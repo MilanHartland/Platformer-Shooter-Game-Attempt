@@ -1,0 +1,57 @@
+Type of game - Platformer with elements of:
+Roguelite
+Stealth
+Shooter
+
+More refined genre ideas:
+Roguelite where the further you progress, the better gear you take back. Could possibly be some sort of extraction shooter
+Infiltration game where you have to go into a place without dying, but the enemies are strong enough that the best strategy is not direct aggression
+Game where you get items based on 'achievements' (kill x things, beat level in x seconds, etc.). Possibly have only 1 level that you repeat consistently
+
+Visual theme ideas:
+Forest
+Industrial - Lots of metal, similar to Portal (very sterile and clean looking) or Portal 2 (decaying)
+Military - Very fortified look, everything looks sturdy and controlled
+Space - In spaceship (because gravity), lots of white and windows with stars in background, ties in with industrial
+Body Horror - Lots of fleshy looking things (like Half-Life and Rainworld rot), meat tentacles, decaying fleshy structures
+
+Emotional theme ideas:
+Apocalypse - some form of (imminent or past) apocalyptic disaster
+War - international war
+1984 - basically only works with stealth aspects. Plays in with the war theme. Hunger Games esque revolution against a nearly all-seeing state
+
+Artstyle ideas:
+Pixelart
+Pixel shader with normal art (Rainworld/Noita esque, but probably needs procedural animation and that shit hard so probably not this)
+Grim
+Vibrant
+
+
+Upgrade system ideas:
+Ctrl-C Ctrl-V the system of Noita (without the rest of Noita)
+Have 1 movement, 1 weapon, 1 alt weapon, and 2 modifier slots. Movement can be things like dash/groundpound, weapon can be different guns/melee,
+alt weapon can be things like grappling hook or just 2nd damage weapon, modifiers can be things like speed or firerate.
+Have a set amount of points to use on different slots
+
+More refined system ideas:
+Have the movement/weapon/alt/modifier system and also the point system. Have 1 slot by default but can add slots for 'item modifiers' with points. This can be
+things similar to Noita upgrades
+
+
+
+Leaning towards:
+Theme - unknown (not that relevant yet)
+Genre - Shooter with extraction elements and some stealth/evasion (enemies too strong to fight multiple at once, so either run, hide, trap, or lure them out), you
+go into an area where you sneak around and try and find items, before having to return somewhere to leave and use said items. If you die, all items get dropped
+and you have to go back in and try and retrieve them (possible upgrades to negate some of the item loss)
+System - Noita with the movement/weapon/alt/modifier system instead of wands. Need some form of points to unlock more slots under the type where you can put
+items (Noita spells) to modify said behaviour
+
+
+Priorities of development:
+1. Create system (barebones, don't need lots of entries into each slot type)
+2. Come up with how enemies should behave
+3. Create pseudocode for enemies
+4. Code pathfinding for enemies
+5. Code enemies
+6. Improve visuals (particle effects, post processing, 1-sprite art for enemies/player)
