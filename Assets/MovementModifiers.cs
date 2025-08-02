@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using MilanUtils;
-using static MilanUtils.RepeatedAction;
+using static MilanUtils.TimedAction;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement))]
@@ -47,7 +47,7 @@ public class MovementModifiers : MonoBehaviour
 
                         Vector2 vel = rb.linearVelocity;
                         
-                        RepeatActionBoth(0.5f,
+                        RepeatActionDuringUntil(0.5f,
                         () => {rb.linearVelocity = vel; return pm.grounded || pm.touchingWall; },
                         () => { rb.linearVelocityX = xBefore; });
 
