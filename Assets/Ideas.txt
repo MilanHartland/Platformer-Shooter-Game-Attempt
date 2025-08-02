@@ -27,6 +27,8 @@ Grim
 Vibrant
 
 
+
+
 Upgrade system ideas:
 Ctrl-C Ctrl-V the system of Noita (without the rest of Noita)
 Have 1 movement, 1 weapon, 1 alt weapon, and 2 modifier slots. Movement can be things like dash/groundpound, weapon can be different guns/melee,
@@ -34,18 +36,21 @@ alt weapon can be things like grappling hook or just 2nd damage weapon, modifier
 Have a set amount of points to use on different slots
 
 More refined system ideas:
-Have the movement/weapon/alt/modifier system and also the point system. Have 1 slot by default but can add slots for 'item modifiers' with points. This can be
-things similar to Noita upgrades
+    Have the movement/weapon/alt/modifier system and also the point system. Have 1 slot by default but can add slots for 'item modifiers' with points. This can be
+things similar to Noita upgrades. Have 1/2 slots besides that for universal modifiers (like +1 projectile)
+    Have the movement/weapon/alt/modifier system but with 'trigger' items. Like 'When Projectile Lands', or 'On Fire', where you can put items, allowing for
+things like a Grappling Hook that knocks enemies back when fired and explodes on landing. Possible Mana system to encourage resource management
+
+
 
 
 
 Leaning towards:
-Theme - unknown (not that relevant yet)
-Genre - Shooter with extraction elements and some stealth/evasion (enemies too strong to fight multiple at once, so either run, hide, trap, or lure them out), you
+    Theme - unknown (not that relevant yet)
+    Genre - Shooter with extraction elements and some stealth/evasion (enemies too strong to fight multiple at once, so either run, hide, trap, or lure them out), you
 go into an area where you sneak around and try and find items, before having to return somewhere to leave and use said items. If you die, all items get dropped
 and you have to go back in and try and retrieve them (possible upgrades to negate some of the item loss)
-System - Noita with the movement/weapon/alt/modifier system instead of wands. Need some form of points to unlock more slots under the type where you can put
-items (Noita spells) to modify said behaviour
+    System - Movement/weapon/alt/modifier system where each 'module' can have multiple triggers, each with its own effects, and optional modifiers
 
 
 Priorities of development:
@@ -55,3 +60,13 @@ Priorities of development:
 4. Code pathfinding for enemies
 5. Code enemies
 6. Improve visuals (particle effects, post processing, 1-sprite art for enemies/player)
+
+
+
+
+
+Implementation/highly refined ideas:
+    System- Have all 'modules' (movement/weapon/alt/modifier) vertically. When clicked, a menu expands where you can customize everything, and the other modules 
+            disappear offscreen. Each module has x different 'parts'. Each part takes a trigger (e.g. 'always', 'on land', 'on start') and 1-2 items (e.g. 'explode', 
+            'pull', 'stun'). Triggers can possibly also have optional modifiers (e.g. 'only trigger when above x health', 'wait x seconds'), 
+            and said modifiers can also optionally have variable fields (e.g. the x field in said examples)
