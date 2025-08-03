@@ -21,6 +21,8 @@ public class ModuleConfigurationHandler : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        CloseInformation();
+
         basePositions = new();
         thisBaseSize = GetComponent<RectTransform>().sizeDelta;
 
@@ -72,6 +74,7 @@ public class ModuleConfigurationHandler : MonoBehaviour
 
         isTweening = false;
         currentlyOpened = null;
+        transform.position = new(1000f, 1000f);
     }
 
     public void OpenInformation(InfoTag module) { StartCoroutine(OpenInformationCoroutine(module)); }

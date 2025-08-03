@@ -70,3 +70,38 @@ Implementation/highly refined ideas:
             disappear offscreen. Each module has x different 'parts'. Each part takes a trigger (e.g. 'always', 'on land', 'on start') and 1-2 items (e.g. 'explode', 
             'pull', 'stun'). Triggers can possibly also have optional modifiers (e.g. 'only trigger when above x health', 'wait x seconds'), 
             and said modifiers can also optionally have variable fields (e.g. the x field in said examples)
+            Can possibly have different 'suits' with different base stats and slots (e.g. tankier suit has higher HP but less mobility and 3 modifier slots, while
+            an aggressive suit has lower HP but a lot more mobility and 2 weapon slots)
+    
+    Enemy AI - Generic: enemies should stand around as lookout with very wide FOV. If the player enters, the enemy sees them after a certain amount of time, which
+            is based on the distance between the player and enemy (for example if the player is 5 units away they are noticed after 0.1s, but 20 units away takes 
+            0.3 or something). If the enemy notices the player, they should pathfind towards their last seen location, and their 'noticing' time should be
+            drastically decreased. When they see the player, they sprint towards them and attack
+            Advanced: 3 types of enemies, which are lookout/tasks/scout. Lookout is as described above. Task hangs around certain areas and are less observant
+            but more abundant. Scouts move around a lot and are more middle-ground in terms of vision.
+
+
+
+Enemy pseudocode:
+
+void Update(){
+
+    if(is task type){
+        pathfind(task location + random offset)
+    }
+    if(is scout type){
+        pathfind(random location)
+    }
+
+    if(see player and timer is up){
+        state = alert
+        last location = player position
+        pathfind(last location)
+    }
+
+    if(not see player and has been a while){
+        state = calm
+        pathfind(base position)
+    }
+
+}
