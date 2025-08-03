@@ -14,7 +14,7 @@ public class ModuleConfigurationHandler : MonoBehaviour
     bool isTweening;
 
     public bool hideVertically;
-    public float itemsCloseSpeed, panelCloseSpeed, waitSpeed, panelOpenSpeed, itemsOpenSpeed;
+    public OpenCloseVisuals vis;
 
     //IDEA: BOOL TO CHANGE IF NON-SELECTED OPTIONS SHOULD HIDE VERTICALL (GO UP/DOWN) OR HORIZONTALLY (MOVE A BIT LEFT TO GO BEHIND THE INVENTORY)
 
@@ -26,8 +26,8 @@ public class ModuleConfigurationHandler : MonoBehaviour
 
         World.AllGameObjectsWhere((obj) => { return obj.GetComponent<DragDrop>() && obj.GetComponent<DragDrop>().type == DragDrop.DragDropType.Slot; })
         .ForEach(x => { basePositions.Add(x, x.transform.position); if (x.transform.position.y > baseSelectedPosition.y) baseSelectedPosition = x.transform.position; });
-        
-        foreach(Transform transf in transform){ baseSizes.Add(transf.gameObject, transf.GetComponent<RectTransform>().sizeDelta); }
+
+        foreach (Transform transf in transform) { baseSizes.Add(transf.gameObject, transf.GetComponent<RectTransform>().sizeDelta); }
     }
 
     // Update is called once per frame
@@ -44,8 +44,8 @@ public class ModuleConfigurationHandler : MonoBehaviour
             if (!openedSomething) CloseInformation();
         }
     }
-    
-    public void CloseInformation(){ StartCoroutine(CloseInformationCoroutine()); }
+
+    public void CloseInformation() { StartCoroutine(CloseInformationCoroutine()); }
     //In total: resets all slot positions to the base position, if currently something open move this to that base, then 'close' this to slot size (first y then x)
     public IEnumerator CloseInformationCoroutine()
     {
@@ -56,19 +56,19 @@ public class ModuleConfigurationHandler : MonoBehaviour
 
         foreach (Transform obj in transform)
         {
-            LeanTween.size(obj.GetComponent<RectTransform>(), Vector3.zero, itemsCloseSpeed);
+            LeanTween.size(obj.GetComponent<RectTransform>(), Vector3.zero, vis.itemSpeed).setEase(vis.itemEase);
         }
-        yield return new WaitForSeconds(itemsCloseSpeed);
+        yield return new WaitForSeconds(vis.itemSpeed);
 
         //Moves objects back to base position
-        foreach (GameObject obj in allSlots) { LeanTween.move(obj, basePositions[obj], panelCloseSpeed); }
+        foreach (GameObject obj in allSlots) { LeanTween.move(obj, basePositions[obj], vis.panelSpeed).setEase(vis.moduleMoveEase); }
 
         //If something opened, move this to that base position. Also size down to height of slot in half time and in other half size down to width
-        if (currentlyOpened) LeanTween.move(gameObject, basePositions[currentlyOpened.gameObject], panelCloseSpeed);
-        LeanTween.size(GetComponent<RectTransform>(), new Vector3(GetComponent<RectTransform>().sizeDelta.x, 200f), panelCloseSpeed / 2f);
-        yield return new WaitForSeconds(panelCloseSpeed / 2f);
-        LeanTween.size(GetComponent<RectTransform>(), new Vector3(200f, 200f), panelCloseSpeed / 2f);
-        yield return new WaitForSeconds(panelCloseSpeed / 2f);
+        if (currentlyOpened) LeanTween.move(gameObject, basePositions[currentlyOpened.gameObject], vis.panelSpeed).setEase(vis.moduleMoveEase);
+        LeanTween.size(GetComponent<RectTransform>(), new Vector3(GetComponent<RectTransform>().sizeDelta.x, 200f), vis.panelYSpeed).setEase(vis.panelEase);
+        yield return new WaitForSeconds(vis.panelYSpeed);
+        LeanTween.size(GetComponent<RectTransform>(), new Vector3(200f, 200f), vis.panelXSpeed).setEase(vis.panelEase);
+        yield return new WaitForSeconds(vis.panelXSpeed);
 
         isTweening = false;
         currentlyOpened = null;
@@ -88,8 +88,8 @@ public class ModuleConfigurationHandler : MonoBehaviour
         if (currentlyOpened)
         {
             CloseInformation();
-            yield return new WaitForSeconds(panelCloseSpeed);
-            yield return new WaitForSeconds(waitSpeed);
+            yield return new WaitForSeconds(vis.panelSpeed);
+            yield return new WaitForSeconds(vis.closeopenCooldown);
         }
 
         currentlyOpened = module;
@@ -97,7 +97,7 @@ public class ModuleConfigurationHandler : MonoBehaviour
         //Because all modules and this have anchor/pivot at topleft and both are childed to the slot parent, you can set this anchor to other
         GetComponent<RectTransform>().anchoredPosition = rectTransf.anchoredPosition;
 
-        LeanTween.move(rectTransf, baseSelectedPosition, panelOpenSpeed);
+        LeanTween.move(rectTransf, baseSelectedPosition, vis.panelSpeed).setEase(vis.panelEase);
 
         foreach (GameObject obj in allSlots)
         {
@@ -106,28 +106,37 @@ public class ModuleConfigurationHandler : MonoBehaviour
                 if (obj.transform.position.y > module.transform.position.y)
                 {
                     //Should move to this y + (difference this y and selected y)
-                    LeanTween.moveY(obj, obj.transform.position.y + (baseSelectedPosition.y - module.transform.position.y), panelOpenSpeed);
+                    LeanTween.moveY(obj, obj.transform.position.y + (baseSelectedPosition.y - module.transform.position.y), vis.panelSpeed).setEase(vis.moduleMoveEase);
                 }
                 else if (basePositions[module.gameObject] == baseSelectedPosition)
                 {
                     //Should move to basepos y - this size y
-                    LeanTween.moveY(obj, obj.transform.position.y - (thisBaseSize.y - 293.33333f), panelOpenSpeed);
+                    LeanTween.moveY(obj, obj.transform.position.y - (thisBaseSize.y - 293.33333f), vis.panelSpeed).setEase(vis.moduleMoveEase);
                 }
             }
-            else LeanTween.moveX(obj, obj.transform.position.x - 200f, panelOpenSpeed);
+            else LeanTween.moveX(obj, obj.transform.position.x - 200f, vis.panelSpeed).setEase(vis.moduleMoveEase);
         }
-        LeanTween.move(currentlyOpened.gameObject, baseSelectedPosition, panelOpenSpeed);
-        LeanTween.move(gameObject, baseSelectedPosition, panelOpenSpeed);
-        LeanTween.size(GetComponent<RectTransform>(), new Vector2(thisBaseSize.x, 200f), panelOpenSpeed / 2f);
-        yield return new WaitForSeconds(panelOpenSpeed / 2f);
-        LeanTween.size(GetComponent<RectTransform>(), thisBaseSize, panelOpenSpeed / 2f);
+        LeanTween.move(currentlyOpened.gameObject, baseSelectedPosition, vis.panelSpeed).setEase(vis.moduleMoveEase);
+        LeanTween.move(gameObject, baseSelectedPosition, vis.panelSpeed).setEase(vis.moduleMoveEase);
+        LeanTween.size(GetComponent<RectTransform>(), new Vector2(thisBaseSize.x, 200f), vis.panelXSpeed).setEase(vis.panelEase);
+        yield return new WaitForSeconds(vis.panelXSpeed);
+        LeanTween.size(GetComponent<RectTransform>(), thisBaseSize, vis.panelYSpeed / 2f).setEase(vis.panelEase);
+        yield return new WaitForSeconds(vis.panelYSpeed);
 
         foreach (Transform transf in transform)
         {
-            LeanTween.size(transf.GetComponent<RectTransform>(), baseSizes[transf.gameObject], itemsOpenSpeed);
+            LeanTween.size(transf.GetComponent<RectTransform>(), baseSizes[transf.gameObject], vis.itemSpeed).setEase(vis.itemEase);
         }
-        yield return new WaitForSeconds(itemsOpenSpeed);
+        yield return new WaitForSeconds(vis.itemSpeed);
 
         isTweening = false;
+    }
+
+    [System.Serializable]
+    public struct OpenCloseVisuals
+    {
+        public float itemSpeed, panelXSpeed, panelYSpeed, closeopenCooldown;
+        public readonly float panelSpeed => panelXSpeed + panelYSpeed;
+        public LeanTweenType itemEase, panelEase, moduleMoveEase;
     }
 }

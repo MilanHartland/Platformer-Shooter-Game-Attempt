@@ -1229,12 +1229,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a5e94553617eb243aca388eb1b62c66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hideVertically: 0
-  itemsCloseSpeed: 1
-  panelCloseSpeed: 1
-  waitSpeed: 0.2
-  panelOpenSpeed: 1
-  itemsOpenSpeed: 1
+  hideVertically: 1
+  vis:
+    itemSpeed: 1
+    panelXSpeed: 1
+    panelYSpeed: 1
+    closeopenCooldown: 0.5
+    itemEase: 13
+    panelEase: 13
+    moduleMoveEase: 13
 --- !u!1 &1252722811
 GameObject:
   m_ObjectHideFlags: 0
