@@ -578,7 +578,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9.79, y: 3.14, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -591,7 +591,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ddc954c16a36e164d84dc0fcbde9525b, type: 3}
   m_Name: 
@@ -1224,7 +1224,7 @@ Transform:
   m_GameObject: {fileID: 1137754132}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.1, y: 0.1, z: 0}
+  m_LocalPosition: {x: 4.21, y: 1.04, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1246,7 +1246,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 6200000, guid: 107009bf2b1d9124f998026ffe31f56a, type: 2}
+  m_Material: {fileID: 6200000, guid: 14b8b852ed46e134299b406b25108476, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1315,12 +1315,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 691222edbddcb2f4cab5b1cbb2bb1f32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 4
+  speed: 3
   maxJumpHeight: 5
-  mapBounds:
-    m_Center: {x: 11.5, y: 4, z: 0}
-    m_Extent: {x: 6.5, y: 6, z: 0}
   map: {fileID: 1597208886}
+  floorBounds:
+    m_Center: {x: 0, y: -0.55, z: 0}
+    m_Extent: {x: 0.45, y: 0.05, z: 0}
 --- !u!1 &1155562149
 GameObject:
   m_ObjectHideFlags: 0
