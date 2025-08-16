@@ -20,26 +20,36 @@ public class BetterEnemyAI : MonoBehaviour
     public Bounds floorBounds;
     bool grounded => Physics2D.OverlapBox(transform.position + floorBounds.center, floorBounds.size, 0f, ~(1 << gameObject.layer));
 
+    Pathfinding.ConnectionRequirements graphConnectionRequirements;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
 
-        Pathfinding.ConnectionRequirements requirements = (a, b) =>
-        {
-            Vector2 diff = b - a;
-            bool corrX = Mathf.Abs(diff.x) <= 2f*speed - Mathf.Clamp(diff.y, 0f, maxJumpHeight);
-            bool corrY = diff.y <= maxJumpHeight;
+        // graphConnectionRequirements = (a, b) =>
+        // {
+        //     Vector2 diff = b - a;
+        //     bool corrX = Mathf.Abs(diff.x) <= 2f*speed - Mathf.Clamp(diff.y, 0f, maxJumpHeight);
+        //     bool corrY = diff.y <= maxJumpHeight;
 
-            return corrX && corrY;
-        };
-        pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, requirements, gameObject);
+        //     float fullTime = Mathf.Abs(diff.x) / speed;
+        //     float height = (diff.y + 0.5f * -Physics2D.gravity.y * fullTime * fullTime) / fullTime;
+        //     height = (height * height) / (Physics2D.gravity.y * -2f);
+        //     bool cantJump = Physics2D.Raycast(a, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), ~(1 << gameObject.layer));
+
+        //     return corrX && corrY && !cantJump;
+        // };
+        // pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
+
+        GenerateMap();
     }
 
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Z)) Pathfind(World.mousePos);
+        if (Input.GetKeyDown(KeyCode.G)) pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
     }
 
     void Pathfind(Vector3 target) { StartCoroutine(PathfindCoroutine(target)); }
@@ -58,7 +68,10 @@ public class BetterEnemyAI : MonoBehaviour
             }
 
             if (curTarget.y - transform.position.y > 0.05f && grounded) JumpTo(curTarget);
-            rb.linearVelocityX = Mathf.Sign(curTarget.x - transform.position.x) * speed;
+
+            if (Mathf.Abs(curTarget.x - transform.position.x) > speed * Time.fixedDeltaTime)
+                rb.linearVelocityX = Mathf.Sign(curTarget.x - transform.position.x) * speed;
+            else { rb.linearVelocityX = 0f; transform.position = new(curTarget.x, transform.position.y); }
 
             yield return new WaitForFixedUpdate();
         }
@@ -70,9 +83,42 @@ public class BetterEnemyAI : MonoBehaviour
 
         float g = -Physics2D.gravity.y;
         float fullTime = Mathf.Abs(diff.x) / speed;
-        Vector2 vel = new(Mathf.Sign(diff.x) * speed, (diff.y + 0.5f * g * fullTime * fullTime) / fullTime);
+        Vector2 vel = new(Mathf.Sign(diff.x) * speed, (diff.y+0.1f + 0.5f * g * fullTime * fullTime) / fullTime);
 
         rb.linearVelocity = vel;
+    }
+
+    [InspectorButton("Generate Map")]
+    void GenerateMap()
+    {
+        graphConnectionRequirements = (a, b) =>
+        {
+            bool clearLine = !Physics2D.Linecast(a, b, ~(1 << gameObject.layer));
+            Vector2 diff = b - a;
+            bool corrY = diff.y <= maxJumpHeight;
+
+            float fullTime = Mathf.Abs(diff.x) / speed;
+            float height = (diff.y + 0.5f * -Physics2D.gravity.y * fullTime * fullTime) / fullTime;
+            height = (height * height) / (Physics2D.gravity.y * -2f);
+            bool canJump = !Physics2D.Raycast(a, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), ~(1 << gameObject.layer));
+
+            bool isAbove = diff.y < 0;
+            bool canFall = false;
+            if (isAbove)
+            {
+                bool lineLeft = !Physics2D.Linecast(a + Vector3.left*0.5f, b);
+                bool lineRight = !Physics2D.Linecast(a + Vector3.right*0.5f, b);
+
+                canFall = (lineLeft || lineRight) && !clearLine;
+            }
+
+            float fallX = -1f * Mathf.Sign(diff.x) + Mathf.Abs(speed * Mathf.Sqrt(2f * Mathf.Abs(diff.y) / -Physics2D.gravity.y));
+            float maxFallLength = ((Mathf.Clamp(diff.y, 0f, Mathf.Infinity) + maxJumpHeight) / maxJumpHeight) * Mathf.Sqrt(2f * maxJumpHeight / -Physics2D.gravity.y);
+            bool corrX = canFall ? (Mathf.Abs(diff.x) < fallX) : (Mathf.Abs(diff.x) < maxFallLength * speed);
+            
+            return (clearLine || canFall) && corrX && corrY && canJump;
+        };
+        pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
     }
 
     void OnDrawGizmos()
