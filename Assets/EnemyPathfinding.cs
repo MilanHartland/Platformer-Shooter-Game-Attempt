@@ -112,12 +112,26 @@ public class EnemyPathfinding : MonoBehaviour
                 corrY = height <= maxJumpHeight;
                 bool nothingAbove = !Physics2D.Raycast(start, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), ~(1 << gameObject.layer));
 
+                bool nothingInLine = true;
+                for (int i = 0; i < Mathf.Abs(diff.x); i++)
+                {
+                    Vector3 signedDir = new(Mathf.Sign(diff.x), 0f);
+                    if(!Physics2D.Raycast(start + i * signedDir, signedDir, 0f, ~(1 << gameObject.layer)))
+                    {
+                        if(Physics2D.Raycast(start + i * signedDir, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), ~(1 << gameObject.layer)))
+                        {
+                            nothingInLine = false;
+                            break;
+                        }
+                    }
+                }
+
                 //Gets the linecast 1 unit to the left/right of the start. If either is unobstructed, that means a fall is possible (disregarding x distance)
                 bool lineLeft = !Physics2D.Linecast(end + Vector3.left * 0.5f, start, ~(1 << gameObject.layer));
                 bool lineRight = !Physics2D.Linecast(end + Vector3.right * 0.5f, start, ~(1 << gameObject.layer));
                 bool otherLine = lineLeft || lineRight;
 
-                canJump = nothingAbove && (clearLine || otherLine);
+                canJump = nothingAbove && nothingInLine && (clearLine || otherLine);
             }
 
             float fallX = Mathf.Abs(speed * Mathf.Sqrt(2f * Mathf.Abs(diff.y) / -Physics2D.gravity.y)) + 1.5f; //Gets the absolute of speed * falltime (sqrt of 2h/g). 1.5 to account for tile size
