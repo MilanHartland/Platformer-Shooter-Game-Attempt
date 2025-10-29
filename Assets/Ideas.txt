@@ -3,6 +3,29 @@ Roguelite
 Stealth
 Shooter
 
+SCHOOL PROJECT:
+-Theme: Reason for respawn is timeloop. You fight semi-organized groups and infiltrate their bases
+
+-Ending: Rainworld. You die so hard you can't respawn (black hole maybe?)
+
+
+-Story: you are set in a timeloop by a military force. Your task is to infiltrate bases and steal weapons (which you use).
+    The "enemies" are the good guy revolutionists. You are part of a magically enhanced oppressive military force tasked to infiltrate and eliminate 
+    revolutionists. When you read further into it, you realize that your party is doing extreme oppression.
+
+
+-Gameplay:
+
+
+-Priority: weapon system, enemies, maps, hub/mission system, story, endings
+
+
+
+
+
+
+
+
 More refined genre ideas:
 Roguelite where the further you progress, the better gear you take back. Could possibly be some sort of extraction shooter
 Infiltration game where you have to go into a place without dying, but the enemies are strong enough that the best strategy is not direct aggression

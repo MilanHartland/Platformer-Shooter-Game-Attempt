@@ -112,7 +112,7 @@ public class EnemyPathfinding : MonoBehaviour
                 corrY = height <= maxJumpHeight;
                 bool nothingAbove = !Physics2D.Raycast(start, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), ~(1 << gameObject.layer));
 
-                //Gets the linecast 1 unit to the left/right of the startk. If either is unobstructed, that means a fall is possible (disregarding x distance)
+                //Gets the linecast 1 unit to the left/right of the start. If either is unobstructed, that means a fall is possible (disregarding x distance)
                 bool lineLeft = !Physics2D.Linecast(end + Vector3.left * 0.5f, start, ~(1 << gameObject.layer));
                 bool lineRight = !Physics2D.Linecast(end + Vector3.right * 0.5f, start, ~(1 << gameObject.layer));
                 bool otherLine = lineLeft || lineRight;
