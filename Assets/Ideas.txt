@@ -13,11 +13,19 @@ SCHOOL PROJECT:
     The "enemies" are the good guy revolutionists. You are part of a magically enhanced oppressive military force tasked to infiltrate and eliminate 
     revolutionists. When you read further into it, you realize that your party is doing extreme oppression.
 
+-Story options: you are military last resort, all energy is put into creating your weapon system
+
+-Weapon system ideas: weapon slot where you can put in a weapon with different stats/projectiles, where you can then put a "trigger" (on fire, on land, after seconds)
+    which triggers the effect(s).
+    Slots needed: weapon slot, alt weapon, 2 movement
+
+    
+
 
 -Gameplay:
 
 
--Priority: weapon system, enemies, maps, hub/mission system, story, endings
+-Priority: weapon system, enemies, item collection system, maps, saves, hub/mission system, story, endings
 
 
 

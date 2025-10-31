@@ -14,14 +14,14 @@ public class ModuleConfigurationHandler : MonoBehaviour
     bool isTweening;
 
     public bool hideVertically;
-    public OpenCloseVisuals vis;
+    public OpenCloseVisuals visuals;
 
     //IDEA: BOOL TO CHANGE IF NON-SELECTED OPTIONS SHOULD HIDE VERTICALL (GO UP/DOWN) OR HORIZONTALLY (MOVE A BIT LEFT TO GO BEHIND THE INVENTORY)
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        CloseInformation();
+        CloseInformation(new OpenCloseVisuals());
 
         basePositions = new();
         thisBaseSize = GetComponent<RectTransform>().sizeDelta;
@@ -41,15 +41,15 @@ public class ModuleConfigurationHandler : MonoBehaviour
             UI.GetObjectsUnderMouse().ForEach(x =>
             {
                 if (currentlyOpened != x.GetComponent<InfoTag>() && x.GetComponent<DragDrop>() && x.GetComponent<DragDrop>().type == DragDrop.DragDropType.Slot)
-                { OpenInformation(x.GetComponent<InfoTag>()); openedSomething = true; return; }
+                { OpenInformation(x.GetComponent<InfoTag>(), visuals); openedSomething = true; return; }
             });
-            if (!openedSomething) CloseInformation();
+            if (!openedSomething) CloseInformation(visuals);
         }
     }
 
-    public void CloseInformation() { StartCoroutine(CloseInformationCoroutine()); }
+    public void CloseInformation(OpenCloseVisuals vis) { StartCoroutine(CloseInformationCoroutine(vis)); }
     //In total: resets all slot positions to the base position, if currently something open move this to that base, then 'close' this to slot size (first y then x)
-    public IEnumerator CloseInformationCoroutine()
+    public IEnumerator CloseInformationCoroutine(OpenCloseVisuals vis)
     {
         isTweening = true;
 
@@ -77,9 +77,9 @@ public class ModuleConfigurationHandler : MonoBehaviour
         transform.position = new(1000f, 1000f);
     }
 
-    public void OpenInformation(InfoTag module) { StartCoroutine(OpenInformationCoroutine(module)); }
+    public void OpenInformation(InfoTag module, OpenCloseVisuals vis) { StartCoroutine(OpenInformationCoroutine(module, vis)); }
     //In total: closes, then moves non-selected out of the way, moves this and selected to correct position, then opens this to base size (first x then y)
-    public IEnumerator OpenInformationCoroutine(InfoTag module)
+    public IEnumerator OpenInformationCoroutine(InfoTag module, OpenCloseVisuals vis)
     {
         isTweening = true;
         RectTransform rectTransf = module.GetComponent<RectTransform>();
@@ -90,7 +90,7 @@ public class ModuleConfigurationHandler : MonoBehaviour
 
         if (currentlyOpened)
         {
-            CloseInformation();
+            CloseInformation(vis);
             yield return new WaitForSeconds(vis.panelSpeed);
             yield return new WaitForSeconds(vis.closeopenCooldown);
         }
@@ -111,10 +111,11 @@ public class ModuleConfigurationHandler : MonoBehaviour
                     //Should move to this y + (difference this y and selected y)
                     LeanTween.moveY(obj, obj.transform.position.y + (baseSelectedPosition.y - module.transform.position.y), vis.panelSpeed).setEase(vis.moduleMoveEase);
                 }
-                else if (basePositions[module.gameObject] == baseSelectedPosition)
+                else if (obj.transform.position.y < module.transform.position.y)
                 {
-                    //Should move to basepos y - this size y
-                    LeanTween.moveY(obj, obj.transform.position.y - (thisBaseSize.y - 293.33333f), vis.panelSpeed).setEase(vis.moduleMoveEase);
+                    //Should move to 0 - (difference module and this y) + difference between slots
+                    print(module.transform.position.y - obj.transform.position.y);
+                    LeanTween.moveY(obj, -(module.transform.position.y - obj.transform.position.y) + 57.03704f, vis.panelSpeed).setEase(vis.moduleMoveEase);
                 }
             }
             else LeanTween.moveX(obj, obj.transform.position.x - 200f, vis.panelSpeed).setEase(vis.moduleMoveEase);
@@ -141,5 +142,10 @@ public class ModuleConfigurationHandler : MonoBehaviour
         public float itemSpeed, panelXSpeed, panelYSpeed, closeopenCooldown;
         public readonly float panelSpeed => panelXSpeed + panelYSpeed;
         public LeanTweenType itemEase, panelEase, moduleMoveEase;
+
+        public OpenCloseVisuals(float _itemSpeed = 0f, float _panelXSpeed = 0f, float _panelYSpeed = 0f, float _closeOpenCooldown = 0f,
+        LeanTweenType _itemEase = LeanTweenType.notUsed, LeanTweenType _panelEase = LeanTweenType.notUsed, LeanTweenType _moduleMoveEase = LeanTweenType.notUsed)
+        { itemSpeed = _itemSpeed; panelXSpeed = _panelXSpeed; panelYSpeed = _panelYSpeed; closeopenCooldown = _closeOpenCooldown; 
+        itemEase = _itemEase; panelEase = _panelEase; moduleMoveEase = _moduleMoveEase; }
     }
 }
