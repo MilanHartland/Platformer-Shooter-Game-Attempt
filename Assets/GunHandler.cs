@@ -2,12 +2,13 @@ using UnityEngine;
 using MilanUtils;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 
 public class GunHandler : MonoBehaviour
 {
     [Tooltip("If raycasts should be used for hit detection or physical bullets")]public bool useRaycast;
     [Tooltip("The prefab of the bullet"), ShowIf("!useRaycast")]public GameObject bulletPrefab;
-    [Tooltip("The velocity of the bullet"), ShowIf("!useRaycast")]public float shootVelocity;
+    [Tooltip("The velocity of the bullet"), ShowIf("!useRaycast")] public float shootVelocity;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

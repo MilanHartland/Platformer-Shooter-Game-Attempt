@@ -19,6 +19,20 @@ SCHOOL PROJECT:
     which triggers the effect(s).
     Slots needed: weapon slot, alt weapon, 2 movement
 
+-Weapon edit ideas:
+1- The edits you make are to the slot itself. The gun is just modifiers to speed/damage/firerate, and the effects stay even when a different/no gun is slotted. The edit menu
+    is just dragging the item into the slot, and then having that slot open to allow you to edit things (imagine like Skyblock accessory bag - you put in parts, which stay in the bag itself,
+    even when you change the bag reforge)
+2- The edits are to the gun itself. The items you put in stay on that gun, even when it's not slotted, and you have to take them out to use them again (imagine like Skyblock gemstones - you put in parts,
+    which stay on the item, even when not equipped)
+
+A- You have to drag the gun into a slot to edit it
+B- The guns are editable even outside the slot (in the inventory), and the edit menu opens in the inventory
+C- The guns are editable even outside the slot (in the inventory), and the edit menu opens on a separate part of the screen
+
+I- The edit menu is always open
+II- The edit menu needs to be opened manually
+
     
 
 

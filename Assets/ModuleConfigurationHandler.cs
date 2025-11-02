@@ -3,6 +3,17 @@ using System.Collections.Generic;
 using MilanUtils;
 using UnityEngine;
 
+public interface ITrigger
+{
+    delegate void Trigger();
+    event Trigger trigger;
+}
+
+public interface IModule
+{
+    void ApplyEffect();
+}
+
 public class ModuleConfigurationHandler : MonoBehaviour
 {
     InfoTag currentlyOpened;
@@ -15,8 +26,6 @@ public class ModuleConfigurationHandler : MonoBehaviour
 
     public bool hideVertically;
     public OpenCloseVisuals visuals;
-
-    //IDEA: BOOL TO CHANGE IF NON-SELECTED OPTIONS SHOULD HIDE VERTICALL (GO UP/DOWN) OR HORIZONTALLY (MOVE A BIT LEFT TO GO BEHIND THE INVENTORY)
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -54,7 +63,7 @@ public class ModuleConfigurationHandler : MonoBehaviour
         isTweening = true;
 
         List<GameObject> allSlots = World.AllGameObjectsWhere((obj) =>
-            { return obj.GetComponent<DragDrop>() && obj.GetComponent<DragDrop>().type == DragDrop.DragDropType.Slot; });
+        { return obj.GetComponent<DragDrop>() && obj.GetComponent<DragDrop>().type == DragDrop.DragDropType.Slot && obj.transform.parent != this.transform; });
 
         foreach (Transform obj in transform)
         {
@@ -85,7 +94,7 @@ public class ModuleConfigurationHandler : MonoBehaviour
         RectTransform rectTransf = module.GetComponent<RectTransform>();
 
         List<GameObject> allSlots = World.AllGameObjectsWhere((obj) =>
-            { return obj.GetComponent<DragDrop>() && obj.GetComponent<DragDrop>().type == DragDrop.DragDropType.Slot; });
+            { return obj.GetComponent<DragDrop>() && obj.GetComponent<DragDrop>().type == DragDrop.DragDropType.Slot && obj.transform.parent != this.transform; });
         allSlots.Remove(module.gameObject);
 
         if (currentlyOpened)
@@ -114,7 +123,6 @@ public class ModuleConfigurationHandler : MonoBehaviour
                 else if (obj.transform.position.y < module.transform.position.y)
                 {
                     //Should move to 0 - (difference module and this y) + difference between slots
-                    print(module.transform.position.y - obj.transform.position.y);
                     LeanTween.moveY(obj, -(module.transform.position.y - obj.transform.position.y) + 57.03704f, vis.panelSpeed).setEase(vis.moduleMoveEase);
                 }
             }
@@ -145,7 +153,9 @@ public class ModuleConfigurationHandler : MonoBehaviour
 
         public OpenCloseVisuals(float _itemSpeed = 0f, float _panelXSpeed = 0f, float _panelYSpeed = 0f, float _closeOpenCooldown = 0f,
         LeanTweenType _itemEase = LeanTweenType.notUsed, LeanTweenType _panelEase = LeanTweenType.notUsed, LeanTweenType _moduleMoveEase = LeanTweenType.notUsed)
-        { itemSpeed = _itemSpeed; panelXSpeed = _panelXSpeed; panelYSpeed = _panelYSpeed; closeopenCooldown = _closeOpenCooldown; 
-        itemEase = _itemEase; panelEase = _panelEase; moduleMoveEase = _moduleMoveEase; }
+        {
+            itemSpeed = _itemSpeed; panelXSpeed = _panelXSpeed; panelYSpeed = _panelYSpeed; closeopenCooldown = _closeOpenCooldown;
+            itemEase = _itemEase; panelEase = _panelEase; moduleMoveEase = _moduleMoveEase;
+        }
     }
 }

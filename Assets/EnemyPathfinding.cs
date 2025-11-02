@@ -116,9 +116,9 @@ public class EnemyPathfinding : MonoBehaviour
                 for (int i = 0; i < Mathf.Abs(diff.x); i++)
                 {
                     Vector3 signedDir = new(Mathf.Sign(diff.x), 0f);
-                    if(!Physics2D.Raycast(start + i * signedDir, signedDir, 0f, ~(1 << gameObject.layer)))
+                    if (!Physics2D.Raycast(start + i * signedDir, signedDir, 0f, ~(1 << gameObject.layer)))
                     {
-                        if(Physics2D.Raycast(start + i * signedDir, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), ~(1 << gameObject.layer)))
+                        if (Physics2D.Raycast(start + i * signedDir, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), ~(1 << gameObject.layer)))
                         {
                             nothingInLine = false;
                             break;
@@ -137,14 +137,16 @@ public class EnemyPathfinding : MonoBehaviour
             float fallX = Mathf.Abs(speed * Mathf.Sqrt(2f * Mathf.Abs(diff.y) / -Physics2D.gravity.y)) + 1.5f; //Gets the absolute of speed * falltime (sqrt of 2h/g). 1.5 to account for tile size
             float maxJumpTime = ((Mathf.Clamp(diff.y, 0f, Mathf.Infinity) + maxJumpHeight) / maxJumpHeight) * Mathf.Sqrt(2f * maxJumpHeight / -Physics2D.gravity.y);
             bool corrX = canFall ? (Mathf.Abs(diff.x) - 0.2f < fallX) : (Mathf.Abs(diff.x) < maxJumpTime * speed);
-            
+
             return (canWalk || canJump || canFall) && corrX && corrY;
         };
         pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
     }
-
+    
+    #pragma warning disable
     void OnDrawGizmos()
     {
+        return;
         foreach (var obj in pathGraph.Keys)
         {
             Gizmos.DrawCube(obj, Vector3.one * 0.5f);
