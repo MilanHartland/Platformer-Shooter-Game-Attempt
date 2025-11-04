@@ -25,7 +25,7 @@ public class ModuleEffectHandler : MonoBehaviour
         if (Input.GetMouseButtonDown(1) && altWeapon != null) GameObject.Find("Game Manager").GetComponent<WeaponModules>().FireWeapon(altWeapon);
     }
 
-    void ApplyModule(DragDrop obj)
+    void ApplyModule(DragDrop obj, DragDrop slot)
     {
         bool isSlotted = DragDrop.allSlots.Contains(obj);
         InfoTag tag = (obj == null) ? null : obj.GetComponent<InfoTag>();

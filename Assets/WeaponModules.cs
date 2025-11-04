@@ -4,7 +4,7 @@ using UnityEngine;
 public class WeaponModules : MonoBehaviour
 {
     public GameObject bulletPrefab;
-    public GameObject triggerSlotPrefab, arrowFillerPrefab, effectSlotPrefab, triggerEffectPairPrefab;
+    public GameObject bulletSlotPrefab, effectSlotPrefab, weaponPrefab;
 
     Transform player;
 

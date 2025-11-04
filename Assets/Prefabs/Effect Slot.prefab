@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 425, y: -40}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6806554652256535301
 CanvasRenderer:
@@ -88,8 +88,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55bbc1a1e71bb154c949903024716c56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _editorHoldToDrag: 1
-  _editorAddHologram: 1
-  _editorNeedSameName: 1
+  _editorHoldToDrag: 0
+  _editorAddHologram: 0
+  _editorNeedSameName: 0
   type: 1
   name: Effect
