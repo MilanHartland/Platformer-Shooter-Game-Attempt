@@ -1,4 +1,5 @@
 using MilanUtils;
+using static MilanUtils.Objects;
 using UnityEngine;
 
 public class ModuleEffectHandler : MonoBehaviour
@@ -10,6 +11,9 @@ public class ModuleEffectHandler : MonoBehaviour
     {
         DragDrop.dragInAction += ApplyModule;
         DragDrop.dragOutAction += ApplyModule;
+
+        TryAutoSetValues();
+        LoadAllResourcesToPrefabs();
     }
 
     // Update is called once per frame
@@ -21,8 +25,14 @@ public class ModuleEffectHandler : MonoBehaviour
             canvas.SetActive(!canvas.activeSelf);
         }
 
-        if (Input.GetMouseButtonDown(0) && weapon != null) GameObject.Find("Game Manager").GetComponent<WeaponModules>().FireWeapon(weapon);
-        if (Input.GetMouseButtonDown(1) && altWeapon != null) GameObject.Find("Game Manager").GetComponent<WeaponModules>().FireWeapon(altWeapon);
+        if (Input.GetMouseButtonDown(0))
+        {
+            GameObject obj = Instantiate(prefabs["Bullet"]);
+            Angle2D.TurnTo(obj, World.mousePos);
+            obj.transform.position = player.position;
+            obj.GetComponent<Rigidbody2D>().linearVelocity = Angle2D.GetAngleFromPos<GameObject, Vector2>(obj, World.mousePos) * 10f;
+            Destroy(obj, 5f);
+        }
     }
 
     void ApplyModule(DragDrop obj, DragDrop slot)

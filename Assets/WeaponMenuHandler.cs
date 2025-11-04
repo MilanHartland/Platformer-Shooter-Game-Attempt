@@ -4,7 +4,7 @@ using MilanUtils;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class WeaponStats : MonoBehaviour
+public class WeaponMenuHandler : MonoBehaviour
 {
     public int bulletSlots;
     public int effectSlots;
@@ -21,10 +21,12 @@ public class WeaponStats : MonoBehaviour
     [InspectorButton("Create Edit Panel")]
     void EditorResetEditLayout() { ResetEditLayout(GetComponent<DragDrop>(), GameObject.Find("Weapon Inventory").GetComponent<DragDrop>()); }
 
+    //Kill the parent
     void Patricide(DragDrop item)
     {
-        if (item != GetComponent<DragDrop>() || parent.gameObject.name != transform.name + " Parent") return;
+        if (this == null || item != GetComponent<DragDrop>() || (parent && parent.gameObject.name != transform.name + " Parent") || !parent) return;
         Destroy(parent.gameObject);
+        GetComponent<DragDrop>().SetFallbackParent(GameObject.Find("Weapon Inventory").transform);
     }
     
     void ResetEditLayout(DragDrop item, DragDrop slot)
@@ -34,7 +36,7 @@ public class WeaponStats : MonoBehaviour
         //If not parented to the correct item, instantiate the prefab, set the name, set parent/scale of parent, parent this to parent, and correct scale/position
         if (transform.parent.name != transform.name + " Parent")
         {
-            GameObject obj = Instantiate(GameObject.Find("Game Manager").GetComponent<WeaponModules>().weaponPrefab);
+            GameObject obj = Instantiate(Objects.prefabs["Weapon"]);
             obj.name = transform.name + " Parent";
             obj.transform.SetParent(GameObject.Find("Weapon Inventory").transform);
             obj.transform.localScale = Vector3.one;
@@ -55,10 +57,9 @@ public class WeaponStats : MonoBehaviour
         }
 
         //For each bullet/effect slot, instantiate it, set parent, set as last sibling, and fix scale
-        WeaponModules modules = GameObject.Find("Game Manager").GetComponent<WeaponModules>();
         for (int i = 0; i < bulletSlots; i++)
         {
-            GameObject obj = Instantiate(modules.bulletSlotPrefab);
+            GameObject obj = Instantiate(Objects.prefabs["Bullet Slot"]);
             obj.transform.SetParent(panel);
             obj.transform.SetAsLastSibling();
             obj.transform.localScale = Vector3.one;
@@ -66,7 +67,7 @@ public class WeaponStats : MonoBehaviour
 
         for (int i = 0; i < effectSlots; i++)
         {
-            GameObject obj = Instantiate(modules.effectSlotPrefab);
+            GameObject obj = Instantiate(Objects.prefabs["Effect Slot"]);
             obj.transform.SetParent(panel);
             obj.transform.SetAsLastSibling();
             obj.transform.localScale = Vector3.one;
