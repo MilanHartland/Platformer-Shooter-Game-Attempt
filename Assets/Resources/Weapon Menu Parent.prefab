@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8708483528426845354}
   m_Layer: 5
-  m_Name: Weapon
+  m_Name: Weapon Menu Parent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

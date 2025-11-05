@@ -1488,7 +1488,6 @@ GameObject:
   - component: {fileID: 982580664}
   - component: {fileID: 982580663}
   - component: {fileID: 982580660}
-  - component: {fileID: 982580665}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -1674,18 +1673,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &982580665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 982580659}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c5db6fa5662c8b4b9ae8b63f811dba9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1002571941
 GameObject:
   m_ObjectHideFlags: 0
@@ -5288,7 +5275,7 @@ GameObject:
   - component: {fileID: 2127909315}
   - component: {fileID: 2127909314}
   m_Layer: 5
-  m_Name: Weapon
+  m_Name: Pistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

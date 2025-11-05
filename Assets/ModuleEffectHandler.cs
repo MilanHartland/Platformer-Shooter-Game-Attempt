@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class ModuleEffectHandler : MonoBehaviour
 {
-    InfoTag weapon, altWeapon;
+    InfoTag weaponTag, altWeaponTag;
+    WeaponStats weapon, altWeapon;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -13,7 +14,7 @@ public class ModuleEffectHandler : MonoBehaviour
         DragDrop.dragOutAction += ApplyModule;
 
         TryAutoSetValues();
-        LoadAllResourcesToPrefabs();
+        LoadAllResources();
     }
 
     // Update is called once per frame
@@ -25,21 +26,44 @@ public class ModuleEffectHandler : MonoBehaviour
             canvas.SetActive(!canvas.activeSelf);
         }
 
+        if (Input.GetKeyDown(KeyCode.T)) Disintegrate(player);
+
+        if (!weapon) return;
+
         if (Input.GetMouseButtonDown(0))
         {
-            GameObject obj = Instantiate(prefabs["Bullet"]);
-            Angle2D.TurnTo(obj, World.mousePos);
-            obj.transform.position = player.position;
-            obj.GetComponent<Rigidbody2D>().linearVelocity = Angle2D.GetAngleFromPos<GameObject, Vector2>(obj, World.mousePos) * 10f;
-            Destroy(obj, 5f);
+            FireWeapon(weapon);
         }
+
+        if (Input.GetMouseButton(0) && weapon.automatic)
+        {
+            FireWeapon(weapon);
+        }
+    }
+    
+    void FireWeapon(WeaponStats w)
+    {
+        if (w == null) return;
+
+        GameObject obj = Instantiate(prefabs["Bullet"]);
+        float angle = NewAngle2D.GetAngle(obj.transform.position, World.mousePos);
+        obj.transform.eulerAngles = new Vector3(0f, 0f, angle);
+        obj.GetComponent<Rigidbody2D>().linearVelocity = obj.transform.up * w.bulletSpeed;
+        obj.transform.position = player.position;
+        Destroy(obj, 5f);
     }
 
     void ApplyModule(DragDrop obj, DragDrop slot)
     {
         bool isSlotted = DragDrop.allSlots.Contains(obj);
-        InfoTag tag = (obj == null) ? null : obj.GetComponent<InfoTag>();
+        InfoTag tag = obj?.GetComponent<InfoTag>();
 
-        if (obj.name == "Weapon") weapon = tag;
+        if (obj.name == "Weapon")
+        {
+            weaponTag = tag;
+
+            if (tag)
+                weapon = (WeaponStats)resources[tag.name];
+        }
     }
 }

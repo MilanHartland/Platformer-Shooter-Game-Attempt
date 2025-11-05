@@ -36,7 +36,7 @@ public class WeaponMenuHandler : MonoBehaviour
         //If not parented to the correct item, instantiate the prefab, set the name, set parent/scale of parent, parent this to parent, and correct scale/position
         if (transform.parent.name != transform.name + " Parent")
         {
-            GameObject obj = Instantiate(Objects.prefabs["Weapon"]);
+            GameObject obj = Instantiate(Objects.prefabs["Weapon Menu Parent"]);
             obj.name = transform.name + " Parent";
             obj.transform.SetParent(GameObject.Find("Weapon Inventory").transform);
             obj.transform.localScale = Vector3.one;
