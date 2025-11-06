@@ -1879,7 +1879,7 @@ GameObject:
   - component: {fileID: 1137754133}
   - component: {fileID: 1137754136}
   - component: {fileID: 1137754139}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2061,7 +2061,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 192
 --- !u!1 &1208499884
 GameObject:
   m_ObjectHideFlags: 0

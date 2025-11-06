@@ -14,18 +14,21 @@ public class EnemyPathfinding : MonoBehaviour
     Rigidbody2D rb;
 
     public static Dictionary<Vector3, List<Vector3>> pathGraph = new();
-    List<Vector3> path = new();
+    [HideInInspector] public List<Vector3> path { get; private set; } = new();
     Vector3 curTarget = Vector3.zero;
 
     public Tilemap map;
     public Bounds floorBounds;
     bool grounded => Physics2D.OverlapBox(transform.position + floorBounds.center, floorBounds.size, 0f, ~(1 << gameObject.layer));
 
+    bool isPathfinding;
+
     Pathfinding.ConnectionRequirements graphConnectionRequirements;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        isPathfinding = false;
         rb = GetComponent<Rigidbody2D>();
         GenerateMap();
     }
@@ -33,13 +36,23 @@ public class EnemyPathfinding : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Z)) Pathfind(World.mousePos);
+        if (Input.GetKeyDown(KeyCode.Z)) StartPathfindCoroutine(World.mousePos);
         if (Input.GetKeyDown(KeyCode.G)) pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
     }
 
-    void Pathfind(Vector3 target) { StartCoroutine(PathfindCoroutine(target)); }
+    public void Pathfind(Vector3 target)
+    {
+        if (isPathfinding && path.Count != 0 && Pathfinding.Dijkstra(transform.position, target, pathGraph).Contains(path[0])) return;
+
+        StopAllCoroutines();
+        isPathfinding = false;
+        StartPathfindCoroutine(target);
+    }
+
+    void StartPathfindCoroutine(Vector3 target) { StartCoroutine(PathfindCoroutine(target)); }
     IEnumerator PathfindCoroutine(Vector3 target)
     {
+        isPathfinding = true;
         path = Pathfinding.Dijkstra(transform.position, target, pathGraph);
 
         if(path.Count < 2){ print("NO PATH"); rb.linearVelocityX = 0f; yield break; }
@@ -146,17 +159,7 @@ public class EnemyPathfinding : MonoBehaviour
     #pragma warning disable
     void OnDrawGizmos()
     {
-        return;
-        foreach (var obj in pathGraph.Keys)
-        {
-            Gizmos.DrawCube(obj, Vector3.one * 0.5f);
-            foreach (var b in pathGraph[obj]) Gizmos.DrawLine(obj, b);
-            // foreach (var b in pathGraph[obj])
-            // {
-            //     if (obj == b) continue;
-            //     if (b.y - obj.y <= 0.5f) Gizmos.DrawLine(obj, b);
-            // }
-        }
+        // return;
 
         Gizmos.color = Color.red;
         Gizmos.DrawCube(curTarget, Vector3.one);
@@ -168,6 +171,19 @@ public class EnemyPathfinding : MonoBehaviour
         for (int i = 0; i < path.Count - 1; i++)
         {
             Gizmos.DrawLine(path[i], path[i + 1]);
+        }
+
+        return;
+
+        foreach (var obj in pathGraph.Keys)
+        {
+            Gizmos.DrawCube(obj, Vector3.one * 0.5f);
+            foreach (var b in pathGraph[obj]) Gizmos.DrawLine(obj, b);
+            // foreach (var b in pathGraph[obj])
+            // {
+            //     if (obj == b) continue;
+            //     if (b.y - obj.y <= 0.5f) Gizmos.DrawLine(obj, b);
+            // }
         }
     }
 }
