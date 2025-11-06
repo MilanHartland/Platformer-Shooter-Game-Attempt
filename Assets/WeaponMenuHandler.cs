@@ -9,23 +9,27 @@ public class WeaponMenuHandler : MonoBehaviour
     public int bulletSlots;
     public int effectSlots;
     RectTransform panel;
-    Transform parent;
+    Transform inventoryParent;
 
     void Start()
     {
-        parent = transform.parent;
+        inventoryParent = transform.parent;
         DragDrop.pickUpAction += Patricide;
         DragDrop.dragInAction += ResetEditLayout;
+
+        ResetEditLayout(GetComponent<DragDrop>(), GameObject.Find("Weapon Inventory").GetComponent<DragDrop>());
     }
 
     [InspectorButton("Create Edit Panel")]
-    void EditorResetEditLayout() { ResetEditLayout(GetComponent<DragDrop>(), GameObject.Find("Weapon Inventory").GetComponent<DragDrop>()); }
+    void EditorResetEditLayout() { Objects.LoadAllResources(); ResetEditLayout(GetComponent<DragDrop>(), GameObject.Find("Weapon Inventory").GetComponent<DragDrop>()); }
 
     //Kill the parent
     void Patricide(DragDrop item)
     {
-        if (this == null || item != GetComponent<DragDrop>() || (parent && parent.gameObject.name != transform.name + " Parent") || !parent) return;
-        Destroy(parent.gameObject);
+        if (this == null || item != GetComponent<DragDrop>() || (inventoryParent && inventoryParent.gameObject.name != transform.name + " Inventory Parent") || !inventoryParent) return;
+        inventoryParent.SetParent(this.transform);
+        inventoryParent.gameObject.SetActive(false);
+        // Destroy(inventoryParent.gameObject);
         GetComponent<DragDrop>().SetFallbackParent(GameObject.Find("Weapon Inventory").transform);
     }
     
@@ -33,11 +37,22 @@ public class WeaponMenuHandler : MonoBehaviour
     {
         if (this == null || item != GetComponent<DragDrop>() || slot.gameObject.name != "Weapon Inventory") return;
 
+        bool hadAsChild = false;
+        if (transform.Find(transform.name + " Inventory Parent"))
+        {
+            hadAsChild = true;
+            Transform obj = transform.Find(transform.name + " Inventory Parent");
+            obj.gameObject.SetActive(true);
+            obj.SetParent(GameObject.Find("Weapon Inventory").transform);
+            transform.SetParent(obj);
+            transform.SetAsLastSibling();
+            transform.localPosition = new(115f, -115f);
+        }
         //If not parented to the correct item, instantiate the prefab, set the name, set parent/scale of parent, parent this to parent, and correct scale/position
-        if (transform.parent.name != transform.name + " Parent")
+        else if (transform.parent.name != transform.name + " Inventory Parent")
         {
             GameObject obj = Instantiate(Objects.prefabs["Weapon Menu Parent"]);
-            obj.name = transform.name + " Parent";
+            obj.name = transform.name + " Inventory Parent";
             obj.transform.SetParent(GameObject.Find("Weapon Inventory").transform);
             obj.transform.localScale = Vector3.one;
             transform.SetParent(obj.transform);
@@ -45,7 +60,9 @@ public class WeaponMenuHandler : MonoBehaviour
             GetComponent<RectTransform>().anchoredPosition = new(115, -115);
         }
 
-        parent = transform.parent;
+        if (hadAsChild) return;
+
+        inventoryParent = transform.parent;
         panel = transform.parent.Find("Background Panel").GetComponent<RectTransform>();
 
         //Kill all children
