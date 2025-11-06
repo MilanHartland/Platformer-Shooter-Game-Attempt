@@ -12,9 +12,9 @@ TagManager:
   - Projectile
   - Water
   - UI
-  - Entity
+  - Player
   - Map
-  - 
+  - Enemy
   - 
   - 
   - 

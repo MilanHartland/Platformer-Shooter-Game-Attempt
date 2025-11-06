@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 public class ModuleEffectHandler : MonoBehaviour
 {
-    WeaponStats weapon, altWeapon;
-    Timer weaponTimer, altWeaponTimer;
+    public static WeaponStats weapon, altWeapon;
+    public static Timer weaponTimer, altWeaponTimer;
 
     [HideInInspector] public List<string> appliedItems;
 
@@ -94,10 +94,10 @@ public class ModuleEffectHandler : MonoBehaviour
         }
     }
 
-    public enum EffectTrigger{Fire, Hit, TimeOut}
+    public enum EffectTrigger{Fire, Hit, TimeOut, PhysicsFrame}
     public static void TriggerEffect(EffectTrigger trigger, GameObject projectile, Collision2D coll = null)
     {
-        foreach(DragDrop dd in DragDrop.slottedItems)
+        foreach (DragDrop dd in DragDrop.slottedItems)
         {
             if (dd.name != "Bullet" && dd.name != "Effect") continue;
 
@@ -111,26 +111,36 @@ public class ModuleEffectHandler : MonoBehaviour
                     case "Reverse Gravity":
                         rb.gravityScale = -1f;
                         break;
+                    case "Bounce":
+                        rb.sharedMaterial = (PhysicsMaterial2D)resources["Bounce Material"];
+                        break;
                     default:
-                        break;                        
+                        break;
                 }
             }
             else if (trigger == EffectTrigger.Hit)
             {
                 switch (tag.name)
                 {
-                    case "Bounce":
-                        rb.linearVelocity = Vector2.Dot(rb.linearVelocity, coll.GetContact(0).normal) * rb.linearVelocity;
-                        coll = null;
-                        break;
                     default:
                         break;
                 }
             }
-            else if(trigger == EffectTrigger.TimeOut)
+            else if (trigger == EffectTrigger.TimeOut)
             {
                 switch (tag.name)
                 {
+                    default:
+                        break;
+                }
+            }
+            else if (trigger == EffectTrigger.PhysicsFrame)
+            {
+                switch (tag.name)
+                {
+                    case "Exponential Speed":
+                        rb.linearVelocity = (rb.linearVelocity.magnitude + tag.value) * rb.linearVelocity.normalized;
+                        break;
                     default:
                         break;
                 }

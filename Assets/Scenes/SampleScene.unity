@@ -1545,6 +1545,7 @@ GameObject:
   - component: {fileID: 1002571944}
   - component: {fileID: 1002571943}
   - component: {fileID: 1002571945}
+  - component: {fileID: 1002571946}
   m_Layer: 5
   m_Name: Bullet Inventory
   m_TagString: Untagged
@@ -1635,6 +1636,23 @@ MonoBehaviour:
   m_Spacing: {x: 50, y: 50}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!114 &1002571946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1002571941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55bbc1a1e71bb154c949903024716c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  holdToDrag: 0
+  addHologram: 1
+  needSameName: 1
+  type: 2
+  name: Bullet
 --- !u!1 &1044124563
 GameObject:
   m_ObjectHideFlags: 0
@@ -1647,6 +1665,7 @@ GameObject:
   - component: {fileID: 1044124566}
   - component: {fileID: 1044124565}
   - component: {fileID: 1044124567}
+  - component: {fileID: 1044124568}
   m_Layer: 5
   m_Name: Effect Inventory
   m_TagString: Untagged
@@ -1736,6 +1755,23 @@ MonoBehaviour:
   m_Spacing: {x: 50, y: 50}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!114 &1044124568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1044124563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55bbc1a1e71bb154c949903024716c56, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  holdToDrag: 0
+  addHologram: 1
+  needSameName: 1
+  type: 2
+  name: Effect
 --- !u!1 &1073729367
 GameObject:
   m_ObjectHideFlags: 0
@@ -1839,6 +1875,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1137754134}
   - component: {fileID: 1137754140}
+  - component: {fileID: 1137754141}
   - component: {fileID: 1137754133}
   - component: {fileID: 1137754136}
   - component: {fileID: 1137754139}
@@ -2010,6 +2047,21 @@ MonoBehaviour:
   floorBounds:
     m_Center: {x: 0, y: -0.55, z: 0}
     m_Extent: {x: 0.45, y: 0.05, z: 0}
+--- !u!114 &1137754141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1137754132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e834c98e31de1a449cfd7eb04ecb132, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &1208499884
 GameObject:
   m_ObjectHideFlags: 0
@@ -4839,7 +4891,7 @@ PlatformEffector2D:
   m_UseOneWayGrouping: 0
   m_SurfaceArc: 180
   m_UseSideFriction: 0
-  m_UseSideBounce: 0
+  m_UseSideBounce: 1
   m_SideArc: 1
 --- !u!1 &1715855577
 GameObject:
@@ -5014,10 +5066,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   borderColor: {r: 0.5019608, g: 0, b: 1, a: 1}
-  name: Bounce
-  description: Adds +1 bounce to the projectile
+  name: Exponential Speed
+  description: Increases speed every frame
   otherInfo: Effect
-  value: 6
+  value: 3
   priority: 5
   changeColorWhenHoveredOver: 0
   highlightedColor: {r: 1.1, g: 1.1, b: 1.1, a: 1}

@@ -5,6 +5,7 @@ using UnityEngine.Tilemaps;
 
 public class ProjectileHandler : MonoBehaviour
 {
+    public WeaponStats shotBy;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -12,17 +13,15 @@ public class ProjectileHandler : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-
+        TriggerEffect(EffectTrigger.PhysicsFrame, gameObject);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
         TriggerEffect(EffectTrigger.Hit, gameObject, collision);
-
-        if (collision != null) print("not null");
-
+        
         // if(collision.gameObject.name == "Map")
         // {
         //     Vector3Int tileInt = World.ClosestTile(collision.GetContact(0).point, collision.gameObject.GetComponent<Tilemap>());
