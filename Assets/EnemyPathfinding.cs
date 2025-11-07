@@ -15,7 +15,7 @@ public class EnemyPathfinding : MonoBehaviour
 
     public static Dictionary<Vector3, List<Vector3>> pathGraph = new();
     [HideInInspector] public List<Vector3> path { get; private set; } = new();
-    Vector3 curTarget = Vector3.zero;
+    Vector3 curTarget = Vector3.zero, lastTarget = Vector3.zero;
 
     public Tilemap map;
     public Bounds floorBounds;
@@ -42,7 +42,9 @@ public class EnemyPathfinding : MonoBehaviour
 
     public void Pathfind(Vector3 target)
     {
-        if (isPathfinding && path.Count != 0 && Pathfinding.Dijkstra(transform.position, target, pathGraph).Contains(path[0])) return;
+        List<Vector3> newPath = Pathfinding.Dijkstra(transform.position, target, pathGraph);
+        // print($"{(path.Count == 0 ? "EMPTY" : path[0])} {(newPath.Count == 0 ? "EMPTY" : newPath[1])}");
+        if (isPathfinding && path.Count != 0 && newPath[0] == lastTarget) return;
 
         StopAllCoroutines();
         isPathfinding = false;
@@ -52,17 +54,24 @@ public class EnemyPathfinding : MonoBehaviour
     void StartPathfindCoroutine(Vector3 target) { StartCoroutine(PathfindCoroutine(target)); }
     IEnumerator PathfindCoroutine(Vector3 target)
     {
+        //Sets the bool to true and gets the path
         isPathfinding = true;
         path = Pathfinding.Dijkstra(transform.position, target, pathGraph);
 
         if(path.Count < 2){ print("NO PATH"); rb.linearVelocityX = 0f; yield break; }
         curTarget = path[0]; path.RemoveAt(0);
+
         while (Vector2.Distance(transform.position, target) > 0.05f)
         {
             if (Vector2.Distance(curTarget, transform.position) < 0.1f)
             {
                 transform.position = curTarget;
-                if (path.Count > 0) { curTarget = path[0]; path.RemoveAt(0); }
+                if (path.Count > 0) 
+                {
+                    lastTarget = curTarget;
+                    curTarget = path[0]; 
+                    path.RemoveAt(0); 
+                }
                 else { rb.linearVelocityX = 0f; yield break; }
             }
 
@@ -162,7 +171,7 @@ public class EnemyPathfinding : MonoBehaviour
         // return;
 
         Gizmos.color = Color.red;
-        Gizmos.DrawCube(curTarget, Vector3.one);
+        Gizmos.DrawWireCube(curTarget, Vector3.one);
 
         Gizmos.color = Color.blue;
         if (path.Count < 1) return;
@@ -171,6 +180,7 @@ public class EnemyPathfinding : MonoBehaviour
         for (int i = 0; i < path.Count - 1; i++)
         {
             Gizmos.DrawLine(path[i], path[i + 1]);
+            Gizmos.DrawWireCube(path[i], 0.25f * Vector3.one);
         }
 
         return;
