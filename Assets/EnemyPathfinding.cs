@@ -103,8 +103,10 @@ public class EnemyPathfinding : MonoBehaviour
         Vector2 diff = target - transform.position;
 
         float g = -Physics2D.gravity.y;
-        float fullTime = Mathf.Clamp(Mathf.Abs(diff.x), 0.2f, Mathf.Infinity) / speed;
-        Vector2 vel = new(Mathf.Sign(diff.x) * speed, (diff.y+0.1f + 0.5f * g * fullTime * fullTime) / fullTime);
+        float fullTime = Mathf.Clamp(Mathf.Abs(diff.x), 1f, Mathf.Infinity) / speed;
+        Vector2 vel = new(Mathf.Sign(diff.x) * speed, (diff.y + 0.1f + g * 0.5f * fullTime * fullTime) / fullTime);
+        
+        //TODO: FIX JUMP HEIGHT. Either here, in the connectionRequirements, or both. From Google it might be sqrt(2gh)
 
         rb.linearVelocity = vel;
     }
@@ -134,26 +136,19 @@ public class EnemyPathfinding : MonoBehaviour
             }
             else
             {
+                float fullTime = Mathf.Clamp(Mathf.Abs(diff.x), 1f, Mathf.Infinity) / speed;
+                float vel = (diff.y + 0.1f -Physics2D.gravity.y * 0.5f * fullTime * fullTime) / fullTime;
+
+                float height = (0.5f * vel * vel) / -Physics2D.gravity.y;
+
                 //Gets the height of the jump that would happen between start/end, and raycasts that distance up to see if it's unobstructed (then the jump would be possible if no map shenanigans)
-                float fullTime = Mathf.Abs(diff.x) / speed;
-                float height = (diff.y + 0.5f * -Physics2D.gravity.y * fullTime * fullTime) / fullTime;
-                height = (height * height) / (Physics2D.gravity.y * -2f);
                 corrY = height <= maxJumpHeight;
                 bool nothingAbove = !Physics2D.Raycast(start, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), mask);
 
-                bool nothingInLine = true;
-                for (int i = 0; i < Mathf.Abs(diff.x); i++)
-                {
-                    Vector3 signedDir = new(Mathf.Sign(diff.x), 0f);
-                    if (!Physics2D.Raycast(start + i * signedDir, signedDir, 0f, mask))
-                    {
-                        if (Physics2D.Raycast(start + i * signedDir, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), mask))
-                        {
-                            nothingInLine = false;
-                            break;
-                        }
-                    }
-                }
+                List<RaycastHit2D> hitList = World.RaycastLine(start, new(Mathf.Sign(diff.x), 0f), Mathf.RoundToInt(Mathf.Abs(diff.x) - 1), Vector2.up * height, mask);
+                bool nothingInLine = !Lists.HasCondition(hitList, (hit) => { return (RaycastHit2D)hit; });
+
+                if (start == new Vector3(3f, -3f) && end == new Vector3(5f, 0f)) print($"{Mathf.RoundToInt(Mathf.Abs(diff.x) - 1)} {nothingInLine}");
 
                 //Gets the linecast 1 unit to the left/right of the end. If either is unobstructed, that means a jump is possible (disregarding x distance)
                 bool lineLeft = !Physics2D.Linecast(end + Vector3.left * 0.5f, start, mask);
