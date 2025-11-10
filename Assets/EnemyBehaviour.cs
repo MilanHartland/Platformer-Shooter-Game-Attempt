@@ -1,6 +1,8 @@
 using UnityEngine;
 using MilanUtils;
 using static MilanUtils.Objects;
+using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(EnemyPathfinding))]
 public class EnemyBehaviour : MonoBehaviour
@@ -17,26 +19,38 @@ public class EnemyBehaviour : MonoBehaviour
     void Start()
     {
         pathfinding = GetComponent<EnemyPathfinding>();
+        StartCoroutine(PathfindCoroutine());
     }
 
     // Update is called once per frame
     void Update()
     {
-        See();
+        
+    }
 
-        if (seesPlayer)
+    IEnumerator PathfindCoroutine()
+    {
+        while (true)
         {
-            lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
-            pathfinding.Pathfind(player.position);
-        }
-        else
-        {
-            if (Vector2.Distance(transform.position, lastSeenPos) <= 0.1f)
-            {
-                lastSeenPos = Vector3.one;
-                pathfinding.Pathfind(Vector3.one);
-            }
-            else pathfinding.Pathfind(lastSeenPos);
+            // pathfinding.Pathfind(World.mousePos);
+            // See();
+
+            // if (seesPlayer)
+            // {
+            //     lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
+            //     pathfinding.Pathfind(player.position);
+            // }
+            // else
+            // {
+            //     if (Vector2.Distance(transform.position, lastSeenPos) <= 0.1f)
+            //     {
+            //         lastSeenPos = Vector3.one;
+            //         pathfinding.Pathfind(Vector3.one);
+            //     }
+            //     else pathfinding.Pathfind(lastSeenPos);
+            // }
+
+            yield return new WaitForSeconds(.01f);
         }
     }
 
