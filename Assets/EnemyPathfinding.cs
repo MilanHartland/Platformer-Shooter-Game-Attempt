@@ -36,12 +36,12 @@ public class EnemyPathfinding : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Z)) StartPathfindCoroutine(World.mousePos);
+        if (Input.GetKeyDown(KeyCode.X)) JumpTo(Pathfinding.ClosestNode(pathGraph, World.mousePos));
         if (Input.GetKeyDown(KeyCode.G)) pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
     }
 
     public void Pathfind(Vector3 target)
     {
-        if (path.Count > 0) print(Lists.HasCondition(World.LinecastMultiple(transform.position, path[0], mask, Vector2.up), (hit) => { return !(RaycastHit2D)hit; }));
         if (path.Count < 1 || !Lists.HasCondition(World.LinecastMultiple(transform.position, path[0], mask, Vector2.up), (hit) => { return !(RaycastHit2D)hit; }))
         {
             path = Pathfinding.Dijkstra(transform.position, target, pathGraph);
@@ -82,16 +82,25 @@ public class EnemyPathfinding : MonoBehaviour
 
             Vector2 diff = curTarget - transform.position;
 
-            if (diff.y > 0.05f && grounded) JumpTo(curTarget);
-
-            if (diff.y > 0.05f && Physics2D.Linecast(transform.position, curTarget, mask))
-                rb.linearVelocityX = 0f;
-            else if (Mathf.Abs(diff.x) > speed * Time.fixedDeltaTime)
-                rb.linearVelocityX = Mathf.Sign(diff.x) * speed;
-            else if (Mathf.Abs(diff.x) < speed * Time.fixedDeltaTime)
+            if(diff.y > 0.05f)
             {
-                rb.linearVelocityX = 0f;
-                transform.position = new(curTarget.x, transform.position.y);
+                if (grounded) 
+                    JumpTo(curTarget);
+
+                if (Physics2D.Linecast(transform.position, curTarget, mask) && Mathf.Abs(diff.x) < 1.05f)
+                    rb.linearVelocityX = 0f;
+            }
+            else
+            {
+                if (grounded && !Physics2D.Raycast(transform.position + new Vector3(Mathf.Sign(diff.x), 0f), Vector2.down, 1f, mask) && Mathf.Abs(diff.x) > 0.45f)
+                    JumpTo(curTarget);
+                else if (Mathf.Abs(diff.x) > speed * Time.fixedDeltaTime)
+                    rb.linearVelocityX = Mathf.Sign(diff.x) * speed;
+                else if (Mathf.Abs(diff.x) < speed * Time.fixedDeltaTime)
+                {
+                    rb.linearVelocityX = 0f;
+                    transform.position = new(curTarget.x, transform.position.y);
+                }   
             }
 
             yield return new WaitForFixedUpdate();
@@ -106,8 +115,6 @@ public class EnemyPathfinding : MonoBehaviour
         float fullTime = Mathf.Clamp(Mathf.Abs(diff.x), 1f, Mathf.Infinity) / speed;
         Vector2 vel = new(Mathf.Sign(diff.x) * speed, (diff.y + 0.1f + g * 0.5f * fullTime * fullTime) / fullTime);
         
-        //TODO: FIX JUMP HEIGHT. Either here, in the connectionRequirements, or both. From Google it might be sqrt(2gh)
-
         rb.linearVelocity = vel;
     }
 
@@ -123,7 +130,8 @@ public class EnemyPathfinding : MonoBehaviour
             bool corrY = diff.y <= maxJumpHeight;
 
             bool isAbove = diff.y < 0;
-            bool canWalk = clearLine && diff.y == 0f;
+            bool isSame = Mathf.Abs(diff.y) < 0.05f;
+            bool canWalk = false;
             bool canFall = false;
             bool canJump = false;
             if (isAbove)
@@ -134,28 +142,49 @@ public class EnemyPathfinding : MonoBehaviour
 
                 canFall = lineLeft || lineRight;
             }
+            else if (isSame)
+            {
+                //Checks if there is a gap by doing a raycastline downward and returning if on any there is no hit
+                List<RaycastHit2D> hitList = World.RaycastLine(start, new(Mathf.Sign(diff.x), 0f), Mathf.RoundToInt(Mathf.Abs(diff.x) - 1), Vector2.down, mask);
+                bool hasGap = Lists.HasCondition(hitList, (hit) => { return !(RaycastHit2D)hit; });
+
+                if (hasGap)
+                {
+                    canWalk = false;
+
+                    //Gets the jump variables
+                    float fullTime = Mathf.Clamp(Mathf.Abs(diff.x), 1f, Mathf.Infinity) / speed;
+                    float vel = (-Physics2D.gravity.y * 0.5f * fullTime * fullTime) / fullTime;
+                    float height = (0.5f * vel * vel) / -Physics2D.gravity.y;
+                    
+                    //Does another 'can jump' raycast line
+                    hitList = World.RaycastLine(start, new(Mathf.Sign(diff.x), 0f), Mathf.RoundToInt(Mathf.Abs(diff.x) - 1), Vector2.up * height, mask);
+                    bool nothingInLine = !Lists.HasCondition(hitList, (hit) => { return (RaycastHit2D)hit; });
+
+                    canJump = nothingInLine && clearLine;
+                }
+                else canWalk = clearLine;
+            }
             else
             {
+                //Gets the jump variables
                 float fullTime = Mathf.Clamp(Mathf.Abs(diff.x), 1f, Mathf.Infinity) / speed;
-                float vel = (diff.y + 0.1f -Physics2D.gravity.y * 0.5f * fullTime * fullTime) / fullTime;
-
+                float vel = (diff.y + 0.1f - Physics2D.gravity.y * 0.5f * fullTime * fullTime) / fullTime;
                 float height = (0.5f * vel * vel) / -Physics2D.gravity.y;
 
                 //Gets the height of the jump that would happen between start/end, and raycasts that distance up to see if it's unobstructed (then the jump would be possible if no map shenanigans)
                 corrY = height <= maxJumpHeight;
-                bool nothingAbove = !Physics2D.Raycast(start, Vector2.up, Mathf.Clamp(height, 0f, Mathf.Infinity), mask);
 
+                //Gets the raycastline and returns if any is obstructed
                 List<RaycastHit2D> hitList = World.RaycastLine(start, new(Mathf.Sign(diff.x), 0f), Mathf.RoundToInt(Mathf.Abs(diff.x) - 1), Vector2.up * height, mask);
                 bool nothingInLine = !Lists.HasCondition(hitList, (hit) => { return (RaycastHit2D)hit; });
 
-                if (start == new Vector3(3f, -3f) && end == new Vector3(5f, 0f)) print($"{Mathf.RoundToInt(Mathf.Abs(diff.x) - 1)} {nothingInLine}");
-
-                //Gets the linecast 1 unit to the left/right of the end. If either is unobstructed, that means a jump is possible (disregarding x distance)
-                bool lineLeft = !Physics2D.Linecast(end + Vector3.left * 0.5f, start, mask);
-                bool lineRight = !Physics2D.Linecast(end + Vector3.right * 0.5f, start, mask);
+                //Gets the linecast 1 units to the left/right of the end. If either is unobstructed, that means a jump is possible (disregarding x distance)
+                bool lineLeft = !Physics2D.Linecast(end + Vector3.left * 1f, start, mask);
+                bool lineRight = !Physics2D.Linecast(end + Vector3.right * 1f, start, mask);
                 bool otherLine = lineLeft || lineRight;
 
-                canJump = nothingAbove && nothingInLine && (clearLine || otherLine);
+                canJump = nothingInLine && (clearLine || otherLine);
             }
 
             float fallX = Mathf.Abs(speed * Mathf.Sqrt(2f * Mathf.Abs(diff.y) / -Physics2D.gravity.y)) + 1.5f; //Gets the absolute of speed * falltime (sqrt of 2h/g). 1.5 to account for tile size
@@ -170,12 +199,12 @@ public class EnemyPathfinding : MonoBehaviour
     #pragma warning disable
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.white;
-        foreach (var obj in pathGraph.Keys)
-        {
-            Gizmos.DrawCube(obj, Vector3.one * 0.5f);
-            foreach (var b in pathGraph[obj]) Gizmos.DrawLine(obj, b);
-        }
+        // Gizmos.color = Color.white;
+        // foreach (var obj in pathGraph.Keys)
+        // {
+        //     Gizmos.DrawCube(obj, Vector3.one * 0.5f);
+        //     foreach (var b in pathGraph[obj]) Gizmos.DrawLine(obj, b);
+        // }
 
         // return;
 
