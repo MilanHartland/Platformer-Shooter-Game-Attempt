@@ -32,25 +32,24 @@ public class EnemyBehaviour : MonoBehaviour
     {
         while (true)
         {
-            // pathfinding.Pathfind(World.mousePos);
-            // See();
+            See();
 
-            // if (seesPlayer)
-            // {
-            //     lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
-            //     pathfinding.Pathfind(player.position);
-            // }
-            // else
-            // {
-            //     if (Vector2.Distance(transform.position, lastSeenPos) <= 0.1f)
-            //     {
-            //         lastSeenPos = Vector3.one;
-            //         pathfinding.Pathfind(Vector3.one);
-            //     }
-            //     else pathfinding.Pathfind(lastSeenPos);
-            // }
+            if (seesPlayer)
+            {
+                lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
+                pathfinding.Pathfind(player.position);
+            }
+            else
+            {
+                if (Vector2.Distance(transform.position, lastSeenPos) <= 0.1f)
+                {
+                    lastSeenPos = Vector3.one;
+                    pathfinding.Pathfind(Vector3.one);
+                }
+                else pathfinding.Pathfind(lastSeenPos);
+            }
 
-            yield return new WaitForSeconds(.01f);
+            yield return GetWaitForSeconds(0.1f);
         }
     }
 
