@@ -44,8 +44,9 @@ public class EnemyPathfinding : MonoBehaviour
     public void Pathfind(Vector3 target)
     {
         //If no path, or there is no unobstructed line in LinecastMultiple (in this case a linecast from this position and 1 higher towards the path), reset path
-        if (path.Count < 1 || !Lists.HasCondition(World.LinecastMultiple(transform.position, path[0], mask, Vector2.up), (hit) => { return !(RaycastHit2D)hit; }))
+        if (path.Count == 0)
         {
+            print("New path created");
             path = Pathfinding.Dijkstra(transform.position, target, pathGraph);
             return;
         }
@@ -84,20 +85,35 @@ public class EnemyPathfinding : MonoBehaviour
 
             Vector2 diff = curTarget - transform.position;
 
-            if (diff.y > 0.05f)
+            if (diff.y > 0.1f)
             {
+                //If on the ground and there is a y difference, jump
                 if (grounded)
                     rb.linearVelocity = GetJumpToConstantSpeed(transform.position, curTarget, speed);
 
-                if (Physics2D.Linecast(transform.position, curTarget, mask) && Mathf.Abs(diff.x) < 1.05f)
-                    rb.linearVelocityX = 0f;
+                if (Physics2D.Linecast(transform.position, curTarget, mask))
+                {
+                    //If the x distance is between 1-1.2, stop moving horizontally
+                    if (Mathf.Abs(diff.x) > 1f && Mathf.Abs(diff.x) < 1.2f)
+                        rb.linearVelocityX = 0f;
+                    else if(Mathf.Abs(diff.x) < 1f)
+                    {
+                        List<Vector3> targetConnections = pathGraph[curTarget];
+                        Vector3 closest = Lists.GetClosest(pathGraph[curTarget], transform.position);
+                        rb.linearVelocityX = Mathf.Sign(closest.x - transform.position.x) * speed;
+                    }
+                }
             }
             else
             {
                 if (grounded && !Physics2D.Raycast(transform.position + new Vector3(Mathf.Sign(diff.x), 0f), Vector2.down, 1f, mask) && Mathf.Abs(diff.x) > 0.45f)
+                {
                     rb.linearVelocity = GetJumpToConstantSpeed(transform.position, curTarget, speed);
+                }
                 else if (Mathf.Abs(diff.x) > speed * Time.fixedDeltaTime)
+                {
                     rb.linearVelocityX = Mathf.Sign(diff.x) * speed;
+                }
                 else if (Mathf.Abs(diff.x) < speed * Time.fixedDeltaTime)
                 {
                     rb.linearVelocityX = 0f;
@@ -112,10 +128,22 @@ public class EnemyPathfinding : MonoBehaviour
     float GetJumpVelocity(Vector3 start, Vector3 target)
     {
         Vector2 diff = target - start;
+        float dx = diff.x;
+        float dy = diff.y + .1f;
 
-        float g = -Physics2D.gravity.y;
-        float fullTime = Mathf.Abs(diff.x) / speed;
-        return (diff.y + 0.1f + g * 0.5f * fullTime * fullTime) / fullTime;
+        float g = -Physics2D.gravity.y;               // positive gravity magnitude
+        float tHoriz = Mathf.Abs(dx) / speed;         // minimum time so horizontal speed won't exceed `speed`
+
+        // time where vertical initial velocity is minimized while still landing descending
+        float tStationary = 0f;
+        if (dy > 0f) tStationary = Mathf.Sqrt(2f * dy / g);
+
+        // smallest feasible flight time that satisfies both horizontal limit and descending condition
+        float t = Mathf.Max(tHoriz, tStationary);
+
+        // compute required initial vertical velocity for that flight time
+        float v0 = (dy + 0.5f * g * t * t) / t;
+        return v0;
     }
     
     float GetJumpHeight(Vector3 start, Vector3 target)
@@ -176,22 +204,23 @@ public class EnemyPathfinding : MonoBehaviour
                 var hitList = GetJumpRayList();
                 bool nothingInLine = !Lists.HasCondition(hitList, (hit) => { return (RaycastHit2D)hit; });
 
-                //Gets the linecast 1 units to the left/right of the end. If either is unobstructed, that means a jump is possible (disregarding x distance)
-                bool lineLeft = !Physics2D.Linecast(end + Vector3.left * 1f, start, mask);
-                bool lineRight = !Physics2D.Linecast(end + Vector3.right * 1f, start, mask);
+                //Gets the linecast .75 units to the left/right of the end. If either is unobstructed, that means a jump is possible (disregarding x distance)
+                bool lineLeft = !Physics2D.Linecast(end + Vector3.left * .75f, start, mask);
+                bool lineRight = !Physics2D.Linecast(end + Vector3.right * .75f, start, mask);
                 bool otherLine = lineLeft || lineRight;
+                
+                //Checks if the x is different. If not, then you would hit the tile above
+                bool differentX = start.x != end.x;
 
-                canJump = nothingInLine && (clearLine || otherLine);
+                canJump = nothingInLine && differentX && (clearLine || otherLine);
             }
             
             bool corrFallX = Mathf.Abs(diff.x) - 0.2f < GetTimeToFall(Mathf.Abs(diff.y)) * speed;
 
-            float maxJumpTime = 2f * GetJumpHeight(start, end) / speed;
+            float maxJumpTime = 2f * GetTimeToFall(GetJumpHeight(start, end)) * speed;
             bool corrJumpX = Mathf.Abs(diff.x) < maxJumpTime * speed;
 
             bool corrX = (canFall && corrFallX) || (canJump && corrJumpX) || canWalk;
-
-            if(start == new Vector3(-2, 1) && end == new Vector3(-6, 1)) print(corrJumpX);
 
             return (canWalk || canJump || canFall) && corrX && corrY;
 
@@ -227,6 +256,7 @@ public class EnemyPathfinding : MonoBehaviour
         Gizmos.color = Color.white;
         foreach (var obj in pathGraph.Keys)
         {
+            Gizmos.color = Color.white;
             Gizmos.DrawCube(obj, Vector3.one * 0.5f);
             
             foreach (var b in pathGraph[obj])
@@ -254,5 +284,6 @@ public class EnemyPathfinding : MonoBehaviour
             Gizmos.DrawLine(path[i], path[i + 1]);
             Gizmos.DrawWireCube(path[i], 0.25f * Vector3.one);
         }
+        Gizmos.DrawWireCube(path[^1], 0.25f * Vector3.one);
     }
 }
