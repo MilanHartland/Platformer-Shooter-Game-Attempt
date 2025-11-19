@@ -50,7 +50,7 @@ public class ModuleEffectHandler : MonoBehaviour
         weaponTimer.ResetTimer();
 
         GameObject obj = Instantiate(prefabs["Bullet"]);
-        obj.transform.position = player.position;
+        obj.transform.position = player.transform.Find("Gun").position;
         Angle2D.TurnTo(obj, World.mousePos, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
         obj.GetComponent<Rigidbody2D>().linearVelocity = obj.transform.up * w.bulletSpeed;
         Destroy(obj, 5f);
