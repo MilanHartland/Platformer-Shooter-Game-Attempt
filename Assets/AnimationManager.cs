@@ -49,12 +49,12 @@ public class AnimationManager : MonoBehaviour
             rightArm.localScale = new(Mathf.Abs(rightArm.localScale.x) * signedDir, Mathf.Abs(rightArm.localScale.y) * signedDir);
 
             //If moving horizontally and needs to go to next frame, go to next frame. Else, stand
-            if (GetComponent<Rigidbody2D>().linearVelocityX < -.1f || GetComponent<Rigidbody2D>().linearVelocityX > .1f && walkingFrameTimer.finished)
+            if (Mathf.Abs(GetComponent<Rigidbody2D>().linearVelocity.x) > .1f && walkingFrameTimer.finished)
             {
                 walkingFrameTimer.ResetTimer();
                 WalkingAnim();
             }
-            else if(GetComponent<Rigidbody2D>().linearVelocityX < .1f && GetComponent<Rigidbody2D>().linearVelocityX > -.1f)
+            else if(Mathf.Abs(GetComponent<Rigidbody2D>().linearVelocity.x) < .1f)
             {
                 curWalkingFrame = 0;
                 walkingFrameTimer.ResetTimer();

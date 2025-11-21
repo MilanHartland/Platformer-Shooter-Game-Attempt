@@ -77,6 +77,7 @@ public class EnemyPathfinding : MonoBehaviour
                 transform.position = curTarget;
                 if (path.Count > 0)
                 {
+                    print(path[0]);
                     curTarget = path[0];
                     path.RemoveAt(0);
                 }
@@ -106,14 +107,17 @@ public class EnemyPathfinding : MonoBehaviour
             }
             else
             {
+                //If grounded and no raycast next position downward (so when a gap) and there is a significant enough x difference
                 if (grounded && !Physics2D.Raycast(transform.position + new Vector3(Mathf.Sign(diff.x), 0f), Vector2.down, 1f, mask) && Mathf.Abs(diff.x) > 0.45f)
                 {
                     rb.linearVelocity = GetJumpToConstantSpeed(transform.position, curTarget, speed);
                 }
+                //If next frame would not go over target, move
                 else if (Mathf.Abs(diff.x) > speed * Time.fixedDeltaTime)
                 {
                     rb.linearVelocityX = Mathf.Sign(diff.x) * speed;
                 }
+                //If next frame would go over target, teleport to target and reset x
                 else if (Mathf.Abs(diff.x) < speed * Time.fixedDeltaTime)
                 {
                     rb.linearVelocityX = 0f;
@@ -125,6 +129,7 @@ public class EnemyPathfinding : MonoBehaviour
         }
     }
 
+    //ChatGPT code
     float GetJumpVelocity(Vector3 start, Vector3 target)
     {
         Vector2 diff = target - start;
@@ -163,12 +168,12 @@ public class EnemyPathfinding : MonoBehaviour
             Vector2 diff = end - start;
             bool corrY = diff.y <= maxJumpHeight;
 
-            bool isAbove = diff.y < 0;
+            bool startIsAbove = diff.y < 0;
             bool isSame = Mathf.Abs(diff.y) < 0.05f;
             bool canWalk = false;
             bool canFall = false;
             bool canJump = false;
-            if (isAbove)
+            if (startIsAbove)
             {
                 //Gets the linecast 1 unit to the left/right of the startk. If either is unobstructed, that means a fall is possible (disregarding x distance)
                 bool lineLeft = !Physics2D.Linecast(start + Vector3.left * 0.5f, end, mask);
@@ -180,7 +185,7 @@ public class EnemyPathfinding : MonoBehaviour
             {
                 //Checks if there is a gap by doing a raycastline downward and returning if on any there is no hit
                 List<RaycastHit2D> hitList = World.RaycastLine(start, new(Mathf.Sign(diff.x), 0f), Mathf.RoundToInt(Mathf.Abs(diff.x) - 1), Vector2.down, mask);
-                bool hasGap = Lists.HasCondition(hitList, (hit) => { return !(RaycastHit2D)hit; });
+                bool hasGap = Lists.HasCondition(hitList, (hit) => { return !hit; });
 
                 //If there is a gap, set canWalk to false, check if jump is allowed (GetJumpRayList and HasCondition), then set canJump. If no gap, then canWalk is true
                 if (hasGap)
@@ -189,13 +194,13 @@ public class EnemyPathfinding : MonoBehaviour
                     corrY = GetJumpHeight(start, end) <= maxJumpHeight;
 
                     hitList = GetJumpRayList();
-                    bool nothingInLine = !Lists.HasCondition(hitList, (hit) => { return (RaycastHit2D)hit; });
+                    bool nothingInLine = !Lists.HasCondition(hitList, (hit) => { return hit; });
 
                     canJump = nothingInLine && clearLine;
                 }
                 else canWalk = clearLine;
             }
-            else
+            else if(!startIsAbove && !isSame)
             {
                 //Gets the height of the jump that would happen between start/end and check if maxJumpHeight allows it
                 corrY = GetJumpHeight(start, end) <= maxJumpHeight;
@@ -250,40 +255,46 @@ public class EnemyPathfinding : MonoBehaviour
         pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
     }
     
+    public bool drawGraphGizmos;
+    public bool drawPathGizmos;
     #pragma warning disable
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.white;
-        foreach (var obj in pathGraph.Keys)
+        if(drawGraphGizmos)
         {
             Gizmos.color = Color.white;
-            Gizmos.DrawCube(obj, Vector3.one * 0.5f);
-            
-            foreach (var b in pathGraph[obj])
+            foreach (var obj in pathGraph.Keys)
             {
-                bool twoWay = pathGraph[b].Contains(obj);
-                if (twoWay) Gizmos.color = Color.white;
-                else if (obj.y > b.y) Gizmos.color = new Color(.7f, 1f, .7f, 1f);
-                else if (obj.y < b.y) Gizmos.color = new Color(.7f, .7f, 1f, 1f);
+                Gizmos.color = Color.white;
+                Gizmos.DrawCube(obj, Vector3.one * 0.5f);
+                
+                foreach (var b in pathGraph[obj])
+                {
+                    bool twoWay = pathGraph[b].Contains(obj);
+                    if (twoWay) Gizmos.color = Color.white;
+                    else if (obj.y > b.y) Gizmos.color = new Color(.7f, 1f, .7f, 1f);
+                    else if (obj.y < b.y) Gizmos.color = new Color(.7f, .7f, 1f, 1f);
 
-                Gizmos.DrawLine(obj, b);
+                    Gizmos.DrawLine(obj, b);
+                }
             }
         }
 
-        // return;
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(curTarget, Vector3.one);
-
-        Gizmos.color = Color.blue;
-        if (path.Count < 1) return;
-        Gizmos.DrawLine(transform.position, curTarget); Gizmos.DrawLine(curTarget, path[0]);
-        if (path.Count < 2) return;
-        for (int i = 0; i < path.Count - 1; i++)
+        if(drawPathGizmos)
         {
-            Gizmos.DrawLine(path[i], path[i + 1]);
-            Gizmos.DrawWireCube(path[i], 0.25f * Vector3.one);
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(curTarget, Vector3.one);
+
+            Gizmos.color = Color.blue;
+            if (path.Count < 1) return;
+            Gizmos.DrawLine(transform.position, curTarget); Gizmos.DrawLine(curTarget, path[0]);
+            if (path.Count < 2) return;
+            for (int i = 0; i < path.Count - 1; i++)
+            {
+                Gizmos.DrawLine(path[i], path[i + 1]);
+                Gizmos.DrawWireCube(path[i], 0.25f * Vector3.one);
+            }
+            Gizmos.DrawWireCube(path[^1], 0.25f * Vector3.one);
         }
-        Gizmos.DrawWireCube(path[^1], 0.25f * Vector3.one);
     }
 }
