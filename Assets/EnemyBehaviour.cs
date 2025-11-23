@@ -32,7 +32,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         while (true)
         {
-            pathfinding.Pathfind(World.mousePos);
+            // pathfinding.Pathfind(World.mousePos);
             
             // See();
 

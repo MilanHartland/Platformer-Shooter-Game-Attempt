@@ -77,7 +77,6 @@ public class EnemyPathfinding : MonoBehaviour
                 transform.position = curTarget;
                 if (path.Count > 0)
                 {
-                    print(path[0]);
                     curTarget = path[0];
                     path.RemoveAt(0);
                 }
