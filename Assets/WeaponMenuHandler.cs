@@ -14,28 +14,28 @@ public class WeaponMenuHandler : MonoBehaviour
 
     void Start()
     {
-        inventoryParent = transform.parent;
+        // inventoryParent = transform.parent;
         
-        DragDrop.dragOutAction += (x, y) => 
-        {
-            Destroy(x.gameObject); 
+        // DragDrop.dragOutAction += (x, y) => 
+        // {
+        //     Destroy(x.gameObject); 
             
-            GameObject obj = GameObject.Find(transform.name.Remove(transform.name.IndexOf(" Slot Clone")));
-            if(obj) obj.GetComponent<DragDrop>().enabled = true;
+        //     GameObject obj = GameObject.Find(transform.name.Remove(transform.name.IndexOf(" Slot Clone")));
+        //     if(obj) obj.GetComponent<DragDrop>().enabled = true;
 
-            Transform hologram = x.hologram;
-            if(hologram) Destroy(x.hologram.gameObject);
-        };
+        //     Transform hologram = x.hologram;
+        //     if(hologram) Destroy(x.hologram.gameObject);
+        // };
 
-        DragDrop.pickUpAction += (item) =>
-        {
-            item.transform.parent = GameObject.Find(item.transform.name + " Inventory Parent").transform;
-            item.enabled = false;
+        // DragDrop.pickUpAction += (item) =>
+        // {
+        //     item.transform.parent = GameObject.Find(item.transform.name + " Inventory Parent").transform;
+        //     item.enabled = false;
             
-            GameObject clone = Instantiate(item.gameObject);
-            clone.transform.name = item.transform.name + " Slot Clone";
-            DragDrop.SetDraggedObject(clone);
-        };
+        //     GameObject clone = Instantiate(item.gameObject);
+        //     clone.transform.name = item.transform.name + " Slot Clone";
+        //     DragDrop.SetDraggedObject(clone);
+        // };
 
         // DragDrop.pickUpAction += Patricide;
         // DragDrop.dragInAction += ResetEditLayout;

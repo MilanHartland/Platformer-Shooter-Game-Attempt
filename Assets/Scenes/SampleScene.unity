@@ -181,6 +181,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 3
   type: 2
   name: 
 --- !u!1 &84911404
@@ -275,6 +276,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 2
   type: 1
   name: Weapon
 --- !u!114 &84911409
@@ -515,6 +517,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 0
   type: 0
   name: Bullet
 --- !u!1 &312261340
@@ -570,6 +573,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 0
   type: 1
   name: Effect
 --- !u!114 &312261343
@@ -826,6 +830,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 2
   type: 1
   name: Movement
 --- !u!1 &519420028
@@ -1310,6 +1315,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 0
   type: 1
   name: Effect
 --- !u!114 &850153548
@@ -1507,6 +1513,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 2
   type: 1
   name: Alt Weapon
 --- !u!1 &982580659
@@ -1850,6 +1857,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 2
   type: 2
   name: Bullet
 --- !u!1 &1044124563
@@ -1969,6 +1977,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 2
   type: 2
   name: Effect
 --- !u!1 &1073729367
@@ -2024,6 +2033,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 0
   type: 1
   name: Bullet
 --- !u!114 &1073729370
@@ -2375,6 +2385,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 0
   type: 0
   name: Bullet
 --- !u!1 &1252722811
@@ -5086,7 +5097,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1715855578}
-  - component: {fileID: 1715855582}
   - component: {fileID: 1715855584}
   - component: {fileID: 1715855581}
   - component: {fileID: 1715855580}
@@ -5156,23 +5166,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1715855577}
   m_CullTransparentMesh: 1
---- !u!114 &1715855582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1715855577}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55bbc1a1e71bb154c949903024716c56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  holdToDrag: 0
-  addHologram: 1
-  needSameName: 1
-  type: 2
-  name: Weapon
 --- !u!114 &1715855583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5333,6 +5326,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 0
   type: 0
   name: Effect
 --- !u!1 &1862397689
@@ -5388,6 +5382,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 0
   type: 1
   name: Bullet
 --- !u!114 &1862397692
@@ -5540,6 +5535,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 2
   type: 1
   name: Movement
 --- !u!1 &1971864072
@@ -5595,6 +5591,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 0
   type: 1
   name: Effect
 --- !u!114 &1971864075
@@ -5762,6 +5759,7 @@ MonoBehaviour:
   holdToDrag: 0
   addHologram: 1
   needSameName: 1
+  _editorType: 1
   type: 0
   name: Weapon
 --- !u!224 &3775812435163873731 stripped
