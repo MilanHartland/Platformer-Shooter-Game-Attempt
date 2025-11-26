@@ -10,10 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b195714a128da1e4b99cd26bf17da007, type: 3}
-  m_Name: Pistol
+  m_Name: Rifle
   m_EditorClassIdentifier: 
-  name: Pistol
-  automatic: 0
-  fireRate: 2
-  bulletSpeed: 10
-  spread: 1
+  name: Rifle
+  automatic: 1
+  fireRate: 20
+  spread: 10
+  firingType: 1
+  bulletSpeed: 50
+  maxHitscanDistance: 0

@@ -26,11 +26,11 @@ public class AnimationManager : MonoBehaviour
 
     public void LateUpdate()
     {
-        if(transform == Objects.player)
+        if(transform == Variables.player)
         {
             //Gets the position that is within the reach of an arm towards the mousepos (center between left/right arm + average of the directions to point to mouse)
             Vector3 armReachPos = (leftArm.transform.position + rightArm.transform.position) / 2f + 
-            (Vector3)(Angle2D.GetAngle<Vector2>(leftArm.transform.position, World.mousePos, 0f) + Angle2D.GetAngle<Vector2>(rightArm.transform.position, World.mousePos, 0f)) / 2f;
+            (Vector3)(Angle2D.GetAngle<Vector2>(leftArm.transform.position, World.mousePos) + Angle2D.GetAngle<Vector2>(rightArm.transform.position, World.mousePos)) / 2f;
 
             //Turns the arms towards the armReachPos
             Angle2D.TurnTo(leftArm.gameObject, armReachPos, 0f);
@@ -38,7 +38,7 @@ public class AnimationManager : MonoBehaviour
             
             //Places the gun on armReachPos and rotates it outward from the chest (center of arms)
             transform.Find("Gun").position = armReachPos;
-            transform.Find("Gun").rotation = Angle2D.GetAngle<Quaternion>((leftArm.transform.position + rightArm.transform.position) / 2f, transform.Find("Gun").position, 0f);
+            transform.Find("Gun").rotation = Angle2D.GetAngle<Quaternion>((leftArm.transform.position + rightArm.transform.position) / 2f, transform.Find("Gun").position);
 
             //Gets which direction the mouse is (-1 = left, 1 = right)
             float signedDir = Mathf.Sign((World.mousePos - transform.position).x);

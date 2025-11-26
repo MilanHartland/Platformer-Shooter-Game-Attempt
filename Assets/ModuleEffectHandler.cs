@@ -1,14 +1,18 @@
 using MilanUtils;
-using static MilanUtils.Objects;
+using static MilanUtils.Variables;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class ModuleEffectHandler : MonoBehaviour
 {
     public static WeaponStats weapon, altWeapon;
     public static Timer weaponTimer, altWeaponTimer;
 
-    [HideInInspector] public List<string> appliedItems;
+    public static Dictionary<string, List<string>> appliedItems = new();
+
+    public ParticleSystem sys;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -18,50 +22,67 @@ public class ModuleEffectHandler : MonoBehaviour
 
         TryAutoSetValues();
         LoadAllResources();
-    }
+
+        foreach(var obj in resources)
+        {
+            if(obj.Value.GetType() == typeof(WeaponStats))
+                appliedItems.Add(((WeaponStats)obj.Value).name, new());
+        }
+     }
 
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.G))
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             GameObject canvas = World.GameObjectWhere(x => { return x.name == "Canvas"; }, true);
             canvas.SetActive(!canvas.activeSelf);
         }
 
-        if (Input.GetKeyDown(KeyCode.T)) Disintegrate(player);
+        if (Input.GetKeyDown(KeyCode.T)) Particles.Disintegrate(player.gameObject);
 
-        if (!weapon) return;
-
-        if (Input.GetMouseButtonDown(0) || (Input.GetMouseButton(0) && weapon.automatic))
+        if (weapon != null && (Input.GetMouseButtonDown(0) || (Input.GetMouseButton(0) && weapon.automatic)) && weaponTimer)
         {
+            weaponTimer.ResetTimer();
             FireWeapon(weapon);
         }
 
-        if (Input.GetMouseButtonDown(1) || (Input.GetMouseButton(1) && altWeapon.automatic))
+        if (altWeapon != null && (Input.GetMouseButtonDown(1) || (Input.GetMouseButton(1) && altWeapon.automatic)) && altWeaponTimer)
         {
+            altWeaponTimer.ResetTimer();
             FireWeapon(altWeapon);
         }
     }
     
     void FireWeapon(WeaponStats w)
     {
-        if (w == null || !weaponTimer) return;
-        weaponTimer.ResetTimer();
+        if (w == null) return;
+
+        Particles.CreateTemp(prefabs["Simple Muzzle Flash"], player.transform.Find("Gun").position, player.transform.Find("Gun").rotation);
+
+        if(w.firingType == WeaponStats.FiringType.Hitscan)
+        {
+            ProjectileHandler.Hitscan(w);
+            return;
+        }
 
         GameObject obj = Instantiate(prefabs["Bullet"]);
         obj.transform.position = player.transform.Find("Gun").position;
         Angle2D.TurnTo(obj, World.mousePos, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
         obj.GetComponent<Rigidbody2D>().linearVelocity = obj.transform.up * w.bulletSpeed;
+        obj.GetComponent<ProjectileHandler>().shotBy = w;
         Destroy(obj, 5f);
     }
 
-    void ApplyModule(DragDrop obj, DragDrop slot)
+    void ApplyModule(DragDrop item, DragDrop slot)
     {
-        bool isSlotted = DragDrop.slottedItems.Contains(obj);
-        InfoTag tag = obj.GetComponent<InfoTag>();
+        bool isSlotted = DragDrop.slottedItems.Contains(item);
+        InfoTag tag = item.GetComponent<InfoTag>();
 
-        if (obj.name == "Weapon")
+        if (item.name == "Weapon")
         {
             if (isSlotted)
             {
@@ -73,7 +94,7 @@ public class ModuleEffectHandler : MonoBehaviour
                 weapon = null;
             }
         }
-        else if(obj.name == "Alt Weapon")
+        else if(item.name == "Alt Weapon")
         {
             if (isSlotted)
             {
@@ -85,28 +106,28 @@ public class ModuleEffectHandler : MonoBehaviour
                 altWeapon = null;
             }
         }
-        else if (obj.name == "Bullet" || obj.name == "Effect")
+        else if (item.name == "Bullet" || item.name == "Effect")
         {
+            //If slotted add, otherwise remove: this item's name from the appliedItems of the weapon, which is the name of the second parent of the slot, minus " Inventory Parent"
             if (isSlotted)
-                appliedItems.Add(tag.name);
+                appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Add(tag.name);
             else
-                appliedItems.Remove(tag.name);
+                appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Remove(tag.name);
         }
     }
 
     public enum EffectTrigger{Fire, Hit, TimeOut, PhysicsFrame}
-    public static void TriggerEffect(EffectTrigger trigger, GameObject projectile, Collision2D coll = null)
+    public static void TriggerEffect(EffectTrigger trigger, WeaponStats weap, GameObject projectile = null)
     {
-        foreach (DragDrop dd in DragDrop.slottedItems)
+        foreach (string item in appliedItems[weap.name])
         {
-            if (dd.name != "Bullet" && dd.name != "Effect") continue;
-
-            InfoTag tag = dd.GetComponent<InfoTag>();
-            Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
+            InfoTag tag = World.GameObjectWhere(x => {return x.GetComponent<InfoTag>() && x.GetComponent<InfoTag>().name == item;}, true).GetComponent<InfoTag>();
+            Rigidbody2D rb = null;
+            if(projectile) rb = projectile.GetComponent<Rigidbody2D>();
 
             if (trigger == EffectTrigger.Fire)
             {
-                switch (tag.name)
+                switch (item)
                 {
                     case "Reverse Gravity":
                         rb.gravityScale = -1f;
@@ -120,7 +141,7 @@ public class ModuleEffectHandler : MonoBehaviour
             }
             else if (trigger == EffectTrigger.Hit)
             {
-                switch (tag.name)
+                switch (item)
                 {
                     default:
                         break;
@@ -128,7 +149,7 @@ public class ModuleEffectHandler : MonoBehaviour
             }
             else if (trigger == EffectTrigger.TimeOut)
             {
-                switch (tag.name)
+                switch (item)
                 {
                     default:
                         break;
@@ -136,7 +157,7 @@ public class ModuleEffectHandler : MonoBehaviour
             }
             else if (trigger == EffectTrigger.PhysicsFrame)
             {
-                switch (tag.name)
+                switch (item)
                 {
                     case "Exponential Speed":
                         rb.linearVelocity = (rb.linearVelocity.magnitude + tag.value) * rb.linearVelocity.normalized;

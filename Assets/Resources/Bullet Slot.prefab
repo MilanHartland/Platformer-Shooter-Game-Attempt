@@ -88,8 +88,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55bbc1a1e71bb154c949903024716c56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _editorHoldToDrag: 0
-  _editorAddHologram: 0
-  _editorNeedSameName: 0
+  holdToDrag: 0
+  addHologram: 1
+  needSameName: 1
+  _editorType: 2
   type: 1
   name: Bullet

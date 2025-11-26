@@ -1,6 +1,6 @@
 using UnityEngine;
 using MilanUtils;
-using static MilanUtils.Objects;
+using static MilanUtils.Variables;
 using System.Collections;
 using System.Collections.Generic;
 

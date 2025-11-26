@@ -2,37 +2,37 @@ using MilanUtils;
 using static ModuleEffectHandler;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections.Generic;
 
 public class ProjectileHandler : MonoBehaviour
 {
     public WeaponStats shotBy;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        TriggerEffect(EffectTrigger.Fire, gameObject);
+        TriggerEffect(EffectTrigger.Fire, shotBy, gameObject);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        TriggerEffect(EffectTrigger.PhysicsFrame, gameObject);
+        TriggerEffect(EffectTrigger.PhysicsFrame, shotBy, gameObject);
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        TriggerEffect(EffectTrigger.Hit, gameObject, collision);
-        
-        // if(collision.gameObject.name == "Map")
-        // {
-        //     Vector3Int tileInt = World.ClosestTile(collision.GetContact(0).point, collision.gameObject.GetComponent<Tilemap>());
+        TriggerEffect(EffectTrigger.Hit, shotBy, gameObject);
+    }
 
-        //     if (!collision.gameObject.GetComponent<Tilemap>().GetTile(tileInt)) return;
-        //     collision.gameObject.GetComponent<Tilemap>().SetTile(tileInt, null);
-        //     GameObject obj = Instantiate(Objects.prefabs["Square"]);
-        //     obj.transform.position = tileInt;
-        //     obj.GetComponent<SpriteRenderer>().sprite = Sprite.Create((Texture2D)Objects.resources["Box"], new Rect(), Vector2.zero);
-        //     Objects.Disintegrate(obj, (x) => { x.layer = LayerMask.NameToLayer("Entity"); });
-        //     Destroy(this.gameObject);
-        // }
+    public static void Hitscan(WeaponStats weapon)
+    {
+        Vector2 angle = Angle2D.GetAngle<Vector2>(Variables.player.Find("Gun").position, World.mousePos, -90f + Random.Range(-weapon.spread / 2f, weapon.spread / 2f));
+
+        RaycastHit2D hit = Physics2D.Raycast(Variables.player.position, angle, weapon.maxHitscanDistance, ~LayerMask.GetMask("Player"));
+        Particles.SpawnSquare(hit.point, size: .1f);
+
+        if(hit) TriggerEffect(EffectTrigger.Hit, weapon);
+        else TriggerEffect(EffectTrigger.TimeOut, weapon);
     }
 }
