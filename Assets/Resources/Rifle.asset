@@ -18,4 +18,4 @@ MonoBehaviour:
   spread: 10
   firingType: 1
   bulletSpeed: 50
-  maxHitscanDistance: 0
+  maxHitscanDistance: 10

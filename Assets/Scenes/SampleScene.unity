@@ -184,6 +184,7 @@ MonoBehaviour:
   _editorType: 3
   type: 2
   name: 
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &84911404
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,6 +280,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Weapon
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &84911409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -392,6 +394,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Effect
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &190871615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -651,6 +654,7 @@ MonoBehaviour:
   _editorType: 0
   type: 0
   name: Bullet
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &483286743
 GameObject:
   m_ObjectHideFlags: 0
@@ -707,6 +711,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Bullet
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &483286746
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -964,6 +969,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Movement
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1491,6 +1497,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Bullet
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &889633725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1689,6 +1696,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Alt Weapon
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &964600651
 GameObject:
   m_ObjectHideFlags: 0
@@ -1745,6 +1753,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Bullet
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &964600654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2127,6 +2136,7 @@ MonoBehaviour:
   _editorType: 3
   type: 2
   name: Bullet
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1044124563
 GameObject:
   m_ObjectHideFlags: 0
@@ -2247,6 +2257,7 @@ MonoBehaviour:
   _editorType: 3
   type: 2
   name: Effect
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1088483606
 GameObject:
   m_ObjectHideFlags: 0
@@ -2303,6 +2314,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Effect
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &1088483609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2655,6 +2667,7 @@ MonoBehaviour:
   _editorType: 0
   type: 0
   name: Bullet
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1252722811
 GameObject:
   m_ObjectHideFlags: 0
@@ -3198,6 +3211,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Bullet
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &1382188518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5866,6 +5880,7 @@ MonoBehaviour:
   _editorType: 0
   type: 0
   name: Effect
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1941174304
 GameObject:
   m_ObjectHideFlags: 0
@@ -5981,6 +5996,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Movement
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1953602646
 GameObject:
   m_ObjectHideFlags: 0
@@ -6037,6 +6053,7 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Effect
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &1953602649
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -23,6 +23,7 @@ public class ModuleEffectHandler : MonoBehaviour
         TryAutoSetValues();
         LoadAllResources();
 
+        appliedItems = new();
         foreach(var obj in resources)
         {
             if(obj.Value.GetType() == typeof(WeaponStats))
@@ -42,7 +43,7 @@ public class ModuleEffectHandler : MonoBehaviour
             canvas.SetActive(!canvas.activeSelf);
         }
 
-        if (Input.GetKeyDown(KeyCode.T)) Particles.Disintegrate(player.gameObject);
+        if (Input.GetKeyDown(KeyCode.T)) Visuals.Disintegrate(player.gameObject);
 
         if (weapon != null && (Input.GetMouseButtonDown(0) || (Input.GetMouseButton(0) && weapon.automatic)) && weaponTimer)
         {
@@ -61,7 +62,7 @@ public class ModuleEffectHandler : MonoBehaviour
     {
         if (w == null) return;
 
-        Particles.CreateTemp(prefabs["Simple Muzzle Flash"], player.transform.Find("Gun").position, player.transform.Find("Gun").rotation);
+        Visuals.CreateTempParticleSystem(prefabs["Simple Muzzle Flash"], player.transform.Find("Gun").position, player.transform.Find("Gun").rotation);
 
         if(w.firingType == WeaponStats.FiringType.Hitscan)
         {

@@ -27,10 +27,14 @@ public class ProjectileHandler : MonoBehaviour
 
     public static void Hitscan(WeaponStats weapon)
     {
-        Vector2 angle = Angle2D.GetAngle<Vector2>(Variables.player.Find("Gun").position, World.mousePos, -90f + Random.Range(-weapon.spread / 2f, weapon.spread / 2f));
+        Vector3 startPos = Variables.player.Find("Gun").position;
 
-        RaycastHit2D hit = Physics2D.Raycast(Variables.player.position, angle, weapon.maxHitscanDistance, ~LayerMask.GetMask("Player"));
-        Particles.SpawnSquare(hit.point, size: .1f);
+        Vector3 angle = Angle2D.GetAngle<Vector2>(startPos, World.mousePos, -90f + Random.Range(-weapon.spread / 2f, weapon.spread / 2f));
+
+        RaycastHit2D hit = Physics2D.Raycast(startPos, angle, weapon.maxHitscanDistance, ~LayerMask.GetMask("Player"));
+        
+        Vector3 endPos = hit ? hit.point : startPos + angle * weapon.maxHitscanDistance;
+        Visuals.SpawnLine(new(){startPos, endPos}, Color.yellow, .05f, .1f);
 
         if(hit) TriggerEffect(EffectTrigger.Hit, weapon);
         else TriggerEffect(EffectTrigger.TimeOut, weapon);
