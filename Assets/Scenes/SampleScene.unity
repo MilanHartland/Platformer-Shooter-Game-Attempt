@@ -128,7 +128,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 67399695}
-  - component: {fileID: 67399697}
   - component: {fileID: 67399696}
   m_Layer: 5
   m_Name: Item Inventory
@@ -166,25 +165,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 67399694}
   m_CullTransparentMesh: 1
---- !u!114 &67399697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 67399694}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55bbc1a1e71bb154c949903024716c56, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  holdToDrag: 0
-  addHologram: 1
-  needSameName: 1
-  _editorType: 3
-  type: 2
-  name: 
-  ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &84911404
 GameObject:
   m_ObjectHideFlags: 0
@@ -280,6 +260,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Weapon
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &84911409
 MonoBehaviour:
@@ -394,6 +376,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Effect
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &190871615
 MonoBehaviour:
@@ -654,6 +638,8 @@ MonoBehaviour:
   _editorType: 0
   type: 0
   name: Bullet
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &483286743
 GameObject:
@@ -711,6 +697,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Bullet
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &483286746
 MonoBehaviour:
@@ -969,6 +957,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Movement
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &519420028
 GameObject:
@@ -1497,6 +1487,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Bullet
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &889633725
 MonoBehaviour:
@@ -1696,6 +1688,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Alt Weapon
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &964600651
 GameObject:
@@ -1753,6 +1747,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Bullet
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &964600654
 MonoBehaviour:
@@ -2136,6 +2132,8 @@ MonoBehaviour:
   _editorType: 3
   type: 2
   name: Bullet
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1044124563
 GameObject:
@@ -2257,6 +2255,8 @@ MonoBehaviour:
   _editorType: 3
   type: 2
   name: Effect
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1088483606
 GameObject:
@@ -2314,6 +2314,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Effect
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &1088483609
 MonoBehaviour:
@@ -2667,6 +2669,8 @@ MonoBehaviour:
   _editorType: 0
   type: 0
   name: Bullet
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1252722811
 GameObject:
@@ -3211,6 +3215,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Bullet
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &1382188518
 MonoBehaviour:
@@ -5880,6 +5886,8 @@ MonoBehaviour:
   _editorType: 0
   type: 0
   name: Effect
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1941174304
 GameObject:
@@ -5996,6 +6004,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Movement
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!1 &1953602646
 GameObject:
@@ -6053,6 +6063,8 @@ MonoBehaviour:
   _editorType: 2
   type: 1
   name: Effect
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &1953602649
 MonoBehaviour:
@@ -6208,6 +6220,38 @@ PrefabInstance:
       propertyPath: effectSlots
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: test.b
+      value: 0.7509433
+      objectReference: {fileID: 0}
+    - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: test.g
+      value: 0.37263787
+      objectReference: {fileID: 0}
+    - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: test.r
+      value: 0.37263787
+      objectReference: {fileID: 0}
+    - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: isActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: inactiveColor.a
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: inactiveColor.b
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: inactiveColor.g
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: inactiveColor.r
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 8461058766156084233, guid: d993536ce34fb4848a472de912cedf47, type: 3}
       propertyPath: m_Color.b
       value: 1
@@ -6346,6 +6390,10 @@ PrefabInstance:
     - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
       propertyPath: name
       value: Alt Weapon
+      objectReference: {fileID: 0}
+    - target: {fileID: 6590664329430757751, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: isActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
