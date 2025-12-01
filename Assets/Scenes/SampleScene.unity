@@ -278,11 +278,11 @@ MonoBehaviour:
   borderColor: {r: 1, g: 0, b: 0, a: 1}
   name: Weapon Slot
   description: 
-  otherInfo: 
+  otherInfo: Weapon
   value: 0
   priority: -1
-  changeColorWhenHoveredOver: 1
-  highlightedColor: {r: 0.96274525, g: 0.1, b: 0.1, a: 1}
+  changeColorWhenHoveredOver: 0
+  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!1 &87907667
 GameObject:
   m_ObjectHideFlags: 0
@@ -581,7 +581,7 @@ MonoBehaviour:
   value: 6
   priority: 5
   changeColorWhenHoveredOver: 0
-  highlightedColor: {r: 1.1, g: 0.1, b: 1.1, a: 1}
+  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!114 &283726900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -595,7 +595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: -0.5, g: -1.5, b: -0.5, a: 1}
+  m_Color: {r: 0.72264147, g: 1, b: 0.822887, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -934,11 +934,11 @@ MonoBehaviour:
   borderColor: {r: 0, g: 0, b: 1, a: 1}
   name: Movement Slot
   description: 
-  otherInfo: 
+  otherInfo: Movement
   value: 0
   priority: -1
-  changeColorWhenHoveredOver: 1
-  highlightedColor: {r: 0.1, g: 0.1, b: 1.1, a: 1}
+  changeColorWhenHoveredOver: 0
+  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!114 &513211097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1530,11 +1530,11 @@ MonoBehaviour:
   borderColor: {r: 1, g: 0.5019608, b: 0, a: 1}
   name: Alt Weapon Slot
   description: 
-  otherInfo: 
+  otherInfo: Alt Weapon
   value: 0
   priority: -1
-  changeColorWhenHoveredOver: 1
-  highlightedColor: {r: 1.1, g: 0.60196084, b: 0.1, a: 1}
+  changeColorWhenHoveredOver: 0
+  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!114 &963509421
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2321,7 +2321,7 @@ MonoBehaviour:
   value: 6
   priority: 5
   changeColorWhenHoveredOver: 0
-  highlightedColor: {r: 1.1, g: 0.1, b: 1.1, a: 1}
+  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!114 &1208499887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2335,7 +2335,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: -0.5, g: -1.5, b: -0.5, a: 1}
+  m_Color: {r: 0.435849, g: 0.46413577, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5732,7 +5732,7 @@ MonoBehaviour:
   value: 3
   priority: 5
   changeColorWhenHoveredOver: 0
-  highlightedColor: {r: 1.1, g: 1.1, b: 1.1, a: 1}
+  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!114 &1720397400
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5746,7 +5746,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: -1.5, g: -0.5, b: -0.5, a: 1}
+  m_Color: {r: 1, g: 0.2320754, b: 0.29955083, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6040,11 +6040,11 @@ MonoBehaviour:
   borderColor: {r: 0, g: 0, b: 1, a: 1}
   name: Movement Slot
   description: 
-  otherInfo: 
+  otherInfo: Movement
   value: 0
   priority: -1
-  changeColorWhenHoveredOver: 1
-  highlightedColor: {r: 0.1, g: 0.1, b: 1.1, a: 1}
+  changeColorWhenHoveredOver: 0
+  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!114 &1941174307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6202,14 +6202,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3499563203642845250, guid: d993536ce34fb4848a472de912cedf47, type: 3}
       propertyPath: highlightedColor.b
-      value: 0.7490196
+      value: 0.2509804
       objectReference: {fileID: 0}
     - target: {fileID: 3499563203642845250, guid: d993536ce34fb4848a472de912cedf47, type: 3}
       propertyPath: highlightedColor.g
-      value: 1
+      value: 0.2509804
       objectReference: {fileID: 0}
     - target: {fileID: 3499563203642845250, guid: d993536ce34fb4848a472de912cedf47, type: 3}
       propertyPath: highlightedColor.r
+      value: 0.2509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 3499563203642845250, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: changeColorWhenHoveredOver
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5197114266841705557, guid: d993536ce34fb4848a472de912cedf47, type: 3}
@@ -6378,6 +6382,10 @@ PrefabInstance:
     - target: {fileID: 3499563203642845250, guid: d993536ce34fb4848a472de912cedf47, type: 3}
       propertyPath: otherInfo
       value: Alt Weapon
+      objectReference: {fileID: 0}
+    - target: {fileID: 3499563203642845250, guid: d993536ce34fb4848a472de912cedf47, type: 3}
+      propertyPath: changeColorWhenHoveredOver
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5197114266841705557, guid: d993536ce34fb4848a472de912cedf47, type: 3}
       propertyPath: bulletSlots

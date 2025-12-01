@@ -58,6 +58,9 @@ MonoBehaviour:
   _editorType: 1
   type: 0
   name: Weapon
+  isActive: 1
+  inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  ___editorBoolForShowingThisIsACopy: 0
 --- !u!114 &3499563203642845250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,8 +79,8 @@ MonoBehaviour:
   otherInfo: Weapon
   value: 0
   priority: 0
-  changeColorWhenHoveredOver: 0
-  highlightedColor: {r: 1.1, g: 0.3509804, b: 0.3509804, a: 1}
+  changeColorWhenHoveredOver: 1
+  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!222 &6359817389254494990
 CanvasRenderer:
   m_ObjectHideFlags: 0
