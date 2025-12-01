@@ -41,12 +41,13 @@ public class EnemyPathfinding : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.G)) pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
     }
 
+    public void StopPathfinding(){rb.linearVelocityX = 0f; StopAllCoroutines();}
+
     public void Pathfind(Vector3 target)
     {
         //If no path, or there is no unobstructed line in LinecastMultiple (in this case a linecast from this position and 1 higher towards the path), reset path
         if (path.Count == 0)
         {
-            print("New path created");
             path = Pathfinding.Dijkstra(transform.position, target, pathGraph);
             return;
         }

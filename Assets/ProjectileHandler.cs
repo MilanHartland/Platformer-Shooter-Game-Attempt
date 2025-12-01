@@ -39,4 +39,13 @@ public class ProjectileHandler : MonoBehaviour
         if(hit) TriggerEffect(EffectTrigger.Hit, weapon);
         else TriggerEffect(EffectTrigger.TimeOut, weapon);
     }
+
+    public static void HitscanEnemy(Vector3 pos, Vector3 target, WeaponStats weapon)
+    {
+        Vector3 angle = Angle2D.GetAngle<Vector2>(pos, target, -90f + Random.Range(-weapon.spread / 2f, weapon.spread / 2f));
+        RaycastHit2D hit = Physics2D.Raycast(pos, angle, weapon.maxHitscanDistance, ~LayerMask.GetMask("Enemy"));
+
+        Vector3 endPos = hit ? hit.point : pos + angle * weapon.maxHitscanDistance;
+        Visuals.SpawnLine(new(){pos, endPos}, Color.yellow, .05f, .1f);
+    }
 }
