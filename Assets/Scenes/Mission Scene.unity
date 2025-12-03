@@ -314,6 +314,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
@@ -470,6 +471,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Movement
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -588,6 +590,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 0
   type: 0
+  spawnerMax: 0
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -647,6 +650,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.25094336, g: 0.25094336, b: 0.25094336, a: 1}
@@ -803,6 +807,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Movement
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -1122,6 +1127,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
@@ -1381,6 +1387,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Alt Weapon
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -2016,6 +2023,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 1
   type: 0
+  spawnerMax: 1
   name: Weapon
   isActive: 1
   inactiveColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0}
@@ -2075,6 +2083,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.25094336, g: 0.25094336, b: 0.25094336, a: 1}
@@ -2720,6 +2729,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Weapon
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -5387,6 +5397,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
@@ -5573,6 +5584,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 3
   type: 2
+  spawnerMax: 0
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -5768,6 +5780,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 1
   type: 0
+  spawnerMax: 1
   name: Alt Weapon
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -5827,6 +5840,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.25094336, g: 0.25094336, b: 0.25094336, a: 1}
@@ -5994,6 +6008,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 3
   type: 2
+  spawnerMax: 0
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -6347,6 +6362,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 0
   type: 0
+  spawnerMax: 0
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -6603,6 +6619,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: 0
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}

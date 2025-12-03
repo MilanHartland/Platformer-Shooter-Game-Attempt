@@ -109,10 +109,12 @@ public class ModuleEffectHandler : MonoBehaviour
         }
         else if (item.name == "Bullet" || item.name == "Effect")
         {
-            //If slotted add, otherwise remove: this item's name from the appliedItems of the weapon, which is the name of the second parent of the slot, minus " Inventory Parent"
+            //This needs explanation because of hierarchy in the inspector, which is as follows: Weapon Inventory Parent > (Background Panel > (Slots > (Items)), Weapon)
+            //If is currently in a slot (which is in Background Panel, which is in Inventory Panel), add this to the appliedItems of the 2nd parent (Inventory Parent)'s name without " Inventory Parent"
+            //Otherwise, if the new "slot" does contain slot in the name (so isn't a parent), remove it from appliedItems of the 2nd parent
             if (isSlotted)
                 appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Add(tag.name);
-            else
+            else if(slot.transform.name.Contains("Slot"))
                 appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Remove(tag.name);
         }
     }
