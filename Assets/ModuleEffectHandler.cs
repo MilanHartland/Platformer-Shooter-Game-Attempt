@@ -39,7 +39,7 @@ public class ModuleEffectHandler : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            GameObject canvas = World.GameObjectWhere(x => { return x.name == "Canvas"; }, true);
+            GameObject canvas = World.FindInactive("Screen Canvas");
             canvas.SetActive(!canvas.activeSelf);
         }
 
