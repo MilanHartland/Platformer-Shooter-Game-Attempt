@@ -36,7 +36,12 @@ public class ProjectileHandler : MonoBehaviour
         Vector3 endPos = hit ? hit.point : startPos + angle * weapon.maxHitscanDistance;
         Visuals.SpawnLine(new(){startPos, endPos}, Color.yellow, .05f, .1f);
 
-        if(hit) TriggerEffect(EffectTrigger.Hit, weapon);
+        if(hit) 
+        {
+            TriggerEffect(EffectTrigger.Hit, weapon);
+            if(hit.collider.GetComponent<EnemyBehaviour>()) hit.collider.GetComponent<EnemyBehaviour>().hp -= weapon.damage;
+        }
+
         else TriggerEffect(EffectTrigger.TimeOut, weapon);
     }
 

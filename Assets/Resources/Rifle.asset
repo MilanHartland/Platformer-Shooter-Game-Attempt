@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Rifle
   automatic: 1
+  damage: 1
   fireRate: 20
   spread: 10
   firingType: 1

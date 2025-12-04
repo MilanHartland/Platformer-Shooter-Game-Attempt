@@ -17,6 +17,10 @@ public class EnemyBehaviour : MonoBehaviour
 
     public float followDist;
     public WeaponStats weapon;
+    Timer weaponTimer;
+
+    public float maxHp;
+    public float hp {get; set;}
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,6 +29,10 @@ public class EnemyBehaviour : MonoBehaviour
         StartCoroutine(PathfindCoroutine());
 
         lastSeenPos = transform.position;
+
+        weaponTimer = new(1f / weapon.fireRate);
+
+        hp = maxHp;
     }
 
     void OnValidate()
@@ -39,7 +47,10 @@ public class EnemyBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(hp <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 
     IEnumerator PathfindCoroutine()
@@ -57,7 +68,14 @@ public class EnemyBehaviour : MonoBehaviour
                     if(Vector2.Distance(transform.position, player.position) > followDist) 
                     pathfinding.Pathfind(player.position);
                 else 
+                {
                     pathfinding.StopPathfinding();
+                    if (weaponTimer.finished)
+                    {
+                        ProjectileHandler.HitscanEnemy(transform.position, player.position, weapon);
+                        weaponTimer.ResetTimer();
+                    }
+                }
             }
             else
             {

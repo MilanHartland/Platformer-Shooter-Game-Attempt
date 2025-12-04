@@ -8,6 +8,7 @@ public class WeaponStats : ScriptableObject
 
     [Tooltip("The name of the weapon")] public new string name;
     [Tooltip("If the gun is automatic (hold to fire) instead of manual (click to fire)")] public bool automatic;
+    [Tooltip("The damage every hit does")] public float damage;
     [Tooltip("The fire rate in bullets/second")] public float fireRate;
     [Tooltip("The spread in degrees")] public float spread;
     [Tooltip("The type of firing the gun does\n\nProjectile: shoots a physical projectile with gravity\nHitscan: shoots a raycast")] public FiringType firingType;
