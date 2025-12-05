@@ -64,7 +64,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if(hp <= 0)
         {
-            Destroy(gameObject);
+            Visuals.TurnIntoParticles(gameObject, Vector3.zero);
         }
     }
 
