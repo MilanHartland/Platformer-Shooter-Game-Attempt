@@ -17,25 +17,23 @@ public class EnemyBehaviour : MonoBehaviour
     EnemyPathfinding pathfinding;
 
     Vector3 lastSeenPos;
-
-    public float followDist;
-    public WeaponStats weapon;
     Timer weaponTimer;
 
-    public float maxHp;
-    public float hp {get; set;}
+    [Header("Fighting")]
+    [Tooltip("The HP the enemy spawns with")]public float maxHp;
+    [HideInInspector]public float hp;
+    [Tooltip("The weapon the enemy uses. Has to be hitscan")]public WeaponStats weapon;
+    [Tooltip("The distance the enemy follows to. When it comes to this distance, it stops pathfinding")]public float followDist;
 
-    public float updateTime;
+    float playerKnowledge = 0f;
 
-    float timeSeenPeer = 0f;
-    float timeSeenPlayer = 0f;
-
-    [Header("Sight Variables")]
-    [Tooltip(@"The threshold for the enemy to count as ""seeing"" the player through noticing another enemy that does")]public float peerThreshold;
-    [Tooltip("The threshold for seeing the player directly")]public float playerThreshold;
+    [Header("Sight")]
+    [Tooltip("How fast the sight and pathfinding update, in seconds")]public float updateTime;
+    [Tooltip("The threshold the sight value needs before it counts as seeing the player")]public float sightThreshold;
+    [Tooltip("The factor with which the sight is multiplied if this only sees a peer that knows the player"), Range(0f, 1f)]public float peerFactor;
     [Tooltip("The max distance the enemy can see. The closer to this distance the player is, the worse it sees the player")]public float sightDist;
-    [Tooltip("How fast the enemy should forget it saw something. Put as value / second")]public float memoryDeterioration;
-    
+    [Tooltip("How fast the enemy should forget it saw something. Put as value / second. For reference, the highest sight factor possible is 1 per second")]
+    public float memoryDeterioration;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -104,13 +102,15 @@ public class EnemyBehaviour : MonoBehaviour
             //     }
             //     else pathfinding.Pathfind(lastSeenPos);
             // }
-
             yield return GetWaitForSeconds(updateTime);
         }
     }
 
     void See()
     {
+        bool seesPeer = false, seesDirect = true;
+
+        //Gets every vision cast to the player and each corner of the collider
         Vector3 playerScale = player.GetComponent<BoxCollider2D>().size * player.lossyScale / 2f + player.GetComponent<BoxCollider2D>().offset * player.lossyScale;
         visionCasts[0] = Physics2D.Linecast(transform.position, player.position, mask);
         visionCasts[1] = Physics2D.Linecast(transform.position, player.position + playerScale, mask);
@@ -118,46 +118,58 @@ public class EnemyBehaviour : MonoBehaviour
         visionCasts[3] = Physics2D.Linecast(transform.position, player.position + new Vector3(playerScale.x, -playerScale.y), mask);
         visionCasts[4] = Physics2D.Linecast(transform.position, player.position + new Vector3(-playerScale.x, playerScale.y), mask);
 
+        //Gets every vision cast to the peers
         peerVisionCasts = new();
         foreach(var obj in World.AllGameObjects(true, typeof(EnemyBehaviour)))
         {
             if(obj == gameObject) continue;
             peerVisionCasts.Add(Physics2D.Linecast(transform.position + (obj.transform.position - transform.position).normalized, obj.transform.position, LayerMask.GetMask("Enemy", "Map")));
         }
-                
-        int seeingPeers = Lists.ConditionCount(peerVisionCasts, x => {return x && x.collider.GetComponent<EnemyBehaviour>() && x.collider.GetComponent<EnemyBehaviour>().seesPlayer;});
-        if(seeingPeers > 0)
-            timeSeenPeer += updateTime * seeingPeers;
-        else 
-            timeSeenPeer -= updateTime * memoryDeterioration;
-        timeSeenPeer = Mathf.Clamp(timeSeenPeer, 0f, Mathf.Infinity);
+
+        //For each peer vision cast, if it hits, hits a collider with EnemyBehaviour, and that peer seesPlayer, increase knowledge by distance * peerFactor
+        float peerDebugLoggingValue = 0f;
+        foreach(var obj in peerVisionCasts)
+        {
+            if(obj && obj.collider.GetComponent<EnemyBehaviour>() && obj.collider.GetComponent<EnemyBehaviour>().seesPlayer)
+            {
+                float peerDistFactor = Mathf.Clamp01((sightDist - Vector2.Distance(transform.position, obj.collider.transform.position)) / sightDist);
+                playerKnowledge += updateTime * peerDistFactor * peerFactor;
+                seesPeer = true;
+                peerDebugLoggingValue += peerDistFactor * peerFactor;
+            }
+        }
         
-        bool knowsPlayerThroughPeer = timeSeenPeer > peerThreshold;
 
-
+        //Gets the amount of visioncasts that see the player
         int amtSeesPlayer = Lists.ConditionCount(visionCasts.ToList(), hit => {return hit.collider && hit.collider.transform == player;});
 
+        //Gets the closestPoint so that the height of the player doesn't matter (seeing the feet or face of someone, in both cases you know someone is there equally)
         Vector3 closestPoint = player.GetComponent<BoxCollider2D>().bounds.ClosestPoint(transform.position);
+
+        //Gets the angle, and inverts it if the enemy is looking left (lossyScale x = -1f)
         float angle = Mathf.Abs(Angle2D.GetAngle(transform.position, closestPoint, 0f));
+        if(transform.lossyScale.x < 0f) angle = 180f - angle;
+
+        //Gets the angle and distance factors, then calculates a sightFactor
         float angleFactor = Mathf.Clamp01((90f - angle) / 90f);
-        float distFactor = Mathf.Clamp01((sightDist - Vector2.Distance(transform.position, closestPoint)) / sightDist);
-        float sightFactor = angleFactor * (amtSeesPlayer / 5f) * distFactor;
-        timeSeenPlayer += updateTime * sightFactor;
+        float playerDistFactor = Mathf.Clamp01((sightDist - Vector2.Distance(transform.position, closestPoint)) / sightDist);
+        float sightFactor = angleFactor * (amtSeesPlayer / 5f) * playerDistFactor;
 
+        //Increases knowledge by sightFactor per second
         if(amtSeesPlayer > 0)
-            timeSeenPlayer += updateTime * sightFactor;
-        else
-            timeSeenPlayer -= updateTime * memoryDeterioration;
-        timeSeenPlayer = Mathf.Clamp(timeSeenPlayer, 0f, Mathf.Infinity);
+            playerKnowledge += updateTime * sightFactor;
+        else seesDirect = false;
 
-        bool knowsPlayer = timeSeenPlayer > playerThreshold;
+        //If there is no direct line to the player or a peer, decrease playerKnowledge by the memoryDeterioration
+        if(!seesDirect && !seesPeer) playerKnowledge -= updateTime * memoryDeterioration;
 
-        seesPlayer = knowsPlayer || knowsPlayerThroughPeer;
+        //Clamps knowledge so it's never below 0
+        playerKnowledge = Mathf.Clamp(playerKnowledge, 0f, Mathf.Infinity);
 
-        if(transform.name == "Enemy")
-            // print($"Sees: {seesPlayer}, Knows: {knowsPlayer}, Peer: {knowsPlayerThroughPeer}");
-            // print(sightFactor);
-            print(sightFactor);
+        seesPlayer = playerKnowledge > sightThreshold && (seesDirect || seesPeer);
+
+        // if(transform.name == "Enemy")
+            // print($"SeesPlayer: {seesPlayer}, Knowledge: {playerKnowledge}, Sight: {sightFactor}, Peer: {peerDebugLoggingValue}");
     }
 
     #pragma warning disable
@@ -180,6 +192,12 @@ public class EnemyBehaviour : MonoBehaviour
 
             if(hit.collider)
                 Gizmos.DrawLine(transform.position, hit.point);
+        }
+
+        if(seesPlayer)
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireCube(transform.position, Vector3.one * .5f);
         }
 
         Gizmos.color = Color.blue;
