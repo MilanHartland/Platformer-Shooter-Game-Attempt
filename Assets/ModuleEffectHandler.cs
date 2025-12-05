@@ -43,7 +43,7 @@ public class ModuleEffectHandler : MonoBehaviour
             canvas.SetActive(!canvas.activeSelf);
         }
 
-        if (Input.GetKeyDown(KeyCode.T)) Visuals.Disintegrate(player.gameObject);
+        if (Input.GetKeyDown(KeyCode.T)) Visuals.Disintegrate(player.gameObject, dontThrowNonReadException: true);
 
         if (weapon != null && (Input.GetMouseButtonDown(0) || (Input.GetMouseButton(0) && weapon.automatic)) && weaponTimer)
         {

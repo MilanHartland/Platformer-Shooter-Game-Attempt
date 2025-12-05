@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c849e4e9a4dcc2f41952dcebd4e619c8
+guid: b9971f9a1fb44b74ab5a460ab4532fb0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8333682784552734413
-    second: Weapon Slots_0
+      213: -3981228014600243306
+    second: Enemy standing_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,13 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Weapon Slots_0
+      name: Enemy standing_0
       rect:
         serializedVersion: 2
-        x: 0
+        x: 6
         y: 0
-        width: 32
-        height: 32
+        width: 19
+        height: 31
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -115,30 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 33132f349afc85c80800000000000000
-      internalID: -8333682784552734413
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Weapon Slots_1
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 0
-        width: 32
-        height: 32
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 49d53e29fe89d0c49870585f338679e5
-      internalID: -2057311715
+      spriteID: 6973be3d636dfb8c0800000000000000
+      internalID: -3981228014600243306
       vertices: []
       indices: 
       edges: []
@@ -147,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 175c853e7f963db4fb884e24f953f098
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -155,14 +133,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceOnImport
-        value: True
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":true,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+      entries: []
     nameFileIdTable:
-      Weapon Slots_0: -8333682784552734413
-      Weapon Slots_1: -2057311715
+      Enemy standing_0: -3981228014600243306
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

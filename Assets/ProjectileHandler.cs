@@ -41,7 +41,6 @@ public class ProjectileHandler : MonoBehaviour
             TriggerEffect(EffectTrigger.Hit, weapon);
             if(hit.collider.GetComponent<EnemyBehaviour>()) hit.collider.GetComponent<EnemyBehaviour>().hp -= weapon.damage;
         }
-
         else TriggerEffect(EffectTrigger.TimeOut, weapon);
     }
 

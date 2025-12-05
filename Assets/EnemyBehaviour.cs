@@ -11,7 +11,7 @@ public class EnemyBehaviour : MonoBehaviour
     RaycastHit2D[] visionCasts = new RaycastHit2D[5];
     List<RaycastHit2D> peerVisionCasts = new();
 
-    bool seesPlayer;
+    [HideInInspector]public bool seesPlayer;
     LayerMask mask;
 
     EnemyPathfinding pathfinding;
@@ -64,7 +64,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if(hp <= 0)
         {
-            Visuals.TurnIntoParticles(gameObject, Vector3.zero);
+            Visuals.Disintegrate(gameObject, dontThrowNonReadException: true);
         }
     }
 
@@ -74,34 +74,32 @@ public class EnemyBehaviour : MonoBehaviour
         {            
             See();
 
-            // if(pathfinding.path.Count > 0)
-            //     transform.localScale = new(Mathf.Sign(pathfinding.path[0].x - transform.position.x) * Mathf.Abs(transform.localScale.x), transform.localScale.y);
-
-            // if (seesPlayer)
-            // {
-            //     lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
+            if (seesPlayer)
+            {
+                lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
                 
-            //         if(Vector2.Distance(transform.position, player.position) > followDist) 
-            //         pathfinding.Pathfind(player.position);
-            //     else 
-            //     {
-            //         pathfinding.StopPathfinding();
-            //         if (weaponTimer.finished)
-            //         {
-            //             ProjectileHandler.HitscanEnemy(transform.position, player.position, weapon);
-            //             weaponTimer.ResetTimer();
-            //         }
-            //     }
-            // }
-            // else
-            // {
-            //     if (Vector2.Distance(transform.position, lastSeenPos) <= 0.1f)
-            //     {
-            //         lastSeenPos = new Vector3(-1f, -3f);
-            //         pathfinding.Pathfind(lastSeenPos);
-            //     }
-            //     else pathfinding.Pathfind(lastSeenPos);
-            // }
+                    if(Vector2.Distance(transform.position, player.position) > followDist) 
+                    pathfinding.Pathfind(player.position);
+                else 
+                {
+                    pathfinding.StopPathfinding();
+                    if (weaponTimer.finished)
+                    {
+                        ProjectileHandler.HitscanEnemy(transform.Find("Gun").position, player.position, weapon);
+                        weaponTimer.ResetTimer();
+                    }
+                }
+            }
+            else
+            {
+                if (Vector2.Distance(transform.position, lastSeenPos) <= 0.1f)
+                {
+                    lastSeenPos = new Vector3(-1f, -3f);
+                    pathfinding.Pathfind(lastSeenPos);
+                }
+                else pathfinding.Pathfind(lastSeenPos);
+            }
+
             yield return GetWaitForSeconds(updateTime);
         }
     }
@@ -173,7 +171,7 @@ public class EnemyBehaviour : MonoBehaviour
     }
 
     #pragma warning disable
-    void OnDrawGizmos()
+    void OnDrawGizmosSelected()
     {
         // return;
         foreach (var hit in visionCasts)
