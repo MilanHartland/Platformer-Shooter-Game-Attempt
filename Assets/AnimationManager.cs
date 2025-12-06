@@ -26,6 +26,8 @@ public class AnimationManager : MonoBehaviour
 
     public void LateUpdate()
     {
+        if(MenuManager.IsPaused) return;
+        
         Vector3 armReachPos = Vector3.zero;
         float signedDir = 0f;
         if(transform == Variables.player)

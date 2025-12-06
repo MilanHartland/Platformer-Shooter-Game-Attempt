@@ -76,6 +76,8 @@ public class EnemyPathfinding : MonoBehaviour
 
         while (Vector2.Distance(pfCenter, target) > 0.05f)
         {
+            if(MenuManager.IsPaused) yield return null;
+
             if (Vector2.Distance(curTarget, pfCenter) < 0.1f)
             {
                 transform.position = curTarget - pfCenterRelative;
@@ -98,12 +100,13 @@ public class EnemyPathfinding : MonoBehaviour
                 if (Physics2D.Linecast(pfCenter, curTarget, mask))
                 {
                     //If the x distance is between .6-1, stop moving horizontally
-                    if (Mathf.Abs(diff.x) > 1f && Mathf.Abs(diff.x) < 1.2f)
+                    if (Mathf.Abs(diff.x) > .6f && Mathf.Abs(diff.x) < 1f)
                         rb.linearVelocityX = 0f;
                     else if(Mathf.Abs(diff.x) < 1f)
                     {
                         Vector3 closest = Lists.GetClosest(pathGraph[curTarget], pfCenter);
-                        rb.linearVelocityX = Mathf.Sign(closest.x - pfCenter.x) * speed;
+                        curTarget = closest;
+                        // rb.linearVelocityX = Mathf.Sign(closest.x - pfCenter.x) * speed;
                     }
                 }
             }

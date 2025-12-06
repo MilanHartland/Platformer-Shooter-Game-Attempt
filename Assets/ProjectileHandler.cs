@@ -22,34 +22,37 @@ public class ProjectileHandler : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+        if(collision.GetContact(0).collider.TryGetComponent(out EnemyBehaviour eb)) 
+            eb.hp -= shotBy.damage;
+
         TriggerEffect(EffectTrigger.Hit, shotBy, gameObject);
     }
 
-    public static void Hitscan(WeaponStats weapon)
+    public static void Hitscan(WeaponStats w)
     {
         Vector3 startPos = Variables.player.Find("Gun").position;
 
-        Vector3 angle = Angle2D.GetAngle<Vector2>(startPos, World.mousePos, -90f + Random.Range(-weapon.spread / 2f, weapon.spread / 2f));
+        Vector3 angle = Angle2D.GetAngle<Vector2>(startPos, World.mousePos, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
 
-        RaycastHit2D hit = Physics2D.Raycast(startPos, angle, weapon.maxHitscanDistance, ~LayerMask.GetMask("Player"));
+        RaycastHit2D hit = Physics2D.Raycast(startPos, angle, w.maxHitscanDistance, ~LayerMask.GetMask("Player"));
         
-        Vector3 endPos = hit ? hit.point : startPos + angle * weapon.maxHitscanDistance;
+        Vector3 endPos = hit ? hit.point : startPos + angle * w.maxHitscanDistance;
         Visuals.SpawnLine(new(){startPos, endPos}, Color.yellow, .05f, .1f);
 
         if(hit) 
         {
-            TriggerEffect(EffectTrigger.Hit, weapon);
-            if(hit.collider.GetComponent<EnemyBehaviour>()) hit.collider.GetComponent<EnemyBehaviour>().hp -= weapon.damage;
+            TriggerEffect(EffectTrigger.Hit, w);
+            if(hit.collider.GetComponent<EnemyBehaviour>()) hit.collider.GetComponent<EnemyBehaviour>().hp -= w.damage;
         }
-        else TriggerEffect(EffectTrigger.TimeOut, weapon);
+        else TriggerEffect(EffectTrigger.TimeOut, w);
     }
 
-    public static void HitscanEnemy(Vector3 pos, Vector3 target, WeaponStats weapon)
+    public static void HitscanEnemy(Vector3 pos, Vector3 target, WeaponStats w)
     {
-        Vector3 angle = Angle2D.GetAngle<Vector2>(pos, target, -90f + Random.Range(-weapon.spread / 2f, weapon.spread / 2f));
-        RaycastHit2D hit = Physics2D.Raycast(pos, angle, weapon.maxHitscanDistance, ~LayerMask.GetMask("Enemy"));
+        Vector3 angle = Angle2D.GetAngle<Vector2>(pos, target, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
+        RaycastHit2D hit = Physics2D.Raycast(pos, angle, w.maxHitscanDistance, ~LayerMask.GetMask("Enemy"));
 
-        Vector3 endPos = hit ? hit.point : pos + angle * weapon.maxHitscanDistance;
+        Vector3 endPos = hit ? hit.point : pos + angle * w.maxHitscanDistance;
         Visuals.SpawnLine(new(){pos, endPos}, Color.yellow, .05f, .1f);
     }
 }

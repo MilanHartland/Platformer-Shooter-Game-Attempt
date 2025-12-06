@@ -12,8 +12,6 @@ public class ModuleEffectHandler : MonoBehaviour
 
     public static Dictionary<string, List<string>> appliedItems = new();
 
-    public ParticleSystem sys;
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -34,14 +32,10 @@ public class ModuleEffectHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(MenuManager.IsPaused) return;
+
         if(Input.GetKeyDown(KeyCode.G))
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            GameObject canvas = World.FindInactive("Screen Canvas");
-            canvas.SetActive(!canvas.activeSelf);
-        }
 
         if (Input.GetKeyDown(KeyCode.T)) Visuals.Disintegrate(player.gameObject, dontThrowNonReadException: true);
 

@@ -18,6 +18,8 @@ public class MissionManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(MenuManager.IsPaused) return;
+
         GameObject closestCrate = Lists.GetClosest(allItemCrates, player.gameObject);
         if(closestCrate && Vector2.Distance(closestCrate.transform.position, player.position) < 2f && Input.GetKeyDown(KeyCode.E))
         {

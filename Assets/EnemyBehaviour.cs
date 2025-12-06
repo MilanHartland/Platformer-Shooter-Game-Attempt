@@ -17,7 +17,11 @@ public class EnemyBehaviour : MonoBehaviour
     EnemyPathfinding pathfinding;
 
     Vector3 lastSeenPos;
+    Vector3 startPos;
     Timer weaponTimer;
+
+    Vector3 pfCenterRelative => Vector3.down * (1f / transform.lossyScale.y);
+    Vector3 pfCenter => transform.position + pfCenterRelative;
 
     [Header("Fighting")]
     [Tooltip("The HP the enemy spawns with")]public float maxHp;
@@ -41,7 +45,7 @@ public class EnemyBehaviour : MonoBehaviour
         pathfinding = GetComponent<EnemyPathfinding>();
         StartCoroutine(PathfindCoroutine());
 
-        lastSeenPos = transform.position;
+        startPos = lastSeenPos = transform.position;
 
         weaponTimer = new(1f / weapon.fireRate);
 
@@ -71,14 +75,16 @@ public class EnemyBehaviour : MonoBehaviour
     IEnumerator PathfindCoroutine()
     {
         while (true)
-        {            
+        {
+            if(MenuManager.IsPaused) yield return null;
+
             See();
 
             if (seesPlayer)
             {
                 lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
                 
-                    if(Vector2.Distance(transform.position, player.position) > followDist) 
+                    if(Vector2.Distance(pfCenter, player.position) > followDist) 
                     pathfinding.Pathfind(player.position);
                 else 
                 {
@@ -92,10 +98,10 @@ public class EnemyBehaviour : MonoBehaviour
             }
             else
             {
-                if (Vector2.Distance(transform.position, lastSeenPos) <= 0.1f)
+                if (Vector2.Distance(pfCenter, lastSeenPos) <= 0.1f)
                 {
-                    lastSeenPos = new Vector3(-1f, -3f);
-                    pathfinding.Pathfind(lastSeenPos);
+                    lastSeenPos = startPos;
+                    pathfinding.Pathfind(startPos);
                 }
                 else pathfinding.Pathfind(lastSeenPos);
             }
@@ -110,11 +116,11 @@ public class EnemyBehaviour : MonoBehaviour
 
         //Gets every vision cast to the player and each corner of the collider
         Vector3 playerScale = player.GetComponent<BoxCollider2D>().size * player.lossyScale / 2f + player.GetComponent<BoxCollider2D>().offset * player.lossyScale;
-        visionCasts[0] = Physics2D.Linecast(transform.position, player.position, mask);
-        visionCasts[1] = Physics2D.Linecast(transform.position, player.position + playerScale, mask);
-        visionCasts[2] = Physics2D.Linecast(transform.position, player.position - playerScale, mask);
-        visionCasts[3] = Physics2D.Linecast(transform.position, player.position + new Vector3(playerScale.x, -playerScale.y), mask);
-        visionCasts[4] = Physics2D.Linecast(transform.position, player.position + new Vector3(-playerScale.x, playerScale.y), mask);
+        visionCasts[0] = Physics2D.Linecast(transform.position + Vector3.up * .5f, player.position, mask);
+        visionCasts[1] = Physics2D.Linecast(transform.position + Vector3.up * .5f, player.position + playerScale, mask);
+        visionCasts[2] = Physics2D.Linecast(transform.position + Vector3.up * .5f, player.position - playerScale, mask);
+        visionCasts[3] = Physics2D.Linecast(transform.position + Vector3.up * .5f, player.position + new Vector3(playerScale.x, -playerScale.y), mask);
+        visionCasts[4] = Physics2D.Linecast(transform.position + Vector3.up * .5f, player.position + new Vector3(-playerScale.x, playerScale.y), mask);
 
         //Gets every vision cast to the peers
         peerVisionCasts = new();
@@ -180,7 +186,7 @@ public class EnemyBehaviour : MonoBehaviour
             else Gizmos.color = Color.red;
 
             if(hit.collider)
-                Gizmos.DrawLine(transform.position, hit.point);
+                Gizmos.DrawLine(transform.position + Vector3.up * .5f, hit.point);
         }
 
         foreach(var hit in peerVisionCasts)
