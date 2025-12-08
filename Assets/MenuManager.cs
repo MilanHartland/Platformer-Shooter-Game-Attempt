@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Rendering.PostProcessing;
+using MilanUtils;
 
 public class MenuManager : MonoBehaviour
 {
@@ -60,6 +61,7 @@ public class MenuManager : MonoBehaviour
         pauseMenu.SetActive(false);
         menuState = MenuState.Inventory;
         Camera.main.GetComponent<PostProcessVolume>().profile = pauseProfile;
+        DragDrop.StopDragging();
     }
 
     void PauseMenu()
@@ -69,6 +71,7 @@ public class MenuManager : MonoBehaviour
         pauseMenu.SetActive(true);
         menuState = MenuState.Pause;
         Camera.main.GetComponent<PostProcessVolume>().profile = pauseProfile;
+        DragDrop.StopDragging();
     }
 
     void ContinueGame()
@@ -78,5 +81,6 @@ public class MenuManager : MonoBehaviour
         pauseMenu.SetActive(false);
         menuState = MenuState.Game;
         Camera.main.GetComponent<PostProcessVolume>().profile = gameProfile;
+        DragDrop.StopDragging();
     }
 }

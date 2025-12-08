@@ -234,7 +234,7 @@ Camera:
   m_GameObject: {fileID: 39596514}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -261,7 +261,7 @@ Camera:
   field of view: 60
   orthographic: 1
   orthographic size: 10
-  m_Depth: -1
+  m_Depth: 1
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -3378,6 +3378,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
@@ -3672,6 +3673,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Movement
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -3805,6 +3807,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 1
   type: 0
+  spawnerMax: -1
   name: Alt Weapon
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -3960,6 +3963,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
@@ -4300,6 +4304,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 0
   type: 0
+  spawnerMax: -1
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -4465,6 +4470,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
@@ -4621,6 +4627,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Weapon
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -4903,6 +4910,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.25094336, g: 0.25094336, b: 0.25094336, a: 1}
@@ -5074,6 +5082,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 1
   type: 0
+  spawnerMax: -1
   name: Weapon
   isActive: 1
   inactiveColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 0}
@@ -5307,6 +5316,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 3
   type: 2
+  spawnerMax: -1
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -5522,6 +5532,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Alt Weapon
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -5744,6 +5755,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 0
   type: 0
+  spawnerMax: -1
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -5916,6 +5928,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Bullet
   isActive: 1
   inactiveColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
@@ -6015,6 +6028,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 3
   type: 2
+  spawnerMax: -1
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -6521,6 +6535,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 0
   type: 0
+  spawnerMax: -1
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -6719,6 +6734,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.25094336, g: 0.25094336, b: 0.25094336, a: 1}
@@ -6962,6 +6978,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Movement
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
@@ -7021,6 +7038,7 @@ MonoBehaviour:
   needSameName: 1
   _editorType: 2
   type: 1
+  spawnerMax: -1
   name: Effect
   isActive: 1
   inactiveColor: {r: 0.25094336, g: 0.25094336, b: 0.25094336, a: 1}
@@ -7092,7 +7110,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2bc04403e292654f974e733d8d7a83b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sys: {fileID: 0}
 --- !u!4 &2083653792
 Transform:
   m_ObjectHideFlags: 0
@@ -7227,6 +7244,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scrollInteraction: 2
   scrollMaxSpeed: 5000
+  scrollLimits:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
   scrollCondition: 1
   scrollDirection: {x: 0, y: 5}
   scrollSmoothing: 2
