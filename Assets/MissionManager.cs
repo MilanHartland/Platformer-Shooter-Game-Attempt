@@ -19,8 +19,6 @@ public class MissionManager : MonoBehaviour
     {
         foreach(var obj in GameObject.FindGameObjectsWithTag("Crate"))
             allItemCrates.Add(obj);
-        
-        sceneLoadingOperation.allowSceneActivation = false;
     }
 
     // Update is called once per frame
