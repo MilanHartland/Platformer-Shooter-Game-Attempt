@@ -3,6 +3,7 @@ using MilanUtils;
 using static MilanUtils.Variables;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class MissionManager : MonoBehaviour
 {
@@ -25,9 +26,16 @@ public class MissionManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Q) && sceneLoadingOperation == null) StartLoadingNewScene(1);
-        else if(Input.GetKeyDown(KeyCode.Q) && sceneLoadingOperation.progress >= 0.9f) sceneLoadingOperation.allowSceneActivation = true;
-        else if(Input.GetKeyDown(KeyCode.Q) && sceneLoadingOperation.isDone) SceneManager.UnloadSceneAsync(0).allowSceneActivation = true;
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            if(sceneLoadingOperation == null) StartLoadingNewScene(1);
+            else if(sceneLoadingOperation.progress >= 0.9f && !sceneLoadingOperation.isDone) sceneLoadingOperation.allowSceneActivation = true;
+            else if (sceneLoadingOperation.isDone)
+            {
+                SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(0));
+                SceneManager.UnloadSceneAsync(0);
+            }
+        }
 
         if(MenuManager.IsPaused) return;
 
