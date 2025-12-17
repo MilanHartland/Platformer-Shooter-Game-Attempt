@@ -68,7 +68,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         if(hp <= 0)
         {
-            Visuals.Disintegrate(gameObject, dontThrowNonReadException: true);
+            Effects.Disintegrate(gameObject, dontThrowNonReadException: true);
         }
     }
 

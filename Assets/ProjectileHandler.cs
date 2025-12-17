@@ -37,7 +37,7 @@ public class ProjectileHandler : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(startPos, angle, w.maxHitscanDistance, ~LayerMask.GetMask("Player"));
         
         Vector3 endPos = hit ? hit.point : startPos + angle * w.maxHitscanDistance;
-        Visuals.SpawnLine(new(){startPos, endPos}, Color.yellow, .05f, .1f);
+        Effects.SpawnLine(new(){startPos, endPos}, Color.yellow, .05f, .1f);
 
         if(hit) 
         {
@@ -53,6 +53,6 @@ public class ProjectileHandler : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(pos, angle, w.maxHitscanDistance, ~LayerMask.GetMask("Enemy"));
 
         Vector3 endPos = hit ? hit.point : pos + angle * w.maxHitscanDistance;
-        Visuals.SpawnLine(new(){pos, endPos}, Color.yellow, .05f, .1f);
+        Effects.SpawnLine(new(){pos, endPos}, Color.yellow, .05f, .1f);
     }
 }

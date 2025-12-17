@@ -18,7 +18,6 @@ public class ModuleEffectHandler : MonoBehaviour
         DragDrop.dragInAction += ApplyModule;
         DragDrop.dragOutAction += ApplyModule;
 
-        TryAutoSetValues();
         LoadAllResources();
 
         appliedItems = new();
@@ -27,7 +26,7 @@ public class ModuleEffectHandler : MonoBehaviour
             if(obj.Value.GetType() == typeof(WeaponStats))
                 appliedItems.Add(((WeaponStats)obj.Value).name, new());
         }
-     }
+    }
 
     // Update is called once per frame
     void Update()
@@ -37,7 +36,7 @@ public class ModuleEffectHandler : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.G))
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
-        if (Input.GetKeyDown(KeyCode.T)) Visuals.Disintegrate(player.gameObject, dontThrowNonReadException: true);
+        if (Input.GetKeyDown(KeyCode.T)){Effects.Disintegrate(player.gameObject, dontThrowNonReadException: true);}
 
         if (weapon != null && (Input.GetMouseButtonDown(0) || (Input.GetMouseButton(0) && weapon.automatic)) && weaponTimer)
         {
@@ -56,7 +55,7 @@ public class ModuleEffectHandler : MonoBehaviour
     {
         if (w == null) return;
 
-        Visuals.CreateTempParticleSystem(prefabs["Simple Muzzle Flash"], player.transform.Find("Gun").position, player.transform.Find("Gun").rotation);
+        Effects.CreateTempParticleSystem(prefabs["Simple Muzzle Flash"], player.transform.Find("Gun").position, player.transform.Find("Gun").rotation);
 
         if(w.firingType == WeaponStats.FiringType.Hitscan)
         {

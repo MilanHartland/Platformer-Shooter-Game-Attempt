@@ -28,9 +28,10 @@ public class AnimationManager : MonoBehaviour
     {
         if(MenuManager.IsPaused) return;
         
-        Vector3 armReachPos = Vector3.zero;
-        float signedDir = 0f;
-        if(transform == Variables.player)
+        Vector3 armReachPos;
+        float signedDir;
+
+        if (transform == Variables.player)
         {
             //Gets the position that is within the reach of an arm towards the mousepos (center between left/right arm + average of the directions to point to mouse)
             armReachPos = (leftArm.transform.position + rightArm.transform.position) / 2f + 
