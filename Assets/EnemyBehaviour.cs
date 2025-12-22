@@ -145,7 +145,7 @@ public class EnemyBehaviour : MonoBehaviour
         
 
         //Gets the amount of visioncasts that see the player
-        int amtSeesPlayer = Lists.ConditionCount(visionCasts.ToList(), hit => {return hit.collider && hit.collider.transform == player;});
+        int amtSeesPlayer = visionCasts.ToList().Count(hit => {return hit.collider && hit.collider.transform == player;});
 
         //Gets the closestPoint so that the height of the player doesn't matter (seeing the feet or face of someone, in both cases you know someone is there equally)
         Vector3 closestPoint = player.GetComponent<BoxCollider2D>().bounds.ClosestPoint(transform.position);

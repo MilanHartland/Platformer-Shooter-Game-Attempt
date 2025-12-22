@@ -194,7 +194,7 @@ public class EnemyPathfinding : MonoBehaviour
             {
                 //Checks if there is a gap by doing a raycastline downward and returning if on any there is no hit
                 List<RaycastHit2D> hitList = World.RaycastLine(trueStart, new(Mathf.Sign(diff.x), 0f), Mathf.RoundToInt(Mathf.Abs(diff.x) - 1), Vector2.down, mask);
-                bool hasGap = Lists.HasCondition(hitList, (hit) => { return !hit; });
+                bool hasGap = hitList.Any((hit) => { return !hit; });
 
                 //If there is a gap, set canWalk to false, check if jump is allowed (GetJumpRayList and HasCondition), then set canJump. If no gap, then canWalk is true
                 if (hasGap)
@@ -203,7 +203,7 @@ public class EnemyPathfinding : MonoBehaviour
                     corrY = GetJumpHeight(trueStart, end) <= maxJumpHeight;
 
                     hitList = GetJumpRayList();
-                    bool nothingInLine = !Lists.HasCondition(hitList, (hit) => { return hit; });
+                    bool nothingInLine = !hitList.Any((hit) => { return hit; });
 
                     canJump = nothingInLine && clearLine;
                 }
@@ -216,7 +216,7 @@ public class EnemyPathfinding : MonoBehaviour
 
                 //Checks if jump is possible
                 var hitList = GetJumpRayList();
-                bool nothingInLine = !Lists.HasCondition(hitList, (hit) => { return hit; });
+                bool nothingInLine = !hitList.Any((hit) => { return hit; });
 
                 //Gets the linecast .75 units to the left/right of the end. If either is unobstructed, that means a jump is possible (disregarding x distance)
                 bool lineLeft = !Physics2D.Linecast(end + Vector3.left * .75f, start, mask);
@@ -230,7 +230,7 @@ public class EnemyPathfinding : MonoBehaviour
             }
             
             bool corrFallX = Mathf.Abs(diff.x) - 0.2f < GetTimeToFall(Mathf.Abs(diff.y)) * speed;
-            bool corrFallLines = !Lists.HasCondition(GetFallRayList(), x => {return x;});
+            bool corrFallLines = !GetFallRayList().Any(x => {return x;});
 
             float maxJumpTime = 2f * GetTimeToFall(GetJumpHeight(trueStart, end)) * speed;
             bool corrJumpX = Mathf.Abs(diff.x) < maxJumpTime * speed;

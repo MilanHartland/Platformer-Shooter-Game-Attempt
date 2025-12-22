@@ -31,7 +31,7 @@ public class ModuleEffectHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(MenuManager.IsPaused) return;
+        if(MenuManager.IsPaused || MissionManager.inHub) return;
 
         if(Input.GetKeyDown(KeyCode.G))
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

@@ -6,19 +6,23 @@ using System.Collections;
 using static UnityEngine.ParticleSystem;
 using UnityEngine.SceneManagement;
 using System;
+using TMPro;
 
 public class MissionManager : MonoBehaviour
 {
     List<GameObject> allItemCrates = new();
     List<GameObject> allDroppedItems = new();
-    GameObject depositBox, lidMask;
-    Vector3 sceneEnterPoint, playerSpawnPoint;
+    public GameObject depositBox, lidMask, gunBench;
+    public Vector3 sceneEnterPoint, playerSpawnPoint, boxTeleportPoint;
     float boxStopHeight;
     
     [Header("Item Pickups")]
     public float pickUpDistance;
-    public Bounds depositBoxPickupArea;
+    public Bounds depositBoxPickupArea; //Can't be SetName'd because the GetHeight doesn't work for Bounds
+    public Bounds gunBenchUseArea;
     Bounds pickupArea;
+
+    GameObject gunBenchButtonUI, depositBoxButtonUI;
 
     [Serializable]
     public struct TransitionVariables
@@ -30,20 +34,18 @@ public class MissionManager : MonoBehaviour
         [Tooltip("The acceleration the box undergoes when going to a new scene")]public float boxAcceleration;
         [Tooltip("The deceleration the box undergoes when having entered a new scene")]public float boxDeceleration;
         [Tooltip("The max speed of the box")]public float boxMaxSpeed;
+        [Tooltip("The amount of seconds it takes for the box to move 1 unit down at the end")]public float boxHideTime;
     }
     [Header("Scene Transitions")]
     public TransitionVariables transition;
     float sceneChangeCamTriggerHeight;
 
-    [Header("Camera Profiles")]
-    public CameraFollowProfile hubProfile;
-    public CameraFollowProfile missionProfile;
-    public CameraFollowProfile transitionProfile;
-
     AsyncOperation sceneLoadingOperation;
-    int sceneIndexToLoad;
+    public static int sceneIndexToLoad;
 
-    bool isTransitioning;
+    public static bool inHub;
+    public static bool isTransitioning;
+    public static bool inGunBenchArea;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -51,7 +53,9 @@ public class MissionManager : MonoBehaviour
         SceneManager.activeSceneChanged += GetSceneObjects;
         GetSceneObjects(default, default);
 
+        inHub = SceneManager.GetActiveScene().name.Contains("Hub");
         isTransitioning = false;
+        inGunBenchArea = false;
 
         depositBox = GameObject.Find("Deposit Box");
         lidMask = depositBox.transform.Find("Lid Mask").gameObject;
@@ -67,9 +71,23 @@ public class MissionManager : MonoBehaviour
         sceneChangeCamTriggerHeight = GameObject.Find("Scene Exit Point").transform.position.y;
         playerSpawnPoint = GameObject.Find("Player Spawn Point").transform.position;
         boxStopHeight = GameObject.Find("Deposit Box Stop Point").transform.position.y;
+        boxTeleportPoint = GameObject.Find("Deposit Box Teleport Point").transform.position;
 
-        if(SceneManager.GetActiveScene().name.Contains("Mission")) sceneIndexToLoad = 0;
-        else if(SceneManager.GetActiveScene().name.Contains("Hub")) sceneIndexToLoad = 1; //When adding more missions, change this to be random based on difficulty or something idk
+        depositBoxButtonUI = GameObject.Find("Deposit Box Use");
+
+        if(SceneManager.GetActiveScene().name.Contains("Mission")) 
+        {
+            inHub = false;
+            sceneIndexToLoad = 1;
+        }
+        else if(SceneManager.GetActiveScene().name.Contains("Hub")) 
+        {
+            inHub = true;
+            gunBench = GameObject.Find("Gun Bench");
+            gunBenchUseArea.size += Vector3.forward * 999f;
+            gunBenchButtonUI = GameObject.Find("Gun Bench Use");
+            sceneIndexToLoad = 2; //When adding more missions, change this to make it unable to load anything until mission is selected
+        }
         else throw new Exception($"No scene found to get! Current scene is {SceneManager.GetActiveScene().name}");
 
         if(isTransitioning) SceneTransitionFunction();
@@ -91,10 +109,32 @@ public class MissionManager : MonoBehaviour
     {
         if(MenuManager.IsPaused) return;
 
+        //Sets the pickupArea position to center in relation to depositBox position
         pickupArea = new(depositBox.transform.position + depositBoxPickupArea.center, depositBoxPickupArea.size);
+
+        //If in the gun bench area (which is when the gun bench exists and the use area contains player), enable the UI if it exists, and set the follow profile
+        inGunBenchArea = gunBench && gunBenchUseArea.Contains(player.position);
+        if(gunBenchButtonUI) gunBenchButtonUI.SetActive(inGunBenchArea);
+        if (inGunBenchArea)
+        {
+            Camera.main.GetComponent<CameraFollow>().ImportFollowProfile(CameraFollow.allProfiles["Gun Bench Profile"]);
+        }
+
+        depositBoxButtonUI.SetActive(pickupArea.Contains(player.position) && !isTransitioning);
+        if (pickupArea.Contains(player.position))
+        {
+            if(inHub) depositBoxButtonUI.GetComponent<TextMeshProUGUI>().text = "[E] Deploy";
+            else depositBoxButtonUI.GetComponent<TextMeshProUGUI>().text = "[E] Extract";
+        }
 
         if(Input.GetKeyDown(KeyCode.E))
         {
+            //If in the bench area and the menu state is good
+            if (inGunBenchArea && MenuManager.menuState == MenuManager.MenuState.Game)
+            {
+                GetComponent<MenuManager>().InventoryMenu();
+            }
+
             //Gets the closest crate, checks if it is closer than pickUpDistance and pressing the pick up button
             GameObject closestCrate = Lists.GetClosest(allItemCrates, player.gameObject);
             if(closestCrate && Vector2.Distance(closestCrate.transform.position, player.position) < pickUpDistance)
@@ -160,7 +200,7 @@ public class MissionManager : MonoBehaviour
 
         //Gets the camera follow and sets the profile to the transition profile
         CameraFollow camFollow = Camera.main.GetComponent<CameraFollow>();
-        camFollow.ImportFollowProfile(transitionProfile);
+        camFollow.ImportFollowProfile(CameraFollow.allProfiles["Transition Profile"]);
         
         //Loads the scene in the background
         sceneLoadingOperation = SceneManager.LoadSceneAsync(sceneIndexToLoad);
@@ -185,6 +225,7 @@ public class MissionManager : MonoBehaviour
         //Disables the player object and creates a particle copy of it
         player.gameObject.SetActive(false);
         Effects.TurnIntoParticles(player.gameObject, player.position, dontThrowNonReadException: true);
+        player.transform.position = Vector3.one * 9999f;
 
         //Moves the copy to the box, rotates it to have no rotation, and scales it to be bigger
         LeanTween.move(gunCopy.gameObject, depositBox.transform.position, transition.gunMoveTime).setEaseOutQuint();
@@ -248,6 +289,10 @@ public class MissionManager : MonoBehaviour
 
         yield return GetWaitForSeconds(transition.gunMoveTime);
 
+        depositBox.transform.position += Vector3.forward * 100f;
+        LeanTween.moveY(depositBox, depositBox.transform.position.y - 1f, transition.boxHideTime).setEaseInQuart().setOnComplete(
+            () => {depositBox.transform.position -= Vector3.forward * 100f; depositBox.transform.position = boxTeleportPoint; });
+
         //Reenables the animation/movement, reactivates the gun, and destroys the copy
         animManager.enabled = true;
         playerMovement.enabled = true;
@@ -255,7 +300,7 @@ public class MissionManager : MonoBehaviour
         Destroy(gunCopy.gameObject);
 
         //Sets the follow profile the the correct one based on the scene, and sets transitioning to false
-        camFollow.ImportFollowProfile(SceneManager.GetActiveScene().name.Contains("Hub") ? hubProfile : missionProfile);
+        camFollow.ImportFollowProfile(SceneManager.GetActiveScene().name.Contains("Hub") ? CameraFollow.allProfiles["Hub Profile"] : CameraFollow.allProfiles["Mission Profile"]);
         isTransitioning = false;
     }
 
@@ -266,6 +311,13 @@ public class MissionManager : MonoBehaviour
             depositBox = GameObject.Find("Deposit Box");
             Gizmos.color = Color.blue;
             Gizmos.DrawWireCube(depositBox.transform.position + depositBoxPickupArea.center, depositBoxPickupArea.size);
+        }
+
+        if(GameObject.Find("Gun Bench"))
+        {
+            gunBench = GameObject.Find("Gun Bench");
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireCube(gunBenchUseArea.center, gunBenchUseArea.size);
         }
     }
 }
