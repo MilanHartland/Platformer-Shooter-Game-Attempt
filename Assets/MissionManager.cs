@@ -12,21 +12,21 @@ public class MissionManager : MonoBehaviour
 {
     List<GameObject> allItemCrates = new();
     List<GameObject> allDroppedItems = new();
-    public GameObject depositBox, lidMask, gunBench;
-    public Vector3 sceneEnterPoint, playerSpawnPoint, boxTeleportPoint;
+    GameObject depositBox, lidMask, gunBench;
+    Vector3 sceneEnterPoint, playerSpawnPoint, boxTeleportPoint;
     float boxStopHeight;
     
     [Header("Item Pickups")]
     public float pickUpDistance;
     public Bounds depositBoxPickupArea; //Can't be SetName'd because the GetHeight doesn't work for Bounds
-    public Bounds gunBenchUseArea;
     Bounds pickupArea;
 
-    GameObject gunBenchButtonUI, depositBoxButtonUI;
+    GameObject depositBoxButtonUI;
 
     [Serializable]
     public struct TransitionVariables
     {
+        [Header("Deposit Box Transition")]
         [Tooltip("The amount of seconds it takes for the gun to move/scale/rotate into position")]public float gunMoveTime;
         [Tooltip("The amount of seconds it takes between the gun being in position and the lid closing")]public float gunLidPauseTime;
         [Tooltip("The amount of seconds it takes for the lid to close")]public float lidMoveTime;
@@ -35,6 +35,11 @@ public class MissionManager : MonoBehaviour
         [Tooltip("The deceleration the box undergoes when having entered a new scene")]public float boxDeceleration;
         [Tooltip("The max speed of the box")]public float boxMaxSpeed;
         [Tooltip("The amount of seconds it takes for the box to move 1 unit down at the end")]public float boxHideTime;
+        
+        [Header("Respawn Transition")]
+        [Tooltip("The time it takes for the camera to fly up")]public float camFlyTime;
+        [Tooltip("The distance the camera flies up")]public float camFlyHeight;
+        [Tooltip("The time it takes for the camera to settle on the Hub scene")]public float camStopTime;
     }
     [Header("Scene Transitions")]
     public TransitionVariables transition;
@@ -45,7 +50,6 @@ public class MissionManager : MonoBehaviour
 
     public static bool inHub;
     public static bool isTransitioning;
-    public static bool inGunBenchArea;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -55,7 +59,6 @@ public class MissionManager : MonoBehaviour
 
         inHub = SceneManager.GetActiveScene().name.Contains("Hub");
         isTransitioning = false;
-        inGunBenchArea = false;
 
         depositBox = GameObject.Find("Deposit Box");
         lidMask = depositBox.transform.Find("Lid Mask").gameObject;
@@ -83,9 +86,6 @@ public class MissionManager : MonoBehaviour
         else if(SceneManager.GetActiveScene().name.Contains("Hub")) 
         {
             inHub = true;
-            gunBench = GameObject.Find("Gun Bench");
-            gunBenchUseArea.size += Vector3.forward * 999f;
-            gunBenchButtonUI = GameObject.Find("Gun Bench Use");
             sceneIndexToLoad = 2; //When adding more missions, change this to make it unable to load anything until mission is selected
         }
         else throw new Exception($"No scene found to get! Current scene is {SceneManager.GetActiveScene().name}");
@@ -112,14 +112,6 @@ public class MissionManager : MonoBehaviour
         //Sets the pickupArea position to center in relation to depositBox position
         pickupArea = new(depositBox.transform.position + depositBoxPickupArea.center, depositBoxPickupArea.size);
 
-        //If in the gun bench area (which is when the gun bench exists and the use area contains player), enable the UI if it exists, and set the follow profile
-        inGunBenchArea = gunBench && gunBenchUseArea.Contains(player.position);
-        if(gunBenchButtonUI) gunBenchButtonUI.SetActive(inGunBenchArea);
-        if (inGunBenchArea)
-        {
-            Camera.main.GetComponent<CameraFollow>().ImportFollowProfile(CameraFollow.allProfiles["Gun Bench Profile"]);
-        }
-
         depositBoxButtonUI.SetActive(pickupArea.Contains(player.position) && !isTransitioning);
         if (pickupArea.Contains(player.position))
         {
@@ -129,12 +121,6 @@ public class MissionManager : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.E))
         {
-            //If in the bench area and the menu state is good
-            if (inGunBenchArea && MenuManager.menuState == MenuManager.MenuState.Game)
-            {
-                GetComponent<MenuManager>().InventoryMenu();
-            }
-
             //Gets the closest crate, checks if it is closer than pickUpDistance and pressing the pick up button
             GameObject closestCrate = Lists.GetClosest(allItemCrates, player.gameObject);
             if(closestCrate && Vector2.Distance(closestCrate.transform.position, player.position) < pickUpDistance)
@@ -183,7 +169,7 @@ public class MissionManager : MonoBehaviour
                 return;
             }
 
-            if (pickupArea.Contains(player.position))
+            if (pickupArea.Contains(player.position) && !PlayerManager.isDead)
             {
                 StartCoroutine(ExtractionCoroutine());
             }
@@ -200,7 +186,7 @@ public class MissionManager : MonoBehaviour
 
         //Gets the camera follow and sets the profile to the transition profile
         CameraFollow camFollow = Camera.main.GetComponent<CameraFollow>();
-        camFollow.ImportFollowProfile(CameraFollow.allProfiles["Transition Profile"]);
+        camFollow.ImportFollowProfile("Transition Profile");
         
         //Loads the scene in the background
         sceneLoadingOperation = SceneManager.LoadSceneAsync(sceneIndexToLoad);
@@ -231,6 +217,9 @@ public class MissionManager : MonoBehaviour
         LeanTween.move(gunCopy.gameObject, depositBox.transform.position, transition.gunMoveTime).setEaseOutQuint();
         LeanTween.rotateZ(gunCopy.gameObject, -90f, transition.gunMoveTime).setEaseInOutSine();
         LeanTween.scale(gunCopy.gameObject, Vector3.one * .5f, transition.gunMoveTime).setEaseInOutSine();
+
+        depositBox.GetComponent<SpriteRenderer>().sortingOrder = 1;
+        depositBox.transform.Find("Lid").GetComponent<SpriteRenderer>().sortingOrder = 2;
         
         yield return GetWaitForSeconds(transition.gunMoveTime + transition.gunLidPauseTime);
 
@@ -289,9 +278,16 @@ public class MissionManager : MonoBehaviour
 
         yield return GetWaitForSeconds(transition.gunMoveTime);
 
-        depositBox.transform.position += Vector3.forward * 100f;
-        LeanTween.moveY(depositBox, depositBox.transform.position.y - 1f, transition.boxHideTime).setEaseInQuart().setOnComplete(
-            () => {depositBox.transform.position -= Vector3.forward * 100f; depositBox.transform.position = boxTeleportPoint; });
+        depositBox.GetComponent<SpriteRenderer>().sortingOrder = -2;
+        depositBox.transform.Find("Lid").GetComponent<SpriteRenderer>().sortingOrder = -1;
+
+        LeanTween.moveY(depositBox, depositBox.transform.position.y - 1f, transition.boxHideTime).setEaseInQuart().setOnComplete(() => 
+        {
+            depositBox.transform.position = boxTeleportPoint;
+
+            depositBox.GetComponent<SpriteRenderer>().sortingOrder = 1;
+            depositBox.transform.Find("Lid").GetComponent<SpriteRenderer>().sortingOrder = 2;
+        });
 
         //Reenables the animation/movement, reactivates the gun, and destroys the copy
         animManager.enabled = true;
@@ -300,7 +296,7 @@ public class MissionManager : MonoBehaviour
         Destroy(gunCopy.gameObject);
 
         //Sets the follow profile the the correct one based on the scene, and sets transitioning to false
-        camFollow.ImportFollowProfile(SceneManager.GetActiveScene().name.Contains("Hub") ? CameraFollow.allProfiles["Hub Profile"] : CameraFollow.allProfiles["Mission Profile"]);
+        camFollow.ImportFollowProfile(SceneManager.GetActiveScene().name.Contains("Hub") ? "Hub Profile" : "Mission Profile");
         isTransitioning = false;
     }
 
@@ -311,13 +307,6 @@ public class MissionManager : MonoBehaviour
             depositBox = GameObject.Find("Deposit Box");
             Gizmos.color = Color.blue;
             Gizmos.DrawWireCube(depositBox.transform.position + depositBoxPickupArea.center, depositBoxPickupArea.size);
-        }
-
-        if(GameObject.Find("Gun Bench"))
-        {
-            gunBench = GameObject.Find("Gun Bench");
-            Gizmos.color = Color.white;
-            Gizmos.DrawWireCube(gunBenchUseArea.center, gunBenchUseArea.size);
         }
     }
 }

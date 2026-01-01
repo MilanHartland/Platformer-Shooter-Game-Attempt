@@ -74,8 +74,8 @@ public class MissionSelection : MonoBehaviour
             }
         }
         
-        if(cameraTakeOverArea.Contains(Variables.player.position)) Camera.main.GetComponent<CameraFollow>().ImportFollowProfile(CameraFollow.allProfiles["Map View Profile"]);
-        else if(!MissionManager.isTransitioning && !MissionManager.inGunBenchArea) Camera.main.GetComponent<CameraFollow>().ImportFollowProfile(CameraFollow.allProfiles["Hub Profile"]);
+        if(cameraTakeOverArea.Contains(Variables.player.position)) Camera.main.GetComponent<CameraFollow>().ImportFollowProfile("Map View Profile");
+        else if(!MissionManager.isTransitioning && !HubManager.inGunBenchArea) Camera.main.GetComponent<CameraFollow>().ImportFollowProfile("Hub Profile");
 
         mapNameText.text = hoveredMission.name;
         difficultyText.text = $"Difficulty: {hoveredMission.difficulty}";

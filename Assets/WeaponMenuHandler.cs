@@ -13,18 +13,18 @@ public class WeaponMenuHandler : MonoBehaviour
     RectTransform panel;
 
     [InspectorButton("Create Edit Panel")]
-    void EditorResetEditLayout() { Variables.LoadAllResources(); ResetEditLayout(GetComponent<DragDrop>()); }
+    void EditorResetEditLayout() { Variables.LoadAllResources(); ResetEditLayout(); }
     
-    void ResetEditLayout(DragDrop item)
+    public void ResetEditLayout()
     {
-        if (this == null || item != GetComponent<DragDrop>()) return;
+        if (this == null) return;
 
         //If not parented to the correct item, instantiate the prefab, set the name, set parent/scale of parent, parent this to parent, and correct scale/position
         if (transform.parent.name != transform.name + " Inventory Parent")
         {
             GameObject obj = Instantiate(Variables.prefabs["Weapon Menu Parent"]);
             obj.name = transform.name + " Inventory Parent";
-            obj.transform.SetParent(GameObject.Find("Weapon Inventory").transform);
+            obj.transform.SetParent(World.FindInactive("Weapon Inventory").transform);
             obj.transform.localScale = Vector3.one;
             transform.SetParent(obj.transform);
             transform.localScale = Vector3.one;
@@ -60,18 +60,19 @@ public class WeaponMenuHandler : MonoBehaviour
 
         //Force rebuild of layout, and validate panel sizes
         LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
-        OnValidate();
+        _OnValidate();
     }
 
-    // void OnValidate() { UnityEditor.EditorApplication.delayCall += _OnValidate; }
-    void OnValidate()
+    void OnValidate() { EditorApplication.delayCall += _OnValidate; }
+    void _OnValidate()
     {
         if (this == null || PrefabUtility.IsPartOfPrefabAsset(this)) return;
         if (!transform.parent.Find("Background Panel")) return;
         panel = transform.parent.Find("Background Panel").GetComponent<RectTransform>();
 
         GridLayoutGroup layout = panel.GetComponent<GridLayoutGroup>();
-        float panelSize = Mathf.Clamp(panel.childCount, 0, 8) * layout.cellSize.x + Mathf.Clamp(panel.childCount - 1, 0, 8) * layout.spacing.x + layout.padding.left + layout.padding.right;
+        float panelSize = Mathf.Clamp(panel.childCount, 0, 6) * layout.cellSize.x + Mathf.Clamp(panel.childCount - 1, 0, 5) * layout.spacing.x + layout.padding.left + layout.padding.right;
         panel.sizeDelta = new(panelSize, panel.sizeDelta.y);
+        transform.parent.GetComponent<RectTransform>().sizeDelta = panel.sizeDelta;
     }
 }

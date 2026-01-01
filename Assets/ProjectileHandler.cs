@@ -54,5 +54,7 @@ public class ProjectileHandler : MonoBehaviour
 
         Vector3 endPos = hit ? hit.point : pos + angle * w.maxHitscanDistance;
         Effects.SpawnLine(new(){pos, endPos}, Color.yellow, .05f, .1f);
+
+        if(hit.collider.TryGetComponent(out PlayerManager pm)) pm.hp -= w.damage;
     }
 }

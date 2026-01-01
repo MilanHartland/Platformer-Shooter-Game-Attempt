@@ -16,6 +16,8 @@ MonoBehaviour:
   automatic: 0
   damage: 3
   fireRate: 2
+  magazineSize: 6
+  reloadTime: 0.5
   spread: 1
   firingType: 0
   bulletSpeed: 10

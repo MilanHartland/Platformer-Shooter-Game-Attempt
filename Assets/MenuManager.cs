@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 public class MenuManager : MonoBehaviour
 {
-    public enum MenuState {MainMenu, Game, Pause, Settings, Inventory}
+    public enum MenuState {MainMenu, Game, Pause, Settings, Inventory, Storage}
     public static MenuState menuState;
 
     public static bool IsPaused => menuState != MenuState.Game;
@@ -20,6 +20,7 @@ public class MenuManager : MonoBehaviour
     [ShowIf("!isMainMenu")]public PostProcessProfile pauseProfile;
 
     [Header("GameObjects")]
+    [ShowIf("!isMainMenu")]public GameObject hud;
     [ShowIf("!isMainMenu")]public GameObject inventory;
     [ShowIf("!isMainMenu")]public GameObject pauseMenu;
     [ShowIf("!isMainMenu")]public GameObject settingsMenu;
@@ -35,7 +36,7 @@ public class MenuManager : MonoBehaviour
     {        
         if(resumeButton) resumeButton.onClick.AddListener(ContinueGame);
         if(startGameButton) startGameButton.onClick.AddListener(async () => {await StartGame();});
-        settingsButton.onClick.AddListener(SettingsMenu);
+        settingsButton.onClick.AddListener(OpenSettingsMenu);
         quitButton.onClick.AddListener(Application.Quit);
 
         if(isMainMenu) menuState = MenuState.MainMenu;
@@ -53,37 +54,29 @@ public class MenuManager : MonoBehaviour
             {
                 case MenuState.Settings:
                 case MenuState.Inventory:
+                case MenuState.Storage:
                 case MenuState.Game:
-                    PauseMenu();
+                    OpenPauseMenu();
                     break;
                 case MenuState.Pause:
                     ContinueGame();
                     break;
             }
         }
-
-        if (Input.GetKeyDown(KeyCode.E) && menuState == MenuState.Inventory) ContinueGame();
     }
 
-    public void InventoryMenu()
+    public void OpenInventoryMenu()
     {
+        PauseGame();
         inventory.SetActive(true);
-        pauseMenu.SetActive(false);
-        settingsMenu.SetActive(false);
         menuState = MenuState.Inventory;
-        Camera.main.GetComponent<PostProcessVolume>().profile = pauseProfile;
-        DragDrop.StopDragging();
     }
 
-    void PauseMenu()
+    public void OpenPauseMenu()
     {
-        Time.timeScale = 0f;
-        inventory.SetActive(false);
+        PauseGame();
         pauseMenu.SetActive(true);
-        settingsMenu.SetActive(false);
         menuState = MenuState.Pause;
-        Camera.main.GetComponent<PostProcessVolume>().profile = pauseProfile;
-        DragDrop.StopDragging();
     }
 
     async Task StartGame()
@@ -91,26 +84,35 @@ public class MenuManager : MonoBehaviour
         var loading = SceneManager.LoadSceneAsync(1);
         await loading;
         Variables.TryAutoSetValues();
+        Time.timeScale = 1f;
     }
 
-    void ContinueGame()
+    public void ContinueGame()
     {
         Time.timeScale = 1f;
         inventory.SetActive(false);
         pauseMenu.SetActive(false);
         settingsMenu.SetActive(false);
+        hud.SetActive(true);
         menuState = MenuState.Game;
         Camera.main.GetComponent<PostProcessVolume>().profile = gameProfile;
         DragDrop.StopDragging();
     }
 
-    void SettingsMenu()
+    public void OpenSettingsMenu()
+    {
+        PauseGame();
+        settingsMenu.SetActive(true);
+        menuState = MenuState.Settings;
+    }
+
+    public void PauseGame()
     {
         Time.timeScale = 0f;
         inventory.SetActive(false);
         pauseMenu.SetActive(false);
-        settingsMenu.SetActive(true);
-        menuState = MenuState.Settings;
+        settingsMenu.SetActive(false);
+        hud.SetActive(false);
         Camera.main.GetComponent<PostProcessVolume>().profile = pauseProfile;
         DragDrop.StopDragging();
     }

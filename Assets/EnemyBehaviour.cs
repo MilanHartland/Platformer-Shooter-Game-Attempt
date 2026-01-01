@@ -84,7 +84,7 @@ public class EnemyBehaviour : MonoBehaviour
             {
                 lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
                 
-                    if(Vector2.Distance(pfCenter, player.position) > followDist) 
+                if(Vector2.Distance(pfCenter, player.position) > followDist) 
                     pathfinding.Pathfind(player.position);
                 else 
                 {
@@ -106,7 +106,7 @@ public class EnemyBehaviour : MonoBehaviour
                 else pathfinding.Pathfind(lastSeenPos);
             }
 
-            yield return GetWaitForSeconds(updateTime);
+            yield return null;
         }
     }
 

@@ -7,9 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class ModuleEffectHandler : MonoBehaviour
 {
-    public static WeaponStats weapon, altWeapon;
-    public static Timer weaponTimer, altWeaponTimer;
-
     public static Dictionary<string, List<string>> appliedItems = new();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -32,43 +29,6 @@ public class ModuleEffectHandler : MonoBehaviour
     void Update()
     {
         if(MenuManager.IsPaused || MissionManager.inHub) return;
-
-        if(Input.GetKeyDown(KeyCode.G))
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-
-        if (Input.GetKeyDown(KeyCode.T)){Effects.Disintegrate(player.gameObject, dontThrowNonReadException: true);}
-
-        if (weapon != null && (Input.GetMouseButtonDown(0) || (Input.GetMouseButton(0) && weapon.automatic)) && weaponTimer)
-        {
-            weaponTimer.ResetTimer();
-            FireWeapon(weapon);
-        }
-
-        if (altWeapon != null && (Input.GetMouseButtonDown(1) || (Input.GetMouseButton(1) && altWeapon.automatic)) && altWeaponTimer)
-        {
-            altWeaponTimer.ResetTimer();
-            FireWeapon(altWeapon);
-        }
-    }
-    
-    void FireWeapon(WeaponStats w)
-    {
-        if (w == null) return;
-
-        Effects.CreateTempParticleSystem(prefabs["Simple Muzzle Flash"], player.transform.Find("Gun").position, player.transform.Find("Gun").rotation);
-
-        if(w.firingType == WeaponStats.FiringType.Hitscan)
-        {
-            ProjectileHandler.Hitscan(w);
-            return;
-        }
-
-        GameObject obj = Instantiate(prefabs["Bullet"]);
-        obj.transform.position = player.transform.Find("Gun").position;
-        Angle2D.TurnTo(obj, World.mousePos, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
-        obj.GetComponent<Rigidbody2D>().linearVelocity = obj.transform.up * w.bulletSpeed;
-        obj.GetComponent<ProjectileHandler>().shotBy = w;
-        Destroy(obj, 5f);
     }
 
     void ApplyModule(DragDrop item, DragDrop slot)
@@ -80,24 +40,24 @@ public class ModuleEffectHandler : MonoBehaviour
         {
             if (isSlotted)
             {
-                weapon = (WeaponStats)resources[tag.name];
-                weaponTimer = new(1f / weapon.fireRate);
+                PlayerManager.mainWeapon = (WeaponStats)resources[tag.name];
+                PlayerManager.mainWeaponTimer = new(1f / PlayerManager.mainWeapon.fireRate);
             }
             else
             {
-                weapon = null;
+                PlayerManager.mainWeapon = null;
             }
         }
         else if(item.name == "Alt Weapon")
         {
             if (isSlotted)
             {
-                altWeapon = (WeaponStats)resources[tag.name];
-                altWeaponTimer = new(1f / altWeapon.fireRate);
+                PlayerManager.altWeapon = (WeaponStats)resources[tag.name];
+                PlayerManager.altWeaponTimer = new(1f / PlayerManager.altWeapon.fireRate);
             }
             else
             {
-                altWeapon = null;
+                PlayerManager.altWeapon = null;
             }
         }
         else if (item.name == "Bullet" || item.name == "Effect")
