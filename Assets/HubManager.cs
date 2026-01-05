@@ -35,7 +35,7 @@ public class HubManager : MonoBehaviour
             {
                 if(MenuManager.menuState == MenuManager.MenuState.Game)
                     GameObject.Find("Game Manager").GetComponent<MenuManager>().OpenInventoryMenu();
-                else
+                else if(MenuManager.menuState == MenuManager.MenuState.Inventory)
                     GameObject.Find("Game Manager").GetComponent<MenuManager>().ContinueGame();
             }
         }

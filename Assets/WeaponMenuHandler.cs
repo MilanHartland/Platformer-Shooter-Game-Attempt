@@ -66,8 +66,8 @@ public class WeaponMenuHandler : MonoBehaviour
     void OnValidate() { EditorApplication.delayCall += _OnValidate; }
     void _OnValidate()
     {
-        if (this == null || PrefabUtility.IsPartOfPrefabAsset(this)) return;
-        if (!transform.parent.Find("Background Panel")) return;
+        if (this == null || PrefabUtility.IsPartOfPrefabAsset(this) || !transform.parent.Find("Background Panel")) return;
+        
         panel = transform.parent.Find("Background Panel").GetComponent<RectTransform>();
 
         GridLayoutGroup layout = panel.GetComponent<GridLayoutGroup>();

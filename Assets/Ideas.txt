@@ -34,12 +34,14 @@ I- The edit menu is always open
 II- The edit menu needs to be opened manually
 
 
--Priority: weapon system, enemies, item collection system, maps, saves, hub/mission system, story, endings
+-Priority: weapon system, enemies, item collection system, maps, saves, hub/mission system, story, endings, upgrade system
 
-Things left to do: item pool, settings, items, maps, multiple enemy types, story, endings, balancing, triple inventory menu (weapons / alt weapons / specials), inventory organisation, tutorial, tooltip
+Things left to do: item pool, settings, items, maps, multiple enemy types, story, endings, balancing, tutorial
 Things to do when more things are added: save file variables
 
-Things added: death/respawning/item loss, gun selection system, HUD
+Currently to work on: settings
+
+Things added: death/respawning/item loss, gun selection system, HUD, tooltip, pooling
 
 
 

@@ -62,6 +62,12 @@ public static class SaveSystem
         foreach(Transform bullet in World.FindInactive("Bullet Inventory").transform){data.bulletInventory.Add(bullet.name);}
         foreach(Transform effect in World.FindInactive("Effect Inventory").transform){data.effectInventory.Add(effect.name);}
 
+        foreach(var pair in Keybinds.bindings)
+        {
+            data.keybindNames.Add(pair.Key);
+            data.keybindValues.Add(pair.Value);
+        }
+
         //Sets saveData to the new data
         saveData = data;
 
@@ -89,7 +95,7 @@ public static class SaveSystem
         DragDrop.slotItemPairs.Clear();
         DragDrop.slottedItems.Clear();
         DragDrop.usedSlots.Clear();
-        ModuleEffectHandler.appliedItems.Clear();
+        ModuleApplyHandler.appliedItems.Clear();
 
         //Gets the weapon inventory and slot parent, and unslots/deletes all weapons from them
         Transform weaponInventory = World.FindInactive("Weapon Inventory").transform;
@@ -116,7 +122,7 @@ public static class SaveSystem
             weapon.name = weaponData.weaponName;
             weapon.transform.SetParent(weaponInventory);
             weapon.GetComponent<WeaponMenuHandler>().ResetEditLayout();
-            ModuleEffectHandler.appliedItems.Add(weapon.name, new());
+            ModuleApplyHandler.appliedItems.Add(weapon.name, new());
 
             //Adds the bullets to the slots
             foreach(var bulletName in weaponData.bulletNames)
@@ -213,6 +219,16 @@ public static class SaveSystem
             obj.transform.SetParent(effectInventory);
             obj.transform.localScale = Vector3.one;
         }
+
+        Keybinds.bindings.Clear();
+        for(int i = 0; i < saveData.keybindNames.Count; i++)
+        {
+            Keybinds.bindings.Add(saveData.keybindNames[i], saveData.keybindValues[i]);
+            foreach(Transform obj in World.FindInactive("Keybind Parent").transform)
+            {
+                if(obj.TryGetComponent(out BindingsChanger bc)) bc.SetTextUI();
+            }
+        }
     }
 
     [System.Serializable]
@@ -222,6 +238,9 @@ public static class SaveSystem
         public List<WeaponData> weapons = new();
         public List<string> bulletInventory = new();
         public List<string> effectInventory = new();
+
+        public List<string> keybindNames = new();
+        public List<KeyCode> keybindValues = new();
         //ADD VARIABLES HERE FOR THINGS THAT NEED TO BE SAVED, SUCH AS:
         //Guns/items in storage
         //Guns/items in inventory

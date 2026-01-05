@@ -72,13 +72,35 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    IEnumerator PathfindCoroutine()
+    IEnumerator SightCoroutine()
     {
         while (true)
         {
             if(MenuManager.IsPaused) yield return null;
-
+            
             See();
+
+            if(seesPlayer && Vector2.Distance(pfCenter, player.position) <= followDist)
+            {
+                pathfinding.StopPathfinding();
+                if (weaponTimer.finished)
+                {
+                    Hitscan(transform.Find("Gun").position, player.position, weapon);
+                    weaponTimer.ResetTimer();
+                }
+            }
+
+            yield return null;
+        }
+    }
+
+    IEnumerator PathfindCoroutine()
+    {
+        StartCoroutine(SightCoroutine());
+
+        while (true)
+        {
+            if(MenuManager.IsPaused) yield return null;
 
             if (seesPlayer)
             {
@@ -86,15 +108,6 @@ public class EnemyBehaviour : MonoBehaviour
                 
                 if(Vector2.Distance(pfCenter, player.position) > followDist) 
                     pathfinding.Pathfind(player.position);
-                else 
-                {
-                    pathfinding.StopPathfinding();
-                    if (weaponTimer.finished)
-                    {
-                        ProjectileHandler.HitscanEnemy(transform.Find("Gun").position, player.position, weapon);
-                        weaponTimer.ResetTimer();
-                    }
-                }
             }
             else
             {
@@ -106,6 +119,11 @@ public class EnemyBehaviour : MonoBehaviour
                 else pathfinding.Pathfind(lastSeenPos);
             }
 
+            if(pathfinding.path.Count > 0)
+            {
+                Vector3 curPath0 = pathfinding.path[0];
+                while(pathfinding.isPathfinding && pathfinding.path.Count > 0 && pathfinding.path[0] == curPath0) yield return null;
+            }
             yield return null;
         }
     }
@@ -174,6 +192,17 @@ public class EnemyBehaviour : MonoBehaviour
 
         // if(transform.name == "Enemy")
             // print($"SeesPlayer: {seesPlayer}, Knowledge: {playerKnowledge}, Sight: {sightFactor}, Peer: {peerDebugLoggingValue}");
+    }
+
+    void Hitscan(Vector3 pos, Vector3 target, WeaponStats w)
+    {
+        Vector3 angle = Angle2D.GetAngle<Vector2>(pos, target, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
+        RaycastHit2D hit = Physics2D.Raycast(pos, angle, w.maxHitscanDistance, ~LayerMask.GetMask("Enemy"));
+
+        Vector3 endPos = hit ? hit.point : pos + angle * w.maxHitscanDistance;
+        Effects.SpawnLine(new(){pos, endPos}, Color.yellow, .05f, .1f);
+
+        if(hit.collider.TryGetComponent(out PlayerManager pm)) pm.hp -= w.damage;
     }
 
     #pragma warning disable

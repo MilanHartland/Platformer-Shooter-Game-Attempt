@@ -29,6 +29,8 @@ public class EnemyPathfinding : MonoBehaviour
     Vector3 pfCenterRelative => Vector3.down * (1f / transform.lossyScale.y);
     Vector3 pfCenter => transform.position + pfCenterRelative;
 
+    public bool isPathfinding;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -44,7 +46,7 @@ public class EnemyPathfinding : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C)) pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
     }
 
-    public void StopPathfinding(){rb.linearVelocityX = 0f; StopAllCoroutines();}
+    public void StopPathfinding(){rb.linearVelocityX = 0f; path = new(); StopAllCoroutines(); isPathfinding = false;}
 
     public void Pathfind(Vector3 target)
     {
@@ -68,6 +70,8 @@ public class EnemyPathfinding : MonoBehaviour
     void StartPathfindCoroutine(Vector3 target, bool getPath = true) { StartCoroutine(PathfindCoroutine(target, getPath)); }
     IEnumerator PathfindCoroutine(Vector3 target, bool getPath = true)
     {
+        isPathfinding = true;
+
         //Sets the bool to true and gets the path
         if (getPath) path = Pathfinding.Dijkstra(pfCenter, target, pathGraph);
 

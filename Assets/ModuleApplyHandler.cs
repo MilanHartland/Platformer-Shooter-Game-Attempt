@@ -2,18 +2,19 @@ using MilanUtils;
 using static MilanUtils.Variables;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine.SceneManagement;
 
-public class ModuleEffectHandler : MonoBehaviour
+public class ModuleApplyHandler : MonoBehaviour
 {
     public static Dictionary<string, List<string>> appliedItems = new();
+    public static Dictionary<string, WeaponStats> allWeapons = new();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         DragDrop.dragInAction += ApplyModule;
+        DragDrop.dragInAction += SlotIn;
         DragDrop.dragOutAction += ApplyModule;
+        DragDrop.dragOutAction += SlotOut;
 
         LoadAllResources();
 
@@ -21,7 +22,10 @@ public class ModuleEffectHandler : MonoBehaviour
         foreach(var obj in resources)
         {
             if(obj.Value.GetType() == typeof(WeaponStats))
+            {
                 appliedItems.Add(((WeaponStats)obj.Value).name, new());
+                allWeapons.Add(((WeaponStats)obj.Value).name, (WeaponStats)obj.Value);
+            }
         }
     }
 
@@ -65,63 +69,24 @@ public class ModuleEffectHandler : MonoBehaviour
             //This needs explanation because of hierarchy in the inspector, which is as follows: Weapon Inventory Parent > (Background Panel > (Slots > (Items)), Weapon)
             //If is currently in a slot (which is in Background Panel, which is in Inventory Panel), add this to the appliedItems of the 2nd parent (Inventory Parent)'s name without " Inventory Parent"
             //Otherwise, if the new "slot" does contain slot in the name (so isn't a parent), remove it from appliedItems of the 2nd parent
-            if (isSlotted)
-                appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Add(tag.name);
-            else if(slot.transform.name.Contains("Slot"))
-                appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Remove(tag.name);
+            // if (isSlotted)
+            //     appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Add(tag.name);
+            // else if(slot.transform.name.Contains("Slot"))
+            //     appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Remove(tag.name);
         }
     }
 
-    public enum EffectTrigger{Fire, Hit, TimeOut, PhysicsFrame}
-    public static void TriggerEffect(EffectTrigger trigger, WeaponStats weap, GameObject projectile = null)
+    void SlotIn(DragDrop item, DragDrop slot)
     {
-        foreach (string item in appliedItems[weap.name])
-        {
-            InfoTag tag = World.GameObjectWhere(x => {return x.GetComponent<InfoTag>() && x.GetComponent<InfoTag>().name == item;}, true).GetComponent<InfoTag>();
-            Rigidbody2D rb = null;
-            if(projectile) rb = projectile.GetComponent<Rigidbody2D>();
+        InfoTag tag = item.GetComponent<InfoTag>();
+        if (DragDrop.slottedItems.Contains(item) && !item.name.Contains("Weapon"))
+            appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Add(tag.name);
+    }
 
-            if (trigger == EffectTrigger.Fire)
-            {
-                switch (item)
-                {
-                    case "Reverse Gravity":
-                        rb.gravityScale = -1f;
-                        break;
-                    case "Bounce":
-                        rb.sharedMaterial = (PhysicsMaterial2D)resources["Bounce Material"];
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else if (trigger == EffectTrigger.Hit)
-            {
-                switch (item)
-                {
-                    default:
-                        break;
-                }
-            }
-            else if (trigger == EffectTrigger.TimeOut)
-            {
-                switch (item)
-                {
-                    default:
-                        break;
-                }
-            }
-            else if (trigger == EffectTrigger.PhysicsFrame)
-            {
-                switch (item)
-                {
-                    case "Exponential Speed":
-                        rb.linearVelocity = (rb.linearVelocity.magnitude + tag.value) * rb.linearVelocity.normalized;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
+    void SlotOut(DragDrop item, DragDrop slot)
+    {
+        InfoTag tag = item.GetComponent<InfoTag>();
+        if(slot.transform.name.Contains("Slot") && !item.name.Contains("Weapon"))
+            appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Remove(tag.name);
     }
 }

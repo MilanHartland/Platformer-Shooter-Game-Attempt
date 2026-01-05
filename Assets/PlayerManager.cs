@@ -3,9 +3,7 @@ using System.Collections;
 using UnityEngine;
 using MilanUtils;
 using static MilanUtils.Variables;
-using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
-using System.Linq;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -20,6 +18,8 @@ public class PlayerManager : MonoBehaviour
     public float hp {get; set;}
     public static bool isDead;
 
+    Queue<GameObject> bulletPool = new();
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -28,6 +28,27 @@ public class PlayerManager : MonoBehaviour
 
         hp = maxHP;
         isDead = false;
+
+        StartCoroutine(FillBulletPool(100));
+
+        SceneManager.activeSceneChanged += DisableAllBullets;
+
+        Keybinds.bindings.Add("Respawn", Keybinds.interact);
+    }
+
+    private void DisableAllBullets(Scene arg0, Scene arg1){foreach(var obj in bulletPool){obj.SetActive(false);}}
+
+    IEnumerator FillBulletPool(int count)
+    {
+        Transform bulletParent = GameObject.Find("Bullet Parent").transform;
+        for(int i = 0; i < count; i++)
+        {
+            GameObject obj = Instantiate(prefabs["Bullet"]);
+            obj.transform.SetParent(bulletParent);
+            obj.SetActive(false);
+            bulletPool.Enqueue(obj);
+            yield return null;
+        }
     }
 
     // Update is called once per frame
@@ -45,18 +66,18 @@ public class PlayerManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            if(mainWeaponBullets <= 0) Reload(mainWeapon);
-            else if(altWeaponBullets <= 0) Reload(altWeapon);
+            if(mainWeaponBullets <= 0 && mainWeapon != null) Reload(mainWeapon);
+            else if(altWeaponBullets <= 0 && altWeapon != null) Reload(altWeapon);
         }
         
-        if (mainWeapon != null && mainWeaponBullets > 0 && (Input.GetMouseButtonDown(0) || (Input.GetMouseButton(0) && mainWeapon.automatic)) && mainWeaponTimer)
+        if (mainWeapon != null && mainWeaponBullets > 0 && (Input.GetKeyDown(Keybinds.shoot) || (Input.GetKey(Keybinds.shoot) && mainWeapon.automatic)) && mainWeaponTimer)
         {
             mainWeaponTimer.ResetTimer();
             mainWeaponBullets--;
             FireWeapon(mainWeapon);
         }
 
-        if (altWeapon != null && altWeaponBullets > 0 && (Input.GetMouseButtonDown(1) || (Input.GetMouseButton(1) && altWeapon.automatic)) && altWeaponTimer)
+        if (altWeapon != null && altWeaponBullets > 0 && (Input.GetKeyDown(Keybinds.alt) || (Input.GetKey(Keybinds.alt) && altWeapon.automatic)) && altWeaponTimer)
         {
             altWeaponTimer.ResetTimer();
             altWeaponBullets--;
@@ -64,15 +85,14 @@ public class PlayerManager : MonoBehaviour
         }
     }
     
-    void Reload(WeaponStats weapon){StartCoroutine(ReloadCouroutine(weapon));}
-    IEnumerator ReloadCouroutine(WeaponStats weapon)
+    void Reload(WeaponStats w){StartCoroutine(ReloadCouroutine(w));}
+    IEnumerator ReloadCouroutine(WeaponStats w)
     {
-        print("reload");
         isReloading = true;
-        yield return GetWaitForSeconds(weapon.reloadTime);
+        yield return GetWaitForSeconds(w.reloadTime);
         isReloading = false;
-        if(weapon == mainWeapon) mainWeaponBullets = mainWeapon.magazineSize;
-        else if(weapon == altWeapon) altWeaponBullets = altWeapon.magazineSize;
+        if(w == mainWeapon) mainWeaponBullets = mainWeapon.magazineSize;
+        else if(w == altWeapon) altWeaponBullets = altWeapon.magazineSize;
     }
 
     //Sets all equipped items to the list
@@ -81,7 +101,7 @@ public class PlayerManager : MonoBehaviour
         //Clears the list, then for each weapon, try to get the object and its copy (because spawner). If no copy or slottedItems does not contain the copy, continue.
         //Add the normal weapon to equippedItems, then for each item equipped to it, get the object. If it is null, throw an error, otherwise, add it to equippedItems
         equippedItems.Clear();
-        foreach(var pair in ModuleEffectHandler.appliedItems)
+        foreach(var pair in ModuleApplyHandler.appliedItems)
         {
             GameObject keyObj = World.FindInactive(pair.Key);
             GameObject keyCopyObj = World.FindInactive(pair.Key + " Copy");
@@ -116,7 +136,7 @@ public class PlayerManager : MonoBehaviour
             
             DragDrop.UnSlot(obj);
             Destroy(obj.transform.parent.gameObject);
-            ModuleEffectHandler.appliedItems.Remove(obj.name);
+            ModuleApplyHandler.appliedItems.Remove(obj.name);
             mainWeapon = null;
             altWeapon = null;
         }
@@ -144,11 +164,11 @@ public class PlayerManager : MonoBehaviour
         var sceneLoading = SceneManager.LoadSceneAsync(1);
         sceneLoading.allowSceneActivation = false;
 
-        bool pressedE = false;
-        while (sceneLoading.progress < .9f || !pressedE) 
+        bool pressedRespawn = false;
+        while (sceneLoading.progress < .9f || !pressedRespawn) 
         {
-            if(Input.GetKeyDown(KeyCode.E)) 
-                pressedE = true; 
+            if(Input.GetKeyDown(Keybinds.bindings["Respawn"])) 
+                pressedRespawn = true; 
             yield return null;
         }
 
@@ -187,17 +207,13 @@ public class PlayerManager : MonoBehaviour
 
         Effects.CreateTempParticleSystem(prefabs["Simple Muzzle Flash"], player.transform.Find("Gun").position, player.transform.Find("Gun").rotation);
 
-        if(w.firingType == WeaponStats.FiringType.Hitscan)
-        {
-            ProjectileHandler.Hitscan(w);
-            return;
-        }
-
-        GameObject obj = Instantiate(prefabs["Bullet"]);
+        GameObject obj = bulletPool.Dequeue();
+        obj.SetActive(true);
         obj.transform.position = player.transform.Find("Gun").position;
         Angle2D.TurnTo(obj, World.mousePos, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
         obj.GetComponent<Rigidbody2D>().linearVelocity = obj.transform.up * w.bulletSpeed;
-        obj.GetComponent<ProjectileHandler>().shotBy = w;
-        Destroy(obj, 5f);
+        obj.GetComponent<BulletBehaviour>().shotBy = w;
+        obj.GetComponent<BulletBehaviour>().Disable(5f);
+        bulletPool.Enqueue(obj);
     }
 }
