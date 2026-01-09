@@ -442,7 +442,7 @@ Transform:
   m_GameObject: {fileID: 486738410}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 11.5, z: 0}
+  m_LocalPosition: {x: 4, y: 15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -939,6 +939,7 @@ MonoBehaviour:
   floorBounds:
     m_Center: {x: 0, y: -1.05, z: 0}
     m_Extent: {x: 0.45, y: 0.05, z: 0}
+  isPathfinding: 0
   drawGraphGizmos: 0
   drawPathGizmos: 1
 --- !u!114 &1137754141

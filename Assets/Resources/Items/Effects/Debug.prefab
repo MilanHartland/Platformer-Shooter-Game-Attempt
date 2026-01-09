@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6821772724731424649
+--- !u!1 &4231970883099005116
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,44 +8,44 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6414713191622329797}
-  - component: {fileID: 4824315384260131448}
-  - component: {fileID: 8010226236274371871}
-  - component: {fileID: 4487117441582553344}
-  - component: {fileID: 3295290874753115178}
+  - component: {fileID: 1664126743290915005}
+  - component: {fileID: 3322084207275565299}
+  - component: {fileID: 1622889189143952307}
+  - component: {fileID: 114815752301416296}
+  - component: {fileID: 4142479869061291329}
   m_Layer: 5
-  m_Name: Exponential Speed
+  m_Name: Debug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &6414713191622329797
+--- !u!224 &1664126743290915005
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6821772724731424649}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_GameObject: {fileID: 4231970883099005116}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 100, y: -100}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &4824315384260131448
+--- !u!114 &3322084207275565299
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6821772724731424649}
+  m_GameObject: {fileID: 4231970883099005116}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55bbc1a1e71bb154c949903024716c56, type: 3}
@@ -63,28 +63,28 @@ MonoBehaviour:
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   parent: {fileID: 0}
   ___editorBoolForShowingThisIsACopy: 0
---- !u!222 &8010226236274371871
+--- !u!222 &1622889189143952307
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6821772724731424649}
+  m_GameObject: {fileID: 4231970883099005116}
   m_CullTransparentMesh: 1
---- !u!114 &4487117441582553344
+--- !u!114 &114815752301416296
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6821772724731424649}
+  m_GameObject: {fileID: 4231970883099005116}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.2320754, b: 0.29955083, a: 1}
+  m_Color: {r: 0.435849, g: 0.46413577, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -101,23 +101,40 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3295290874753115178
+--- !u!114 &4142479869061291329
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6821772724731424649}
+  m_GameObject: {fileID: 4231970883099005116}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce3ff3701737db447b61b2575437f15c, type: 3}
+  m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borderColor: {r: 0.5019608, g: 0, b: 1, a: 1}
-  name: Exponential Speed
-  description: Increases speed every frame
-  otherInfo: Effect
-  value: 3
-  priority: 5
-  changeColorWhenHoveredOver: 0
-  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+  type: 1
+  name: Debug
+  Description: 'Automatic
+
+    +10000% damage
+
+    +10000% bullets per second
+
+    +10000%
+    magazine size
+
+    -100% reload time
+
+    -100% spread
+
+    +1000% bullet speed'
+  modifiers:
+    forceNonAutomatic: 0
+    forceAutomatic: 1
+    damageModifier: 101
+    fireRateModifier: 101
+    magazineModifier: 101
+    reloadModifier: 0
+    spreadModifier: 0
+    speedModifier: 11

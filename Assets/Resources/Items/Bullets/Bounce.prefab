@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6879189027153280698}
   - component: {fileID: 915095414364064871}
   - component: {fileID: 3862820777010339488}
-  - component: {fileID: 4649762357459847993}
+  - component: {fileID: 8437180143325598139}
   m_Layer: 5
   m_Name: Bounce
   m_TagString: Untagged
@@ -27,7 +27,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4833115732223099543}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -101,7 +101,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4649762357459847993
+--- !u!114 &8437180143325598139
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -110,14 +110,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 4833115732223099543}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce3ff3701737db447b61b2575437f15c, type: 3}
+  m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  borderColor: {r: 0.5019608, g: 0, b: 1, a: 1}
-  name: Bounce
-  description: Bounces the bullet on hit
-  otherInfo: Bullet
-  value: 6
-  priority: 5
-  changeColorWhenHoveredOver: 0
-  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+  type: 0
+  name: 
+  Description: 
+  modifiers:
+    forceNonAutomatic: 0
+    forceAutomatic: 0
+    damageModifier: 1
+    fireRateModifier: 1
+    magazineModifier: 1
+    reloadModifier: 1
+    spreadModifier: 1
+    speedModifier: 1

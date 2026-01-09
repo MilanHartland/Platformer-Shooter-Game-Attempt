@@ -21,10 +21,10 @@ public class GuiManager : MonoBehaviour
     {
         hpTMP.text = $"{playerManager.hp} / {playerManager.maxHP}";
         
-        mainMagazineTMP.gameObject.SetActive(PlayerManager.mainWeapon != null);
-        altMagazineTMP.gameObject.SetActive(PlayerManager.altWeapon != null);
+        mainMagazineTMP.gameObject.SetActive(PlayerManager.baseMainWeapon != null);
+        altMagazineTMP.gameObject.SetActive(PlayerManager.baseAltWeapon != null);
         
-        if(PlayerManager.mainWeapon != null) mainMagazineTMP.text = $"{PlayerManager.mainWeaponBullets} / {PlayerManager.mainWeapon.magazineSize}";
-        if(PlayerManager.altWeapon != null) altMagazineTMP.text = $"{PlayerManager.altWeaponBullets} / {PlayerManager.altWeapon.magazineSize}";
+        if(PlayerManager.baseMainWeapon != null) mainMagazineTMP.text = $"{PlayerManager.mainWeaponBullets} / {PlayerManager.mainWeapon.magazineSize}";
+        if(PlayerManager.baseAltWeapon != null) altMagazineTMP.text = $"{PlayerManager.altWeaponBullets} / {PlayerManager.altWeapon.magazineSize}";
     }
 }

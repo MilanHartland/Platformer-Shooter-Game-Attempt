@@ -1,6 +1,8 @@
 using UnityEngine;
 using MilanUtils;
 
+#pragma warning disable CS0660
+#pragma warning disable CS0661
 [CreateAssetMenu]
 public class WeaponStats : ScriptableObject
 {
@@ -13,12 +15,35 @@ public class WeaponStats : ScriptableObject
     [Tooltip("The amount of bullets in a single magazine")] public int magazineSize;
     [Tooltip("The time it takes to reload")] public float reloadTime;
     [Tooltip("The spread in degrees")] public float spread;
-    [Tooltip("The type of firing the gun does\n\nProjectile: shoots a physical projectile with gravity\nHitscan: shoots a raycast")] public FiringType firingType;
+    [Tooltip("The type of firing the gun does\n\nProjectile: shoots a physical projectile with gravity\nHitscan: shoots a raycast. Should only be used for enemy guns")] public FiringType firingType;
     [Tooltip("The speed of the bullet"), ShowIf(_enumName: "firingType", "Projectile")] public float bulletSpeed;
     [Tooltip("The maximum distance the hitscan can go"), ShowIf(_enumName: "firingType", "Hitscan"), SetName("Max Distance")] public float maxHitscanDistance;
 
+    public void SetValues(WeaponStats w)
+    {name = w.name; automatic = w.automatic; damage = w.damage; fireRate = w.fireRate; magazineSize = w.magazineSize; reloadTime = w.reloadTime; spread = w.spread; bulletSpeed = w.bulletSpeed;}
+
     void OnValidate()
     {
-        if(name == string.Empty) name = ((UnityEngine.Object)this).name;
+        if(name == string.Empty) name = ((Object)this).name;
     }
+
+    public WeaponStats AddModifiers(ItemInfo.WeaponModifiers mod)
+    {
+        WeaponStats w = CreateInstance<WeaponStats>();
+        w.SetValues(this);
+
+        if(mod.forceAutomatic) w.automatic = true;
+        else if(mod.forceNonAutomatic) w.automatic = false;
+        
+        w.damage *= mod.damageModifier;
+        w.fireRate *= mod.fireRateModifier;
+        w.magazineSize = Mathf.FloorToInt(w.magazineSize * mod.magazineModifier);
+        w.reloadTime *= mod.reloadModifier;
+        w.spread *= mod.spreadModifier;
+        w.bulletSpeed *= mod.speedModifier;
+        return w;
+    }
+
+    public static bool operator ==(WeaponStats a, WeaponStats b){return ReferenceEquals(a, b) || (!ReferenceEquals(a, null) && !ReferenceEquals(b, null) && a.name == b.name);;}
+    public static bool operator !=(WeaponStats a, WeaponStats b){return !(a == b);}
 }

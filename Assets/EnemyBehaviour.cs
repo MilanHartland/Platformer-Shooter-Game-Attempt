@@ -203,6 +203,7 @@ public class EnemyBehaviour : MonoBehaviour
         Effects.SpawnLine(new(){pos, endPos}, Color.yellow, .05f, .1f);
 
         if(hit.collider.TryGetComponent(out PlayerManager pm)) pm.hp -= w.damage;
+        DamageText.SpawnDamageText(hit.collider.gameObject, w.damage);
     }
 
     #pragma warning disable

@@ -7,9 +7,11 @@ using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviour
 {
-    public static WeaponStats mainWeapon, altWeapon;
-    public static Timer mainWeaponTimer, altWeaponTimer;
-    public static int mainWeaponBullets, altWeaponBullets;
+    public static WeaponStats mainWeapon => GetWeaponWithModifiers(baseMainWeapon);
+    public static WeaponStats altWeapon => GetWeaponWithModifiers(baseAltWeapon);
+    public static WeaponStats baseMainWeapon, baseAltWeapon, heldWeapon;
+    public static Timer heldWeaponTimer;
+    public static int mainWeaponBullets, altWeaponBullets, heldWeaponBullets;
     public static bool isReloading;
 
     public static List<GameObject> equippedItems = new();
@@ -32,8 +34,6 @@ public class PlayerManager : MonoBehaviour
         StartCoroutine(FillBulletPool(100));
 
         SceneManager.activeSceneChanged += DisableAllBullets;
-
-        Keybinds.bindings.Add("Respawn", Keybinds.interact);
     }
 
     private void DisableAllBullets(Scene arg0, Scene arg1){foreach(var obj in bulletPool){obj.SetActive(false);}}
@@ -59,40 +59,79 @@ public class PlayerManager : MonoBehaviour
         
         if(MenuManager.IsPaused || (MissionManager.inHub && !HubManager.inShootingArea) || isDead || isReloading) return;
 
+        //If no heldweapon, or heldweapon is not main/alt weapon, equip existing main/alt weapon
+        if(heldWeapon == null || (heldWeapon != mainWeapon && heldWeapon != altWeapon))
+        {
+            if(mainWeapon != null) EquipWeapon(mainWeapon);
+            else if(altWeapon != null) EquipWeapon(altWeapon);
+        }
+
+        //If pressing equip and not reloading, if possible, switch guns
+        if (Input.GetKeyDown(Keybinds.equip) && !isReloading)
+        {
+            if(heldWeapon == mainWeapon && altWeapon != null) 
+                EquipWeapon(altWeapon);
+            else if(heldWeapon == altWeapon && mainWeapon != null)
+                EquipWeapon(mainWeapon);
+        }
+
+        //If dead, start respawn coroutine
         if(hp <= 0f)
-        {
             StartCoroutine(RespawnCoroutine());
-        }
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            if(mainWeaponBullets <= 0 && mainWeapon != null) Reload(mainWeapon);
-            else if(altWeaponBullets <= 0 && altWeapon != null) Reload(altWeapon);
-        }
-        
-        if (mainWeapon != null && mainWeaponBullets > 0 && (Input.GetKeyDown(Keybinds.shoot) || (Input.GetKey(Keybinds.shoot) && mainWeapon.automatic)) && mainWeaponTimer)
-        {
-            mainWeaponTimer.ResetTimer();
-            mainWeaponBullets--;
-            FireWeapon(mainWeapon);
-        }
+        //If pressing reload, reload
+        if (Input.GetKeyDown(Keybinds.reload) && !isReloading && heldWeapon != null)
+            ReloadInvoke();
 
-        if (altWeapon != null && altWeaponBullets > 0 && (Input.GetKeyDown(Keybinds.alt) || (Input.GetKey(Keybinds.alt) && altWeapon.automatic)) && altWeaponTimer)
+        //If heldweapon, has bullets, and pressing shoot or holding shoot with automatic, and shooting cooldown over, decrease bullets, reset timer, and fire weapon
+        if(heldWeapon != null && heldWeaponBullets > 0 && (Input.GetKeyDown(Keybinds.shoot) || Input.GetKey(Keybinds.shoot) && heldWeapon.automatic) && heldWeaponTimer)
         {
-            altWeaponTimer.ResetTimer();
-            altWeaponBullets--;
-            FireWeapon(altWeapon);
+            heldWeaponTimer.ResetTimer();
+
+            if(heldWeapon == mainWeapon) mainWeaponBullets--;
+            else altWeaponBullets--;
+
+            heldWeaponBullets--;
+            FireWeapon(heldWeapon);
         }
     }
     
-    void Reload(WeaponStats w){StartCoroutine(ReloadCouroutine(w));}
-    IEnumerator ReloadCouroutine(WeaponStats w)
+    //Sets heldweapon and heldweapontimer. If it's mainweapon, set weaponbullets to mainweaponbullets, otherwise altweaponbullets. Then, reset and start weapon cooldown timer
+    void EquipWeapon(WeaponStats weap)
+    {        
+        heldWeapon = weap;
+        heldWeaponTimer = new(1f / weap.fireRate);
+        
+        if(weap == mainWeapon)
+            heldWeaponBullets = mainWeaponBullets;
+        else heldWeaponBullets = altWeaponBullets;
+
+        heldWeaponTimer.ResetTimer();
+        heldWeaponTimer.StartTimer();
+    }
+
+    public static WeaponStats GetWeaponWithModifiers(WeaponStats weap)
     {
-        isReloading = true;
-        yield return GetWaitForSeconds(w.reloadTime);
+        if(weap == null) return null;
+        
+        WeaponStats w = ScriptableObject.CreateInstance<WeaponStats>();
+        w.SetValues(weap);
+        foreach(var item in ModuleApplyHandler.appliedItems[weap.name])
+        {
+            w = w.AddModifiers(ModuleApplyHandler.allModifiers[item]);
+        }
+        return w;
+    }
+    
+    void ReloadInvoke(){isReloading = true; Invoke(nameof(Reload), heldWeapon.reloadTime);}
+    void Reload()
+    {
         isReloading = false;
-        if(w == mainWeapon) mainWeaponBullets = mainWeapon.magazineSize;
-        else if(w == altWeapon) altWeaponBullets = altWeapon.magazineSize;
+
+        if(heldWeapon == mainWeapon) mainWeaponBullets = mainWeapon.magazineSize;
+        else if(heldWeapon == altWeapon) altWeaponBullets = altWeapon.magazineSize;
+
+        heldWeaponBullets = heldWeapon.magazineSize;
     }
 
     //Sets all equipped items to the list
@@ -137,8 +176,9 @@ public class PlayerManager : MonoBehaviour
             DragDrop.UnSlot(obj);
             Destroy(obj.transform.parent.gameObject);
             ModuleApplyHandler.appliedItems.Remove(obj.name);
-            mainWeapon = null;
-            altWeapon = null;
+            baseMainWeapon = null;
+            baseAltWeapon = null;
+            heldWeapon = null;
         }
         equippedItems.Clear();
     }
@@ -157,9 +197,6 @@ public class PlayerManager : MonoBehaviour
         isDead = true;
         DeleteEquippedItems();
         Effects.TurnIntoParticles(gameObject, transform.position, dontThrowNonReadException: true);
-        var projList = World.AllGameObjectsWhere(x => {return x.gameObject.layer == LayerMask.NameToLayer("Projectile");});
-
-        for(int i = projList.Count - 1; i >= 0; i--){Destroy(projList[i]);}
 
         var sceneLoading = SceneManager.LoadSceneAsync(1);
         sceneLoading.allowSceneActivation = false;
@@ -167,7 +204,7 @@ public class PlayerManager : MonoBehaviour
         bool pressedRespawn = false;
         while (sceneLoading.progress < .9f || !pressedRespawn) 
         {
-            if(Input.GetKeyDown(Keybinds.bindings["Respawn"])) 
+            if(Input.GetKeyDown(Keybinds.bindings["Interact"])) 
                 pressedRespawn = true; 
             yield return null;
         }
@@ -179,10 +216,12 @@ public class PlayerManager : MonoBehaviour
         LeanTween.moveY(Camera.main.gameObject, Camera.main.transform.position.y + transVars.camFlyHeight, transVars.camFlyTime).setEaseInQuad();
         yield return GetWaitForSeconds(transVars.camFlyTime);
 
+        hp = maxHP;
         sceneLoading.allowSceneActivation = true;
         yield return sceneLoading;
         Camera.main.transform.position = GameObject.Find("Camera Respawn Enter Point").transform.position;
         player.position = GameObject.Find("Player Respawn Point").transform.position;
+        GameObject.Find("Deposit Box").transform.position = GameObject.Find("Deposit Box Teleport Point").transform.position;
 
         GetComponent<SpriteRenderer>().enabled = true;
         GetComponent<BoxCollider2D>().enabled = true;
@@ -198,7 +237,6 @@ public class PlayerManager : MonoBehaviour
 
         Camera.main.GetComponent<CameraFollow>().enabled = true;
         Camera.main.GetComponent<CameraFollow>().ImportFollowProfile("Hub Profile");
-        hp = maxHP;
     }
 
     void FireWeapon(WeaponStats w)
@@ -209,6 +247,8 @@ public class PlayerManager : MonoBehaviour
 
         GameObject obj = bulletPool.Dequeue();
         obj.SetActive(true);
+        obj.GetComponent<TrailRenderer>().Clear();
+        obj.GetComponent<TrailRenderer>().enabled = false;
         obj.transform.position = player.transform.Find("Gun").position;
         Angle2D.TurnTo(obj, World.mousePos, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
         obj.GetComponent<Rigidbody2D>().linearVelocity = obj.transform.up * w.bulletSpeed;

@@ -12,7 +12,7 @@ public class MissionManager : MonoBehaviour
 {
     List<GameObject> allItemCrates = new();
     List<GameObject> allDroppedItems = new();
-    GameObject depositBox, lidMask, gunBench;
+    GameObject depositBox, lidMask;
     Vector3 sceneEnterPoint, playerSpawnPoint, boxTeleportPoint;
     float boxStopHeight;
     

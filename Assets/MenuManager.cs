@@ -5,6 +5,7 @@ using UnityEngine.Rendering.PostProcessing;
 using MilanUtils;
 using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
+using System;
 
 public class MenuManager : MonoBehaviour
 {
@@ -39,6 +40,14 @@ public class MenuManager : MonoBehaviour
         settingsButton.onClick.AddListener(OpenSettingsMenu);
         quitButton.onClick.AddListener(Application.Quit);
 
+        if(World.TryFindInactive("DragDrop Hold Toggle", out GameObject ddHoldToggle)) 
+        {
+            ddHoldToggle.GetComponent<Toggle>().onValueChanged.AddListener(SettingsDragDropToggle);
+            ddHoldToggle.GetComponent<Toggle>().isOn = World.FindInactive("Bullet Inventory").GetComponent<DragDrop>().holdToDrag;
+            SettingsDragDropToggle(World.FindInactive("Bullet Inventory").GetComponent<DragDrop>().holdToDrag);
+        }
+        if(World.TryFindInactive("Reset Save Button", out GameObject rsb)){rsb.GetComponent<Button>().onClick.AddListener(SaveSystem.ResetSave);}
+
         if(isMainMenu) menuState = MenuState.MainMenu;
         else ContinueGame();
     }
@@ -48,7 +57,7 @@ public class MenuManager : MonoBehaviour
     {
         if(isMainMenu) return;
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(Keybinds.pause))
         {
             switch(menuState)
             {
@@ -77,6 +86,7 @@ public class MenuManager : MonoBehaviour
         PauseGame();
         pauseMenu.SetActive(true);
         menuState = MenuState.Pause;
+        Camera.main.GetComponent<PostProcessVolume>().profile = pauseProfile;
     }
 
     async Task StartGame()
@@ -113,7 +123,11 @@ public class MenuManager : MonoBehaviour
         pauseMenu.SetActive(false);
         settingsMenu.SetActive(false);
         hud.SetActive(false);
-        Camera.main.GetComponent<PostProcessVolume>().profile = pauseProfile;
         DragDrop.StopDragging();
+    }
+
+    private void SettingsDragDropToggle(bool isToggledOn)
+    {
+        World.AllGameObjects(true, typeof(DragDrop)).ForEach(x => {x.GetComponent<DragDrop>().holdToDrag = isToggledOn;});
     }
 }

@@ -6,14 +6,16 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(DragDrop))]
-public class WeaponMenuHandler : MonoBehaviour
+public class WeaponInfo : MonoBehaviour
 {
+    public string weaponName;
     public int bulletSlots;
     public int effectSlots;
     RectTransform panel;
 
     [InspectorButton("Create Edit Panel")]
-    void EditorResetEditLayout() { Variables.LoadAllResources(); ResetEditLayout(); }
+    void EditorResetEditLayout() { Variables.LoadAllResources(); transform.SetParent(transform.parent.parent); 
+    DestroyImmediate(transform.parent.Find(transform.name + " Inventory Parent").gameObject); ResetEditLayout(); }
     
     public void ResetEditLayout()
     {
@@ -49,7 +51,6 @@ public class WeaponMenuHandler : MonoBehaviour
             obj.transform.SetAsLastSibling();
             obj.transform.localScale = Vector3.one;
         }
-
         for (int i = 0; i < effectSlots; i++)
         {
             GameObject obj = Instantiate(Variables.prefabs["Effect Slot"]);

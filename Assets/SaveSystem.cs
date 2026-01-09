@@ -2,17 +2,18 @@ using System.Collections.Generic;
 using System.IO;
 using MilanUtils;
 using UnityEngine;
+using UnityEngine.UI;
 
 //The reason BigEndian is used for encoding instead of nothing is because it looks fancy
 public static class SaveSystem
 {
-    static SaveData saveData = SaveData.New;
+    static SaveData saveData = new();
 
     static void print(object obj){Debug.Log(obj);}
 
     public static void SetSaveData()
     {
-        saveData = SaveData.New;
+        saveData = new();
         SaveData data = new();
 
         //For each slotitempair, if it is a weapon/altweapon/movement slot item, add it to equippedItems
@@ -59,19 +60,22 @@ public static class SaveSystem
             data.weapons.Add(weaponData);
         }
 
+        //Adds the bullet/effect names to the lists
         foreach(Transform bullet in World.FindInactive("Bullet Inventory").transform){data.bulletInventory.Add(bullet.name);}
         foreach(Transform effect in World.FindInactive("Effect Inventory").transform){data.effectInventory.Add(effect.name);}
 
+        //Adds the keybind names and bindings to the lists
         foreach(var pair in Keybinds.bindings)
         {
             data.keybindNames.Add(pair.Key);
             data.keybindValues.Add(pair.Value);
         }
 
+        //Sets the 'hold to drag' toggle
+        data.ddHoldToggle = World.FindInactive("DragDrop Hold Toggle").GetComponent<Toggle>().isOn;
+
         //Sets saveData to the new data
         saveData = data;
-
-        //ADD FUNCTIONALITY HERE TO SET THE SAVEDATA VARIABLES OF ALL THINGS THAT NEED TO BE SAVED
     }
 
     public static void SaveToFile(bool runSetSaveData = true)
@@ -121,7 +125,7 @@ public static class SaveSystem
             //Sets the weapon name to avoid it containing (Clone), sets the parent, generates an edit layout, and adds it back to appliedItems
             weapon.name = weaponData.weaponName;
             weapon.transform.SetParent(weaponInventory);
-            weapon.GetComponent<WeaponMenuHandler>().ResetEditLayout();
+            weapon.GetComponent<WeaponInfo>().ResetEditLayout();
             ModuleApplyHandler.appliedItems.Add(weapon.name, new());
 
             //Adds the bullets to the slots
@@ -220,6 +224,7 @@ public static class SaveSystem
             obj.transform.localScale = Vector3.one;
         }
 
+        //Clears the keybind list, then adds the names and bindings back, then it finds the associated UI object to run SetTextUI on the BindingsChanger
         Keybinds.bindings.Clear();
         for(int i = 0; i < saveData.keybindNames.Count; i++)
         {
@@ -229,6 +234,19 @@ public static class SaveSystem
                 if(obj.TryGetComponent(out BindingsChanger bc)) bc.SetTextUI();
             }
         }
+
+        //Sets the toggle state
+        World.FindInactive("DragDrop Hold Toggle").GetComponent<Toggle>().isOn = saveData.ddHoldToggle;
+    }
+
+    public static void ResetSave()
+    {
+        saveData.equippedItems = new();
+        saveData.weapons = new();
+        saveData.bulletInventory = new();
+        saveData.effectInventory = new();
+        saveData.ddHoldToggle = true;
+        SaveToFile(false);
     }
 
     [System.Serializable]
@@ -241,13 +259,10 @@ public static class SaveSystem
 
         public List<string> keybindNames = new();
         public List<KeyCode> keybindValues = new();
-        //ADD VARIABLES HERE FOR THINGS THAT NEED TO BE SAVED, SUCH AS:
-        //Guns/items in storage
-        //Guns/items in inventory
+
+        public bool ddHoldToggle = true;
 
         public SaveData(){}
-
-        public static SaveData New = new();
 
         [System.Serializable]
         public class WeaponData

@@ -2,6 +2,7 @@ using UnityEngine;
 using MilanUtils;
 using System.Collections;
 
+[RequireComponent(typeof(TrailRenderer))]
 public class BulletBehaviour : MonoBehaviour
 {
     public WeaponStats shotBy;
@@ -14,11 +15,16 @@ public class BulletBehaviour : MonoBehaviour
         trailRend = GetComponent<TrailRenderer>();
     }
 
+    void LateUpdate()
+    {
+        if(trailRend.enabled == false) trailRend.enabled = true;
+    }
+
     void OnEnable()
     {
         if(!trailRend) Start();
         
-        StopCoroutine("DisableCoroutine");
+        StopCoroutine(nameof(DisableCoroutine));
     }
 
     void OnDisable()
@@ -29,14 +35,15 @@ public class BulletBehaviour : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D coll)
     {
-        if(coll.gameObject.tag == "Map")
+        if(coll.gameObject.CompareTag("Map"))
         {
             gameObject.SetActive(false);
         }
-        else if(coll.gameObject.tag == "Enemy")
+        else if(coll.gameObject.CompareTag("Enemy"))
         {
             EnemyBehaviour enemyBehaviour = coll.gameObject.GetComponent<EnemyBehaviour>();
             enemyBehaviour.hp -= shotBy.damage;
+            DamageText.SpawnDamageText(coll.gameObject, shotBy.damage);
             
             gameObject.SetActive(false);
         }
