@@ -7,6 +7,7 @@ public class ModuleApplyHandler : MonoBehaviour
 {
     public static Dictionary<string, List<string>> appliedItems = new();
     public static Dictionary<string, WeaponStats> allWeapons = new();
+    public static Dictionary<string, ItemInfo> allItems = new();
     public static Dictionary<string, ItemInfo.WeaponModifiers> allModifiers = new();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -29,6 +30,7 @@ public class ModuleApplyHandler : MonoBehaviour
             }
             else if(obj.Value.GetType() == typeof(GameObject) && ((GameObject)obj.Value).TryGetComponent(out ItemInfo ii))
             {
+                allItems.Add(((GameObject)obj.Value).name, ii);
                 allModifiers.Add(((GameObject)obj.Value).name, ii.modifiers);
             }
         }
