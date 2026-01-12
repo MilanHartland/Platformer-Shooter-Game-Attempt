@@ -119,7 +119,7 @@ public class MissionManager : MonoBehaviour
             else depositBoxButtonUI.GetComponent<TextMeshProUGUI>().text = "[E] Extract";
         }
 
-        if(Input.GetKeyDown(KeyCode.E))
+        if(Input.GetKeyDown(Keybinds.interact))
         {
             //Gets the closest crate, checks if it is closer than pickUpDistance and pressing the pick up button
             GameObject closestCrate = Lists.GetClosest(allItemCrates, player.gameObject);

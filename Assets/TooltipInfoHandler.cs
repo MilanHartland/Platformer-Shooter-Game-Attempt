@@ -22,7 +22,8 @@ public class TooltipInfoHandler : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if((Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0) || MenuManager.menuState != MenuManager.MenuState.Inventory) return; //If mouse didn't move, don't change anything
+        if((Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0 && !Input.GetKeyDown(Keybinds.bindings["Upgrade"])) || MenuManager.menuState != MenuManager.MenuState.Inventory) 
+            return; //If mouse didn't move and no upgrade happened, or game is not in inventory menu, don't change anything
         var underMouse = UI.GetObjectsUnderMouse();
 
         GameObject hoveredObj = null;
@@ -70,7 +71,7 @@ public class TooltipInfoHandler : MonoBehaviour
 
             if(it.upgrades.Count > 0)
             {
-                upgradeButtonTMP.text = $"Cost: {it.upgrades[0].cost}\n[{Keybinds.interact}] Upgrade";
+                upgradeButtonTMP.text = $"Cost: {it.upgrades[0].cost}\n[{Keybinds.bindings["Upgrade"]}] Upgrade";
                 upgradeInfoTMP.text = it.upgrades[0].description;
                 upgradeInfoTMP.gameObject.SetActive(true);
                 LayoutRebuilder.ForceRebuildLayoutImmediate(upgradePanel.GetComponent<RectTransform>());

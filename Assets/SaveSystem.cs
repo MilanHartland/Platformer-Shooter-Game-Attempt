@@ -11,6 +11,12 @@ public static class SaveSystem
 
     static void print(object obj){Debug.Log(obj);}
 
+    [RuntimeInitializeOnLoadMethod]
+    static void Start()
+    {
+        if(!Keybinds.bindings.ContainsKey("Upgrade")) Keybinds.bindings.Add("Upgrade", KeyCode.Q);
+    }
+
     public static void SetSaveData()
     {
         saveData = new();

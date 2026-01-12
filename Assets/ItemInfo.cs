@@ -20,6 +20,17 @@ public class ItemInfo : MonoBehaviour
     [Tooltip("The stat modifiers this item applies to a weapon. For example, a damage modifier of 1.5 means the weapon deals +50% damage")]
     public WeaponModifiers modifiers = WeaponModifiers.One;
 
+    void Update()
+    {
+        if(Input.GetKeyDown(Keybinds.bindings["Upgrade"]) && upgrades.Count > 0 && UI.GetObjectsUnderMouse().Contains(gameObject))
+        {
+            //DO SOMETHING HERE TO DECREASE CURRENCY BASED ON COST
+
+            itemValues = upgrades[0].itemValues;
+            upgrades.RemoveAt(0);
+        }
+    }
+
     string ReplaceDescriptionValues()
     {
         string damageText = modifiers.damageModifier.ToString();

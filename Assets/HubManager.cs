@@ -31,7 +31,7 @@ public class HubManager : MonoBehaviour
         {
             Camera.main.GetComponent<CameraFollow>().ImportFollowProfile(CameraFollow.allProfiles["Gun Bench Profile"]);
 
-            if(Input.GetKeyDown(KeyCode.E))
+            if(Input.GetKeyDown(Keybinds.interact))
             {
                 if(MenuManager.menuState == MenuManager.MenuState.Game)
                     GameObject.Find("Game Manager").GetComponent<MenuManager>().OpenInventoryMenu();

@@ -57,6 +57,7 @@ public class PlayerManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Z)) SaveSystem.SaveToFile();
         if(Input.GetKeyDown(KeyCode.X)) SaveSystem.Load();
         
+        if(MissionManager.inHub) hp = maxHP;
         if(MenuManager.IsPaused || (MissionManager.inHub && !HubManager.inShootingArea) || isDead || isReloading) return;
 
         //If no heldweapon, or heldweapon is not main/alt weapon, equip existing main/alt weapon
