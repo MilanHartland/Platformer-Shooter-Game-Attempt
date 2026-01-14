@@ -15,7 +15,9 @@ MonoBehaviour:
   name: Enemy Rifle
   automatic: 1
   damage: 1
-  fireRate: 20
+  fireRate: 5
+  magazineSize: 0
+  reloadTime: 0
   spread: 10
   firingType: 1
   bulletSpeed: 50

@@ -13,12 +13,12 @@ public class ItemInfo : MonoBehaviour
     public string description {get{return ReplaceDescriptionValues();}}
 
     [Tooltip("The priority of the effect. Lower values get triggered first")]public int effectOrder;
-
-    [Tooltip("The values this item has. For possible use in BulletBehaviour")]public EditorDictionary<string, float> itemValues;
-    [Tooltip("The upgrade info of this item")]public List<UpgradeInfo> upgrades;
     
     [Tooltip("The stat modifiers this item applies to a weapon. For example, a damage modifier of 1.5 means the weapon deals +50% damage")]
     public WeaponModifiers modifiers = WeaponModifiers.One;
+
+    [Tooltip("The values this item has. For possible use in BulletBehaviour")]public EditorDictionary<string, float> itemValues;
+    [Tooltip("The upgrade info of this item")]public List<UpgradeInfo> upgrades;
 
     void Update()
     {
@@ -27,31 +27,29 @@ public class ItemInfo : MonoBehaviour
             //DO SOMETHING HERE TO DECREASE CURRENCY BASED ON COST
 
             itemValues = upgrades[0].itemValues;
+            modifiers += upgrades[0].modifiers;
             upgrades.RemoveAt(0);
         }
     }
 
     string ReplaceDescriptionValues()
     {
-        string damageText = modifiers.damageModifier.ToString();
-        string fireRateText = modifiers.fireRateModifier.ToString();
-        string magazineText = modifiers.magazineModifier.ToString();
-        string reloadText = modifiers.reloadModifier.ToString();
-        string spreadText = modifiers.spreadModifier.ToString();
-        string speedText = modifiers.speedModifier.ToString();
-
-        string fullDesc = Description.Replace("[d]", damageText);
-        fullDesc = Description.Replace("[f]", fireRateText);
-        fullDesc = Description.Replace("[m]", magazineText);
-        fullDesc = Description.Replace("[r]", reloadText);
-        fullDesc = Description.Replace("[s]", spreadText);
-        fullDesc = Description.Replace("[v]", speedText);
-        fullDesc = Description.Replace("[d%]", GetModifierPercentageText(modifiers.damageModifier));
-        fullDesc = Description.Replace("[f%]", GetModifierPercentageText(modifiers.fireRateModifier));
-        fullDesc = Description.Replace("[m%]", GetModifierPercentageText(modifiers.magazineModifier));
-        fullDesc = Description.Replace("[r%]", GetModifierPercentageText(modifiers.reloadModifier));
-        fullDesc = Description.Replace("[s%]", GetModifierPercentageText(modifiers.spreadModifier));
-        fullDesc = Description.Replace("[v%]", GetModifierPercentageText(modifiers.speedModifier));
+        string fullDesc = Description.Replace("[d]", modifiers.damageModifier.ToString());
+        fullDesc = fullDesc.Replace("[f]", modifiers.fireRateModifier.ToString());
+        fullDesc = fullDesc.Replace("[m]", modifiers.magazineModifier.ToString());
+        fullDesc = fullDesc.Replace("[r]", modifiers.reloadModifier.ToString());
+        fullDesc = fullDesc.Replace("[s]", modifiers.spreadModifier.ToString());
+        fullDesc = fullDesc.Replace("[v]", modifiers.speedModifier.ToString());
+        fullDesc = fullDesc.Replace("[d%]", GetModifierPercentageText(modifiers.damageModifier));
+        fullDesc = fullDesc.Replace("[f%]", GetModifierPercentageText(modifiers.fireRateModifier));
+        fullDesc = fullDesc.Replace("[m%]", GetModifierPercentageText(modifiers.magazineModifier));
+        fullDesc = fullDesc.Replace("[r%]", GetModifierPercentageText(modifiers.reloadModifier));
+        fullDesc = fullDesc.Replace("[s%]", GetModifierPercentageText(modifiers.spreadModifier));
+        fullDesc = fullDesc.Replace("[v%]", GetModifierPercentageText(modifiers.speedModifier));
+        foreach(var value in itemValues.list)
+        {
+            fullDesc = fullDesc.Replace($"[{value.Key}]", value.Value.ToString());
+        }
         return fullDesc;
     }
 
@@ -69,6 +67,8 @@ public class ItemInfo : MonoBehaviour
         if(modifiers.speedModifier != 1f) text += $"{GetModifierPercentageText(modifiers.speedModifier)} bullet speed";
         Description = text;
     }
+
+    [ContextMenu("Log description")]void LogDescription(){Debug.Log(description);}
 
     public string GetModifierPercentageText(float mod)
     {
@@ -119,6 +119,21 @@ public class ItemInfo : MonoBehaviour
         public float speedModifier;
 
         public static WeaponModifiers One = new(){damageModifier = 1f, fireRateModifier = 1f, magazineModifier = 1f, reloadModifier = 1f, spreadModifier = 1f, speedModifier = 1f};
+
+        public static WeaponModifiers operator +(WeaponModifiers a, WeaponModifiers b)
+        {
+            return new()
+            {
+                forceNonAutomatic = (a.forceNonAutomatic || b.forceNonAutomatic) && !(a.forceAutomatic || b.forceAutomatic),  
+                forceAutomatic = a.forceAutomatic || b.forceAutomatic,
+                damageModifier = a.damageModifier + b.damageModifier,
+                fireRateModifier = a.fireRateModifier + b.fireRateModifier,
+                magazineModifier = a.magazineModifier + b.magazineModifier,
+                reloadModifier = a.reloadModifier + b.reloadModifier,
+                spreadModifier = a.spreadModifier + b.spreadModifier,
+                speedModifier = a.speedModifier + b.speedModifier,
+            };
+        }
     }
 
     //IDEA ON HOW TO IMPLEMENT THE UPGRADES: Have a custom class (UpgradeInfo) that has a cost, description, and an editor dictionary of string/float values.
@@ -128,6 +143,7 @@ public class ItemInfo : MonoBehaviour
     {
         [Tooltip("The cost to buy this upgrade")]public int cost;
         [Tooltip("The description this specific upgrade has"), TextArea]public string description;
+        [Tooltip("The modifiers added to the item when upgraded (additive)")]public WeaponModifiers modifiers;
         [Tooltip("The values the item takes after the upgrade")]public EditorDictionary<string, float> itemValues;
     }
 }

@@ -4,6 +4,7 @@ using MilanUtils;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
+[RequireComponent(typeof(RectTransform))]
 public class TooltipInfoHandler : MonoBehaviour
 {
     public TextMeshProUGUI nameTMP, typeTMP, infoTMP, upgradeButtonTMP, upgradeInfoTMP;
@@ -24,11 +25,12 @@ public class TooltipInfoHandler : MonoBehaviour
     {
         if((Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0 && !Input.GetKeyDown(Keybinds.bindings["Upgrade"])) || MenuManager.menuState != MenuManager.MenuState.Inventory) 
             return; //If mouse didn't move and no upgrade happened, or game is not in inventory menu, don't change anything
+
         var underMouse = UI.GetObjectsUnderMouse();
 
         GameObject hoveredObj = null;
         WeaponStats weap = null;
-        ItemInfo it = null;
+        ItemInfo info = null;
         foreach(var obj in underMouse)
         {
             if(obj.TryGetComponent(out WeaponInfo wmh))
@@ -40,8 +42,8 @@ public class TooltipInfoHandler : MonoBehaviour
             }
             else if(obj.TryGetComponent(out ItemInfo ii))
             {
+                info = ii;
                 hoveredObj = obj;
-                it = ii;
                 break;
             }
         }
@@ -58,30 +60,31 @@ public class TooltipInfoHandler : MonoBehaviour
             infoTMP.text = (weap.automatic ? "Automatic\n\n" : "Manual\n\n") + $"Damage: {weap.damage}\nFirerate: {weap.fireRate}/s\nMagazine Size: {weap.magazineSize}"
             + $"\nReload Time: {weap.reloadTime}\nSpread: {weap.spread}°\nBullet Speed: {weap.bulletSpeed} m/s";
         }
-        else if(it != null)
+        else if(info != null)
         {
-            if(it.type == ItemInfo.ItemType.Bullet) img.color = new(.5f, 0f, .75f);
+            if(info.type == ItemInfo.ItemType.Bullet) img.color = new(.5f, 0f, .75f);
             else img.color = new(0f, .75f, .125f);
 
             upgradePanel.SetActive(true);
             transform.localScale = Vector3.one;
-            nameTMP.text = it.name;
-            typeTMP.text = it.type.ToString();
-            infoTMP.text = it.description;
+            nameTMP.text = info.name;
+            typeTMP.text = info.type.ToString();
+            infoTMP.text = info.description;
 
-            if(it.upgrades.Count > 0)
+            if(info.upgrades.Count > 0)
             {
-                upgradeButtonTMP.text = $"Cost: {it.upgrades[0].cost}\n[{Keybinds.bindings["Upgrade"]}] Upgrade";
-                upgradeInfoTMP.text = it.upgrades[0].description;
+                upgradeButtonTMP.text = $"Cost: {info.upgrades[0].cost}\n[{Keybinds.bindings["Upgrade"]}] Upgrade";
+                upgradeInfoTMP.text = info.upgrades[0].description;
                 upgradeInfoTMP.gameObject.SetActive(true);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(upgradePanel.GetComponent<RectTransform>());
             }
             else
             {
                 upgradeButtonTMP.text = $"Item is fully upgraded";
                 upgradeInfoTMP.gameObject.SetActive(false);
-                LayoutRebuilder.ForceRebuildLayoutImmediate(upgradePanel.GetComponent<RectTransform>());
             }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(upgradePanel.GetComponent<RectTransform>());
+            LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         }
         else transform.localScale = Vector3.zero;
     }

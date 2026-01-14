@@ -17,7 +17,6 @@ public class EnemyBehaviour : MonoBehaviour
     EnemyPathfinding pathfinding;
 
     Vector3 lastSeenPos;
-    Vector3 startPos;
     Timer weaponTimer;
 
     Vector3 pfCenterRelative => Vector3.down * (1f / transform.lossyScale.y);
@@ -39,13 +38,15 @@ public class EnemyBehaviour : MonoBehaviour
     [Tooltip("How fast the enemy should forget it saw something. Put as value / second. For reference, the highest sight factor possible is 1 per second")]
     public float memoryDeterioration;
 
+    [Header("Idle")]
+    [Tooltip("A list of positions this enemy can wander to")]public List<Vector3> wanderPositions;
+    [Tooltip("The amount of time there is between wanders")]public Range wanderTimeRange;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         pathfinding = GetComponent<EnemyPathfinding>();
         StartCoroutine(PathfindCoroutine());
-
-        startPos = lastSeenPos = transform.position;
 
         weaponTimer = new(1f / weapon.fireRate);
 
@@ -94,35 +95,59 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
+    Timer wanderTime;
+    Vector3 wanderPos;
+    bool lookingForPlayer = false;
     IEnumerator PathfindCoroutine()
     {
         StartCoroutine(SightCoroutine());
+        wanderPos = wanderPositions[Random.Range(0, wanderPositions.Count)];
+        wanderTime = new(wanderTimeRange.Random());
 
         while (true)
         {
             if(MenuManager.IsPaused) yield return null;
 
+            //If sees the player, sets the last seen position to the closest node to the player. If the distance is over follow distance, pathfind towards player. Set lookingForPlayer to true
             if (seesPlayer)
             {
                 lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
                 
                 if(Vector2.Distance(pfCenter, player.position) > followDist) 
                     pathfinding.Pathfind(player.position);
+                
+                lookingForPlayer = true;
             }
+            //If doesn't see player, if distance to last seen position is close enough, stop looking and pathfind to wander position. Else, if looking, pathfind to last seen position
             else
             {
                 if (Vector2.Distance(pfCenter, lastSeenPos) <= 0.1f)
                 {
-                    lastSeenPos = startPos;
-                    pathfinding.Pathfind(startPos);
+                    lookingForPlayer = false;
+                    pathfinding.Pathfind(wanderPos);
                 }
-                else pathfinding.Pathfind(lastSeenPos);
+                else if(lookingForPlayer) pathfinding.Pathfind(lastSeenPos);
             }
 
+            //If not looking for player, and thus wandering, decrease wander timer. If it is below 0, set a new wander position and reset timer. Then, pathfind to wander pos
+            if (!lookingForPlayer)
+            {
+                if(wanderTime)
+                {
+                    wanderPos = wanderPositions[Random.Range(0, wanderPositions.Count)];
+
+                    wanderTime = new(wanderTimeRange.Random());
+                }
+
+                pathfinding.Pathfind(wanderPos);
+            }
+            
+            //If there is a path, save the current target node. While pathfinding and the path is longer than 0 and the target pos is the same as previous target node, skip to next frame
             if(pathfinding.path.Count > 0)
             {
                 Vector3 curPath0 = pathfinding.path[0];
-                while(pathfinding.isPathfinding && pathfinding.path.Count > 0 && pathfinding.path[0] == curPath0) yield return null;
+                while(pathfinding.isPathfinding && pathfinding.path.Count > 0 && pathfinding.path[0] == curPath0) 
+                    yield return null;
             }
             yield return null;
         }
@@ -236,5 +261,11 @@ public class EnemyBehaviour : MonoBehaviour
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(lastSeenPos, Vector3.one);
+
+        foreach(var pos in wanderPositions)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireCube(pos, Vector3.one);
+        }
     }
 }

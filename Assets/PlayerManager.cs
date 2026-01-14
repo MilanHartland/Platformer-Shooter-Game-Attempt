@@ -54,8 +54,8 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Z)) SaveSystem.SaveToFile();
-        if(Input.GetKeyDown(KeyCode.X)) SaveSystem.Load();
+        // if(Input.GetKeyDown(KeyCode.Z)) SaveSystem.SaveToFile();
+        // if(Input.GetKeyDown(KeyCode.X)) SaveSystem.Load();
         
         if(MissionManager.inHub) hp = maxHP;
         if(MenuManager.IsPaused || (MissionManager.inHub && !HubManager.inShootingArea) || isDead || isReloading) return;

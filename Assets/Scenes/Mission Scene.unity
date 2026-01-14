@@ -940,7 +940,7 @@ MonoBehaviour:
     m_Center: {x: 0, y: -1.05, z: 0}
     m_Extent: {x: 0.45, y: 0.05, z: 0}
   isPathfinding: 0
-  drawGraphGizmos: 0
+  drawGraphGizmos: 1
   drawPathGizmos: 1
 --- !u!114 &1137754141
 MonoBehaviour:
@@ -949,7 +949,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1137754132}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e834c98e31de1a449cfd7eb04ecb132, type: 3}
   m_Name: 
@@ -960,10 +960,16 @@ MonoBehaviour:
   weapon: {fileID: 11400000, guid: 9b954954d6017ab47ba9eea663d00bb1, type: 2}
   followDist: 5
   updateTime: 0.05
-  sightThreshold: 0.375
+  sightThreshold: 375
   peerFactor: 0.7
   sightDist: 100
   memoryDeterioration: 0.1
+  wanderPositions:
+  - {x: 8, y: -3, z: 0}
+  - {x: 4, y: -3, z: 0}
+  wanderTimeRange:
+    Min: 2
+    Max: 4
 --- !u!114 &1137754142
 MonoBehaviour:
   m_ObjectHideFlags: 0
