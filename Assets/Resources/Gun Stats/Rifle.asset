@@ -15,6 +15,7 @@ MonoBehaviour:
   name: Rifle
   automatic: 1
   damage: 1
+  bulletCount: 1
   fireRate: 10
   magazineSize: 24
   reloadTime: 1

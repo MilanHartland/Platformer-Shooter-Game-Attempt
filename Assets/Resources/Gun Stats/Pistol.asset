@@ -15,6 +15,7 @@ MonoBehaviour:
   name: Pistol
   automatic: 0
   damage: 3
+  bulletCount: 1
   fireRate: 2
   magazineSize: 6
   reloadTime: 0.5

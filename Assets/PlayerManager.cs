@@ -246,15 +246,21 @@ public class PlayerManager : MonoBehaviour
 
         Effects.CreateTempParticleSystem(prefabs["Simple Muzzle Flash"], player.transform.Find("Gun").position, player.transform.Find("Gun").rotation);
 
-        GameObject obj = bulletPool.Dequeue();
-        obj.SetActive(true);
-        obj.GetComponent<TrailRenderer>().Clear();
-        obj.GetComponent<TrailRenderer>().enabled = false;
-        obj.transform.position = player.transform.Find("Gun").position;
-        Angle2D.TurnTo(obj, World.mousePos, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
-        obj.GetComponent<Rigidbody2D>().linearVelocity = obj.transform.up * w.bulletSpeed;
-        obj.GetComponent<BulletBehaviour>().shotBy = w;
-        obj.GetComponent<BulletBehaviour>().Disable(5f);
-        bulletPool.Enqueue(obj);
+        int bulletCount = Mathf.FloorToInt(w.bulletCount);
+        if(Random.Range(0f, 1f) <= w.bulletCount - Mathf.Floor(w.bulletCount)) bulletCount++;
+        print($"{w.bulletCount} {w.bulletCount - Mathf.Floor(w.bulletCount)} {bulletCount}");
+        for(int i = 0; i < bulletCount; i++)
+        {
+            GameObject obj = bulletPool.Dequeue();
+            obj.SetActive(true);
+            obj.GetComponent<TrailRenderer>().Clear();
+            obj.GetComponent<TrailRenderer>().enabled = false;
+            obj.transform.position = player.transform.Find("Gun").position;
+            Angle2D.TurnTo(obj, World.mousePos, -90f + Random.Range(-w.spread / 2f, w.spread / 2f));
+            obj.GetComponent<Rigidbody2D>().linearVelocity = obj.transform.up * w.bulletSpeed;
+            obj.GetComponent<BulletBehaviour>().shotBy = w;
+            obj.GetComponent<BulletBehaviour>().Disable(5f);
+            bulletPool.Enqueue(obj);
+        }
     }
 }

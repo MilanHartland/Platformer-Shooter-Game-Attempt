@@ -28,6 +28,7 @@ public class ItemInfo : MonoBehaviour
 
             itemValues = upgrades[0].itemValues;
             modifiers += upgrades[0].modifiers;
+            Description = upgrades[0].itemDescription;
             upgrades.RemoveAt(0);
         }
     }
@@ -44,6 +45,7 @@ public class ItemInfo : MonoBehaviour
         fullDesc = fullDesc.Replace("[f%]", GetModifierPercentageText(modifiers.fireRateModifier));
         fullDesc = fullDesc.Replace("[m%]", GetModifierPercentageText(modifiers.magazineModifier));
         fullDesc = fullDesc.Replace("[r%]", GetModifierPercentageText(modifiers.reloadModifier));
+        fullDesc = fullDesc.Replace("[b%]", GetModifierPercentageText(modifiers.bulletCountModifier));
         fullDesc = fullDesc.Replace("[s%]", GetModifierPercentageText(modifiers.spreadModifier));
         fullDesc = fullDesc.Replace("[v%]", GetModifierPercentageText(modifiers.speedModifier));
         foreach(var value in itemValues.list)
@@ -59,12 +61,13 @@ public class ItemInfo : MonoBehaviour
         string text = string.Empty;
         if(modifiers.forceNonAutomatic) text += "Manual\n";
         else if(modifiers.forceAutomatic) text += "Automatic\n";
-        if(modifiers.damageModifier != 1f) text += $"{GetModifierPercentageText(modifiers.damageModifier)} damage\n";
-        if(modifiers.fireRateModifier != 1f) text += $"{GetModifierPercentageText(modifiers.fireRateModifier)} bullets per second\n";
-        if(modifiers.magazineModifier != 1f) text += $"{GetModifierPercentageText(modifiers.magazineModifier)} magazine size\n";
-        if(modifiers.reloadModifier != 1f) text += $"{GetModifierPercentageText(modifiers.reloadModifier)} reload time\n";
-        if(modifiers.spreadModifier != 1f) text += $"{GetModifierPercentageText(modifiers.spreadModifier)} spread\n";
-        if(modifiers.speedModifier != 1f) text += $"{GetModifierPercentageText(modifiers.speedModifier)} bullet speed";
+        if(modifiers.damageModifier != 1f) text += $"[d%] damage\n";
+        if(modifiers.reloadModifier != 1f) text += $"[b%] bullets per shot\n";
+        if(modifiers.fireRateModifier != 1f) text += $"[f%] bullets per second\n";
+        if(modifiers.magazineModifier != 1f) text += $"[m%] magazine size\n";
+        if(modifiers.reloadModifier != 1f) text += $"[r%] reload time\n";
+        if(modifiers.spreadModifier != 1f) text += $"[s%] spread\n";
+        if(modifiers.speedModifier != 1f) text += $"[v%] bullet speed";
         Description = text;
     }
 
@@ -112,13 +115,15 @@ public class ItemInfo : MonoBehaviour
         public bool forceNonAutomatic;
         public bool forceAutomatic;
         public float damageModifier;
+        public float bulletCountModifier;
         public float fireRateModifier;
         public float magazineModifier;
         public float reloadModifier;
         public float spreadModifier;
         public float speedModifier;
 
-        public static WeaponModifiers One = new(){damageModifier = 1f, fireRateModifier = 1f, magazineModifier = 1f, reloadModifier = 1f, spreadModifier = 1f, speedModifier = 1f};
+        public static WeaponModifiers One = new()
+        {damageModifier = 1f, fireRateModifier = 1f, bulletCountModifier = 1f, magazineModifier = 1f, reloadModifier = 1f, spreadModifier = 1f, speedModifier = 1f};
 
         public static WeaponModifiers operator +(WeaponModifiers a, WeaponModifiers b)
         {
@@ -127,6 +132,7 @@ public class ItemInfo : MonoBehaviour
                 forceNonAutomatic = (a.forceNonAutomatic || b.forceNonAutomatic) && !(a.forceAutomatic || b.forceAutomatic),  
                 forceAutomatic = a.forceAutomatic || b.forceAutomatic,
                 damageModifier = a.damageModifier + b.damageModifier,
+                bulletCountModifier = a.bulletCountModifier + b.bulletCountModifier,
                 fireRateModifier = a.fireRateModifier + b.fireRateModifier,
                 magazineModifier = a.magazineModifier + b.magazineModifier,
                 reloadModifier = a.reloadModifier + b.reloadModifier,
@@ -142,7 +148,8 @@ public class ItemInfo : MonoBehaviour
     public struct UpgradeInfo
     {
         [Tooltip("The cost to buy this upgrade")]public int cost;
-        [Tooltip("The description this specific upgrade has"), TextArea]public string description;
+        [Tooltip("The description this specific upgrade has"), TextArea]public string upgradeDescription;
+        [Tooltip("The description that the item will get after the upgrade")]public string itemDescription;
         [Tooltip("The modifiers added to the item when upgraded (additive)")]public WeaponModifiers modifiers;
         [Tooltip("The values the item takes after the upgrade")]public EditorDictionary<string, float> itemValues;
     }

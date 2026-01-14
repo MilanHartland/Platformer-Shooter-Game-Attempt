@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7912168986806063818}
   - component: {fileID: 8315636380318481335}
-  - component: {fileID: 5954235584970100587}
   - component: {fileID: 8941655675394574144}
   - component: {fileID: 7227403879731885884}
   - component: {fileID: 451309563950599655}
@@ -64,26 +63,6 @@ MonoBehaviour:
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   parent: {fileID: 0}
   ___editorBoolForShowingThisIsACopy: 0
---- !u!114 &5954235584970100587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1036685817095248419}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce3ff3701737db447b61b2575437f15c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  borderColor: {r: 0.5019608, g: 0, b: 1, a: 1}
-  name: Pistol
-  description: 
-  otherInfo: Alt Weapon
-  value: 0
-  priority: 0
-  changeColorWhenHoveredOver: 1
-  highlightedColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
 --- !u!222 &8941655675394574144
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -134,5 +113,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1864e413e7daf478aee173473e59b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponName: Pistol
   bulletSlots: 3
   effectSlots: 3

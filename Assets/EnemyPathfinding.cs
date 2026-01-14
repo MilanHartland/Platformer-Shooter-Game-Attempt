@@ -60,6 +60,9 @@ public class EnemyPathfinding : MonoBehaviour
         List<Vector3> newPath = Pathfinding.Dijkstra(path[0], target, pathGraph);
         if(Vector2.Distance(pfCenter, path[0]) <= .1f) path.RemoveAt(0);
         if(Vector2.Distance(pfCenter, newPath[0]) <= .1f) newPath.RemoveAt(0);
+
+        if(path.Count == 0){path = Pathfinding.Dijkstra(pfCenter, target, pathGraph); return;}
+        else if(newPath.Count == 0) StopPathfinding();
         
         Vector3 firstCur = path[0];
         path = newPath;
@@ -186,7 +189,6 @@ public class EnemyPathfinding : MonoBehaviour
             bool clearLine = !Physics2D.Linecast(start, end, mask);
             Vector2 diff = end - start;
             Vector2 trueDiff = end - trueStart;
-            bool corrY = diff.y <= maxJumpHeight;
 
             bool startIsAbove = trueDiff.y < 0;
             bool isSame = Mathf.Abs(trueDiff.y) < 0.05f;
@@ -198,6 +200,7 @@ public class EnemyPathfinding : MonoBehaviour
             var hitList = GetJumpRayList();
             bool jumpUnobstructed = !hitList.Any((hit) => { return hit; });
 
+            //If the height difference is downward (start is above the end), check for fall possibilities
             if (startIsAbove)
             {
                 //Gets the linecast 1 unit to the left/right of the start. If either is unobstructed, that means a fall is possible (disregarding x distance)
@@ -207,6 +210,7 @@ public class EnemyPathfinding : MonoBehaviour
                 fallRayUnobstructed = lineLeft || lineRight;
             }
             
+            //If there is no height difference, check for walk or gap jump possibilities
             if (isSame)
             {
                 //Checks if there is a gap by doing a raycastline downward and returning if on any there is no hit
@@ -217,17 +221,18 @@ public class EnemyPathfinding : MonoBehaviour
                 if (hasGap)
                 {
                     canWalk = false;
-                    corrY = GetJumpHeight(trueStart, end) <= maxJumpHeight;
+                    bool corrJumpY = GetJumpHeight(trueStart, end) <= maxJumpHeight;
 
-                    canJump = jumpUnobstructed && clearLine;
+                    canJump = jumpUnobstructed && clearLine && corrJumpY;
                 }
                 else canWalk = clearLine && !Physics2D.Linecast(trueStart, end, mask) && !Physics2D.Raycast(start, new Vector2(diff.x, 0f), Mathf.Abs(diff.x), mask);
             }
             
-            if(!startIsAbove && !isSame)
+            //If there is a height difference, check for jump possibilities
+            if(!isSame)
             {
                 //Gets the height of the jump that would happen between start/end and check if maxJumpHeight allows it
-                corrY = GetJumpHeight(trueStart, end) <= maxJumpHeight;
+                bool corrJumpY = GetJumpHeight(trueStart, end) <= maxJumpHeight;
 
                 //Gets the linecast .75 units to the left/right of the end. If either is unobstructed, that means a jump is possible (disregarding x distance)
                 bool lineLeft = !Physics2D.Linecast(end + Vector3.left * .75f, start, mask);
@@ -237,7 +242,7 @@ public class EnemyPathfinding : MonoBehaviour
                 //Checks if the x is different. If not, then you would hit the tile above
                 bool differentX = start.x != end.x;
 
-                canJump = jumpUnobstructed && differentX && (clearLine || otherLine);
+                canJump = jumpUnobstructed && differentX && (clearLine || otherLine) && corrJumpY;
             }
             
             //Checks if the x is good enough for falling, which is when the x difference (-.2 to account for tile size) is under the fall time * speed
@@ -250,13 +255,12 @@ public class EnemyPathfinding : MonoBehaviour
             bool corrJumpX = Mathf.Abs(diff.x) < maxJumpTime * speed;
             
             //Checks if can fall according to raycasts and max fall distance
-            bool canFall = fallRayUnobstructed && (corrFallX || (canJump && corrJumpX)) && corrFallLines;
+            bool canFall = fallRayUnobstructed && corrFallX && corrFallLines;
 
             //Checks if the x is good enough in general, which is if can fall, can jump (with correct x for jump), or can walk
             bool corrX = canFall || (canJump && corrJumpX) || canWalk;
             
-            if(end == new Vector3(13, 3) && trueStart == new Vector3(21, 5)) print(corrX);
-            return (canWalk || canJump || fallRayUnobstructed) && corrX && corrY;
+            return (canWalk || canJump || canFall) && corrX;
 
             List<RaycastHit2D> GetJumpRayList()
             {

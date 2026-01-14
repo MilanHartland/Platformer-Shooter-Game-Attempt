@@ -14758,10 +14758,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1799357688}
     m_Modifications:
-    - target: {fileID: 251234601975085245, guid: 44c2200c76500ad41aa95bad78e86933, type: 3}
-      propertyPath: weaponName
-      value: Rifle
-      objectReference: {fileID: 0}
     - target: {fileID: 2019705198460590168, guid: 44c2200c76500ad41aa95bad78e86933, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -14846,8 +14842,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rifle
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2317070970700594561, guid: 44c2200c76500ad41aa95bad78e86933, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -14942,7 +14937,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4142479869061291329, guid: 89d20a1d13f4dd946b36e1fef3fff83d, type: 3}
       propertyPath: Description
-      value: 
+      value: 'Automatic
+
+        [d%] damage
+
+        [f%] bullets per second
+
+        [m%]
+        magazine size
+
+        [r%] reload time
+
+        [b%] bullets per shot
+
+        [s%]
+        spread
+
+        [v%] bullet speed'
       objectReference: {fileID: 0}
     - target: {fileID: 4142479869061291329, guid: 89d20a1d13f4dd946b36e1fef3fff83d, type: 3}
       propertyPath: upgrades.Array.size
@@ -14951,6 +14962,10 @@ PrefabInstance:
     - target: {fileID: 4142479869061291329, guid: 89d20a1d13f4dd946b36e1fef3fff83d, type: 3}
       propertyPath: itemValues.list.Array.size
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4142479869061291329, guid: 89d20a1d13f4dd946b36e1fef3fff83d, type: 3}
+      propertyPath: modifiers.bulletCountModifier
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4142479869061291329, guid: 89d20a1d13f4dd946b36e1fef3fff83d, type: 3}
       propertyPath: itemValues.editorList.Array.size
@@ -15031,14 +15046,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1913172278}
     m_Modifications:
-    - target: {fileID: 451309563950599655, guid: 772e1e1e87f64984cbff3e4b155debf8, type: 3}
-      propertyPath: weaponName
-      value: Pistol
-      objectReference: {fileID: 0}
-    - target: {fileID: 451309563950599655, guid: 772e1e1e87f64984cbff3e4b155debf8, type: 3}
-      propertyPath: effectSlots
-      value: 3
-      objectReference: {fileID: 0}
     - target: {fileID: 1036685817095248419, guid: 772e1e1e87f64984cbff3e4b155debf8, type: 3}
       propertyPath: m_Name
       value: Pistol
@@ -15123,8 +15130,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5954235584970100587, guid: 772e1e1e87f64984cbff3e4b155debf8, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

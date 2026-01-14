@@ -38,12 +38,12 @@ II- The edit menu needs to be opened manually
 
 
 
-Things left to do: item pool, items, maps, multiple enemy types, story, endings, balancing, tutorial, enemy wandering
+Things left to do: item pool, items, maps, multiple enemy types, story, endings, balancing, tutorial
 Things to do when more things are added: save file variables
 
-Currently to work on: enemy wandering
+Currently to work on: item pool
 
-Things added: death/respawning/item loss, gun selection system, HUD, tooltip, pooling, settings, item weapon modifiers, damage numbers, upgrade system
+Things added: death/respawning/item loss, gun selection system, HUD, tooltip, pooling, settings, item weapon modifiers, damage numbers, upgrade system, enemy wandering
 
 
 

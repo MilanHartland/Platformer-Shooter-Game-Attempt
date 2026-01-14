@@ -11,6 +11,7 @@ public class WeaponStats : ScriptableObject
     [Tooltip("The name of the weapon")] public new string name;
     [Tooltip("If the gun is automatic (hold to fire) instead of manual (click to fire)")] public bool automatic;
     [Tooltip("The damage every hit does")] public float damage;
+    [Tooltip("The amount of bullets shot at once. Value is the percentage to shoot a bullet, so 1.4 is 100% chance at 1 bullet, and 40% of 2 bullets")] public float bulletCount;
     [Tooltip("The fire rate in bullets/second")] public float fireRate;
     [Tooltip("The amount of bullets in a single magazine")] public int magazineSize;
     [Tooltip("The time it takes to reload")] public float reloadTime;
@@ -20,11 +21,13 @@ public class WeaponStats : ScriptableObject
     [Tooltip("The maximum distance the hitscan can go"), ShowIf(_enumName: "firingType", "Hitscan"), SetName("Max Distance")] public float maxHitscanDistance;
 
     public void SetValues(WeaponStats w)
-    {name = w.name; automatic = w.automatic; damage = w.damage; fireRate = w.fireRate; magazineSize = w.magazineSize; reloadTime = w.reloadTime; spread = w.spread; bulletSpeed = w.bulletSpeed;}
+    {name = w.name; automatic = w.automatic; damage = w.damage; bulletCount = w.bulletCount; fireRate = w.fireRate; 
+    magazineSize = w.magazineSize; reloadTime = w.reloadTime; spread = w.spread; bulletSpeed = w.bulletSpeed;}
 
     void OnValidate()
     {
         if(name == string.Empty) name = ((Object)this).name;
+        if(bulletCount < 0) bulletCount = 0f;
     }
 
     public WeaponStats AddModifiers(ItemInfo.WeaponModifiers mod)
@@ -36,6 +39,7 @@ public class WeaponStats : ScriptableObject
         else if(mod.forceNonAutomatic) w.automatic = false;
         
         w.damage *= mod.damageModifier;
+        w.bulletCount *= mod.bulletCountModifier;
         w.fireRate *= mod.fireRateModifier;
         w.magazineSize = Mathf.FloorToInt(w.magazineSize * mod.magazineModifier);
         w.reloadTime *= mod.reloadModifier;
