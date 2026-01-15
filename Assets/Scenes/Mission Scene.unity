@@ -960,7 +960,7 @@ MonoBehaviour:
   weapon: {fileID: 11400000, guid: 9b954954d6017ab47ba9eea663d00bb1, type: 2}
   followDist: 5
   updateTime: 0.05
-  sightThreshold: 375
+  sightThreshold: 0.375
   peerFactor: 0.7
   sightDist: 100
   memoryDeterioration: 0.1

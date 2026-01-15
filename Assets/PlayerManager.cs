@@ -5,6 +5,7 @@ using MilanUtils;
 using static MilanUtils.Variables;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(SpriteRenderer), typeof(BoxCollider2D), typeof(PlayerMovement)), RequireComponent(typeof(AnimationManager), typeof(Rigidbody2D))]
 public class PlayerManager : MonoBehaviour
 {
     public static WeaponStats mainWeapon => GetWeaponWithModifiers(baseMainWeapon);
@@ -19,6 +20,8 @@ public class PlayerManager : MonoBehaviour
     public float maxHP;
     public float hp {get; set;}
     public static bool isDead;
+
+    public static int oreCount;
 
     Queue<GameObject> bulletPool = new();
 
@@ -54,6 +57,7 @@ public class PlayerManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // GetComponent<AnimationManager>().SetArmAngle(-45f);
         // if(Input.GetKeyDown(KeyCode.Z)) SaveSystem.SaveToFile();
         // if(Input.GetKeyDown(KeyCode.X)) SaveSystem.Load();
         
@@ -195,13 +199,16 @@ public class PlayerManager : MonoBehaviour
         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
         foreach(Transform child in transform){child.GetComponent<SpriteRenderer>().enabled = false;}
         
+        //Sets dead to true and deletes equipped items, as well as turning the player to particles
         isDead = true;
         DeleteEquippedItems();
         Effects.TurnIntoParticles(gameObject, transform.position, dontThrowNonReadException: true);
 
+        //Creates a scene loading variable, and makes it not automatically switch scenes
         var sceneLoading = SceneManager.LoadSceneAsync(1);
         sceneLoading.allowSceneActivation = false;
 
+        //Waits until the respawn bind is pressed and the scene is done loading
         bool pressedRespawn = false;
         while (sceneLoading.progress < .9f || !pressedRespawn) 
         {
@@ -210,13 +217,15 @@ public class PlayerManager : MonoBehaviour
             yield return null;
         }
 
-        //TODO - ADD CODE SO THAT CAMERA FLIES UP, THEN SWITCHES SCENE, THEN MOVES TO CORRECT POSITION FOR RESPAWNED PLAYER
+        //Moves the player out of the way and disables camera follow
         player.position = Vector3.one * 9999f;
         Camera.main.GetComponent<CameraFollow>().enabled = false;
 
+        //Moves the camera upwards for camFlyHeight units over the course of camFlyTime seconds, with ease in/out, and waits for that time
         LeanTween.moveY(Camera.main.gameObject, Camera.main.transform.position.y + transVars.camFlyHeight, transVars.camFlyTime).setEaseInQuad();
         yield return GetWaitForSeconds(transVars.camFlyTime);
 
+        //Resets HP, loads scene, sets camera position to respawn enter point, sets player position to respawn point, and sets deposit box position to teleport point
         hp = maxHP;
         sceneLoading.allowSceneActivation = true;
         yield return sceneLoading;
@@ -224,6 +233,7 @@ public class PlayerManager : MonoBehaviour
         player.position = GameObject.Find("Player Respawn Point").transform.position;
         GameObject.Find("Deposit Box").transform.position = GameObject.Find("Deposit Box Teleport Point").transform.position;
 
+        //Reenables all player things
         GetComponent<SpriteRenderer>().enabled = true;
         GetComponent<BoxCollider2D>().enabled = true;
         GetComponent<PlayerMovement>().enabled = true;
@@ -231,24 +241,29 @@ public class PlayerManager : MonoBehaviour
         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
         foreach(Transform child in transform){child.GetComponent<SpriteRenderer>().enabled = true;}
 
-        isDead = false;
+        isDead = false; //Sets dead to false
 
+        //Moves the camera to the stop point with ease in/out, and waits for that time
         LeanTween.move(Camera.main.gameObject, GameObject.Find("Camera Respawn Stop Point").transform.position, transVars.camStopTime).setEaseOutQuad();
         yield return GetWaitForSeconds(transVars.camStopTime);
 
+        //Reenables camera follow and sets the profile
         Camera.main.GetComponent<CameraFollow>().enabled = true;
         Camera.main.GetComponent<CameraFollow>().ImportFollowProfile("Hub Profile");
     }
 
     void FireWeapon(WeaponStats w)
     {
-        if (w == null) return;
+        if (w == null) return; //Checks if there is a weapon to fire
 
+        //Creates a muzzle flash particle system that gets deleted when it finishes
         Effects.CreateTempParticleSystem(prefabs["Simple Muzzle Flash"], player.transform.Find("Gun").position, player.transform.Find("Gun").rotation);
 
+        //Gets the amount of bullets shot, which is the floor of the count (example: 3.4 -> 3), and if the random chance of the remainder is hit (3.4 -> 40%), add 1
         int bulletCount = Mathf.FloorToInt(w.bulletCount);
         if(Random.Range(0f, 1f) <= w.bulletCount - Mathf.Floor(w.bulletCount)) bulletCount++;
-        print($"{w.bulletCount} {w.bulletCount - Mathf.Floor(w.bulletCount)} {bulletCount}");
+
+        //For each bullet to fire, get it from the pool, activate it and reset trail, set position to gun, turn to mouse, set velocity and shotBy, disable after time, and requeue
         for(int i = 0; i < bulletCount; i++)
         {
             GameObject obj = bulletPool.Dequeue();

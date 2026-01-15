@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3862820777010339488}
   - component: {fileID: 8437180143325598139}
   m_Layer: 5
-  m_Name: Bounce
+  m_Name: Bouncy Bullets
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -113,15 +113,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemQuality: 0
   type: 0
-  name: 
-  Description: 
+  name: Bouncy Bullets
+  Description: Makes the bullets bounce [Max Bounces] times on contact with the map
+  effectOrder: 0
   modifiers:
     forceNonAutomatic: 0
     forceAutomatic: 0
     damageModifier: 1
+    bulletCountModifier: 1
     fireRateModifier: 1
     magazineModifier: 1
     reloadModifier: 1
     spreadModifier: 1
     speedModifier: 1
+  itemValues:
+    list:
+    - Key: Max Bounces
+      Value: 1
+  upgrades:
+  - cost: 0
+    upgradeDescription: Increases the max number of bounces to 2
+    itemDescription: 
+    modifiers:
+      forceNonAutomatic: 0
+      forceAutomatic: 0
+      damageModifier: 1
+      bulletCountModifier: 1
+      fireRateModifier: 1
+      magazineModifier: 1
+      reloadModifier: 1
+      spreadModifier: 1
+      speedModifier: 1
+    itemValues:
+      list:
+      - Key: Max Bounces
+        Value: 2

@@ -7,7 +7,7 @@ public class HubManager : MonoBehaviour
     [Tooltip("The area in which the player can interact with the gun bench/inventory")]public Bounds gunBenchUseArea;
     GameObject gunBenchButtonUI;
     
-    [Tooltip("The area in which guns are enabled")]public Bounds shootingArea;
+    Bounds shootingArea;
 
     public static bool inGunBenchArea, inShootingArea;
 
@@ -17,6 +17,8 @@ public class HubManager : MonoBehaviour
         gunBenchUseArea.size += Vector3.forward * 999f;
         shootingArea.size += Vector3.forward * 999f;
         gunBenchButtonUI = GameObject.Find("Gun Bench Use");
+
+        shootingArea = GameObject.Find("Shooting Range").GetComponent<BoxCollider2D>().bounds;
     }
 
     // Update is called once per frame

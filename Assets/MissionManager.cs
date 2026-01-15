@@ -3,21 +3,19 @@ using MilanUtils;
 using static MilanUtils.Variables;
 using UnityEngine;
 using System.Collections;
-using static UnityEngine.ParticleSystem;
 using UnityEngine.SceneManagement;
 using System;
 using TMPro;
 
 public class MissionManager : MonoBehaviour
 {
-    List<GameObject> allItemCrates = new();
-    List<GameObject> allDroppedItems = new();
+    public static List<GameObject> allDroppedItems = new();
     GameObject depositBox, lidMask;
     Vector3 sceneEnterPoint, playerSpawnPoint, boxTeleportPoint;
     float boxStopHeight;
     
     [Header("Item Pickups")]
-    public float pickUpDistance;
+    public float itemPickupDistance;
     public Bounds depositBoxPickupArea; //Can't be SetName'd because the GetHeight doesn't work for Bounds
     Bounds pickupArea;
 
@@ -67,9 +65,6 @@ public class MissionManager : MonoBehaviour
 
     private void GetSceneObjects(Scene a, Scene b)
     {
-        foreach(var obj in GameObject.FindGameObjectsWithTag("Crate"))
-            allItemCrates.Add(obj);
-
         sceneEnterPoint = GameObject.Find("Scene Enter Point").transform.position;
         sceneChangeCamTriggerHeight = GameObject.Find("Scene Exit Point").transform.position.y;
         playerSpawnPoint = GameObject.Find("Player Spawn Point").transform.position;
@@ -95,19 +90,19 @@ public class MissionManager : MonoBehaviour
 
     private void SceneTransitionFunction()
     {
-        player.gameObject.SetActive(true);
-        player.position = playerSpawnPoint;
-        player.transform.Find("Gun").gameObject.SetActive(false);
-        
         Vector3 posDiff = depositBox.transform.position - Camera.main.transform.position;
         Camera.main.transform.position = sceneEnterPoint + Vector3.back * 10f;
         depositBox.transform.position = sceneEnterPoint + posDiff;
+        
+        player.gameObject.SetActive(true);
+        player.position = playerSpawnPoint;
+        player.transform.Find("Gun").gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(MenuManager.IsPaused) return;
+        if(MenuManager.IsPaused || isTransitioning) return;
 
         //Sets the pickupArea position to center in relation to depositBox position
         pickupArea = new(depositBox.transform.position + depositBoxPickupArea.center, depositBoxPickupArea.size);
@@ -120,44 +115,18 @@ public class MissionManager : MonoBehaviour
         }
 
         if(Input.GetKeyDown(Keybinds.interact))
-        {
-            //Gets the closest crate, checks if it is closer than pickUpDistance and pressing the pick up button
-            GameObject closestCrate = Lists.GetClosest(allItemCrates, player.gameObject);
-            if(closestCrate && Vector2.Distance(closestCrate.transform.position, player.position) < pickUpDistance)
-            {
-                //Creates an item, adds it to droppeditems, sets parent to world canvas, and sets position
-                GameObject item = Instantiate(prefabs["Item"]);
-                allDroppedItems.Add(item);
-                item.transform.SetParent(GameObject.Find("World Canvas").transform);
-                item.transform.position = closestCrate.transform.position + Vector3.up * .5f;
-
-                item.name = "Reverse Gravity";
-
-                //ADD FUNCTIONALITY FOR CHANGING THE IMAGE WHEN KEVIN MAKES THE IMAGES
-
-                //Deletes the crate
-                allItemCrates.Remove(closestCrate);
-                Destroy(closestCrate);
-                return;
-            }
-            
+        {            
             //Gets the closest item, checks if it is closer than pickUpDistance and pressing the pick up button
             GameObject closestItem = Lists.GetClosest(allDroppedItems, player.gameObject);
-            if(closestItem && Vector2.Distance(closestItem.transform.position, player.position) < pickUpDistance)
+            if(closestItem && Vector2.Distance(closestItem.transform.position, player.position) < 2f)
             {
-                GameObject item = Instantiate(prefabs[closestItem.name]);
+                //Gets the item prefab, which is 
+                GameObject item = Instantiate(prefabs[closestItem.name[..closestItem.name.IndexOf(" Dropped Item")]]);
 
-                //Sets the instantiated item to the correct inventory parent
+                //Sets the instantiated item to the correct inventory parent and resets localScale
                 if (item && item.GetComponent<DragDrop>())
                 {
-                    if(item.GetComponent<DragDrop>().name == "Bullet")
-                    {
-                        item.transform.SetParent(World.FindInactive("Bullet Inventory").transform);
-                    }
-                    else if(item.GetComponent<DragDrop>().name == "Effect")
-                    {
-                        item.transform.SetParent(World.FindInactive("Effect Inventory").transform);
-                    }
+                    item.transform.SetParent(World.FindInactive(item.GetComponent<DragDrop>().name + " Inventory").transform);
 
                     item.transform.localScale = Vector3.one;
                 }
@@ -170,9 +139,7 @@ public class MissionManager : MonoBehaviour
             }
 
             if (pickupArea.Contains(player.position) && !PlayerManager.isDead)
-            {
                 StartCoroutine(ExtractionCoroutine());
-            }
         }
     }
 
@@ -202,16 +169,15 @@ public class MissionManager : MonoBehaviour
         gunCopy.position = playerGun.position;
         DontDestroyOnLoad(gunCopy.gameObject);
 
-        //Gets and disables the animation manager and player movement
+        //Gets and disables the animation manager/player movement, zeros out x velocity, and disables gun
         AnimationManager animManager = player.GetComponent<AnimationManager>();
         PlayerMovement playerMovement = player.GetComponent<PlayerMovement>();
+        PlayerManager playerManager = player.GetComponent<PlayerManager>();
         animManager.enabled = false;
         playerMovement.enabled = false;
-
-        //Disables the player object and creates a particle copy of it
-        player.gameObject.SetActive(false);
-        Effects.TurnIntoParticles(player.gameObject, player.position, dontThrowNonReadException: true);
-        player.transform.position = Vector3.one * 9999f;
+        playerManager.enabled = false;
+        player.GetComponent<Rigidbody2D>().linearVelocityX = 0f;
+        playerGun.gameObject.SetActive(false);
 
         //Moves the copy to the box, rotates it to have no rotation, and scales it to be bigger
         LeanTween.move(gunCopy.gameObject, depositBox.transform.position, transition.gunMoveTime).setEaseOutQuint();
@@ -220,8 +186,22 @@ public class MissionManager : MonoBehaviour
 
         depositBox.GetComponent<SpriteRenderer>().sortingOrder = 1;
         depositBox.transform.Find("Lid").GetComponent<SpriteRenderer>().sortingOrder = 2;
+
+        //Set a LeanTween rotate for the gun object. For the duration of gunMoveTime, set AnimationManager ArmAngle to the angle of the Tween
+        float timeStart = Time.time;
+        LeanTween.rotateZ(player.transform.Find("Gun").gameObject, Mathf.Sign(player.localScale.x) * -160f, transition.gunMoveTime).setEaseOutQuint();
+        while(Time.time < timeStart + transition.gunMoveTime)
+        {
+            animManager.SetArmAngle(player.transform.Find("Gun").eulerAngles.z);
+            yield return null;
+        }
         
-        yield return GetWaitForSeconds(transition.gunMoveTime + transition.gunLidPauseTime);
+        yield return GetWaitForSeconds(transition.gunLidPauseTime);
+
+        //Disables the player object and creates a particle copy of it
+        player.gameObject.SetActive(false);
+        Effects.TurnIntoParticles(player.gameObject, player.position, dontThrowNonReadException: true);
+        player.transform.position = Vector3.one * 9999f;
 
         //Activates the mask (if already active it would've maybe interacted with the gun) and moves it
         lidMask.SetActive(true);
@@ -243,6 +223,9 @@ public class MissionManager : MonoBehaviour
         rb.linearVelocityY = transition.boxMaxSpeed * sign;
         camFollow.restrictionType = CameraFollow.RestrictionType.Unrestricted;
         yield return null;
+
+        //Turns the player's arms towards the deposit box end point. Can't go in the OnActiveSceneChanged function for some reason (arms are fucked)
+        player.GetComponent<AnimationManager>().SetArmPointPos(new(sceneEnterPoint.x, boxStopHeight));
 
         //Gets the sign again (just to be sure), then while depositbox still has to move and has some speed, if needs to decelerate (physics shit idk), decelerate
         sign = Mathf.Sign(boxStopHeight - depositBox.transform.position.y);
@@ -289,9 +272,10 @@ public class MissionManager : MonoBehaviour
             depositBox.transform.Find("Lid").GetComponent<SpriteRenderer>().sortingOrder = 2;
         });
 
-        //Reenables the animation/movement, reactivates the gun, and destroys the copy
+        //Reenables the animation/movement/manager, reactivates the gun, and destroys the copy
         animManager.enabled = true;
         playerMovement.enabled = true;
+        playerManager.enabled = true;
         playerGun.gameObject.SetActive(true);
         Destroy(gunCopy.gameObject);
 

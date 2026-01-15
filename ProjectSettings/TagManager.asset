@@ -5,8 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - Map
-  - Crate
   - Enemy
+  - Crate
   layers:
   - Default
   - TransparentFX
@@ -18,7 +18,7 @@ TagManager:
   - Map
   - Enemy
   - Camera
-  - 
+  - Item Crate
   - 
   - 
   - 

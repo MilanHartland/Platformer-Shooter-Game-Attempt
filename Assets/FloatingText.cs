@@ -2,7 +2,7 @@ using UnityEngine;
 using MilanUtils;
 using TMPro;
 
-public class DamageText : MonoBehaviour
+public class FloatingText : MonoBehaviour
 {
     public float moveSpeed;
     public float disappearTime;
@@ -29,5 +29,13 @@ public class DamageText : MonoBehaviour
         obj.transform.SetParent(GameObject.Find("World Canvas").transform);
         obj.GetComponent<TextMeshProUGUI>().text = damage.ToString("#.#");
         obj.transform.position = hitObj.transform.position + Vector3.one * Random.Range(.8f, 1f) + Vector3.right * Random.Range(-.5f, .5f);
+    }
+
+    public static void SpawnOreText(GameObject crate, int count)
+    {
+        GameObject obj = Instantiate(Variables.prefabs["Ore Text"]);
+        obj.transform.SetParent(GameObject.Find("World Canvas").transform);
+        obj.GetComponent<TextMeshProUGUI>().text = $"+{count} Ore";
+        obj.transform.position = crate.transform.position;
     }
 }

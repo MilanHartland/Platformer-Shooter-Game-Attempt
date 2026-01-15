@@ -7,6 +7,7 @@ public class GuiManager : MonoBehaviour
     public TextMeshProUGUI hpTMP;
     public TextMeshProUGUI mainMagazineTMP;
     public TextMeshProUGUI altMagazineTMP;
+    public TextMeshProUGUI oreCounterTMP;
 
     PlayerManager playerManager;
 
@@ -26,5 +27,8 @@ public class GuiManager : MonoBehaviour
         
         if(PlayerManager.baseMainWeapon != null) mainMagazineTMP.text = $"{PlayerManager.mainWeaponBullets} / {PlayerManager.mainWeapon.magazineSize}";
         if(PlayerManager.baseAltWeapon != null) altMagazineTMP.text = $"{PlayerManager.altWeaponBullets} / {PlayerManager.altWeapon.magazineSize}";
+
+        oreCounterTMP.gameObject.SetActive(MissionManager.inHub);
+        oreCounterTMP.text = $"{PlayerManager.oreCount} Ore";
     }
 }

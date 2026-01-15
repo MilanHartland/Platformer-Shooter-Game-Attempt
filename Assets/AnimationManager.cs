@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MilanUtils;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Rigidbody2D)), RequireComponent(typeof(SpriteRenderer))]
 public class AnimationManager : MonoBehaviour
@@ -26,56 +27,18 @@ public class AnimationManager : MonoBehaviour
 
     public void LateUpdate()
     {
-        if(MenuManager.IsPaused) return;
+        if(MenuManager.IsPaused || MissionManager.isTransitioning || PlayerManager.isDead) return;
         
-        Vector3 armReachPos;
-        float signedDir;
-
+        //If this is the player, point arms to mouse. If not (thus an enemy), if sees the player, point to player, otherwise point downwards
         if (transform == Variables.player)
-        {
-            //Gets the position that is within the reach of an arm towards the mousepos (center between left/right arm + average of the directions to point to mouse)
-            armReachPos = (leftArm.transform.position + rightArm.transform.position) / 2f + 
-            (Vector3)(Angle2D.GetAngle<Vector2>(leftArm.transform.position, World.mousePos) + Angle2D.GetAngle<Vector2>(rightArm.transform.position, World.mousePos)) / 2f;
-
-            //Gets which direction the mouse is (-1 = left, 1 = right)
-            signedDir = Mathf.Sign((World.mousePos - transform.position).x);
-        }
+            SetArmPointPos(World.mousePos);
         else
         {
             if(GetComponent<EnemyBehaviour>().seesPlayer)
-            {
-                //Gets the position that is within the reach of an arm towards the player (center between left/right arm + average of the directions to point to player)
-                armReachPos = (leftArm.transform.position + rightArm.transform.position) / 2f 
-                + (Vector3)(Angle2D.GetAngle<Vector2>(leftArm.transform.position, Variables.player.transform.position) 
-                + Angle2D.GetAngle<Vector2>(rightArm.transform.position, Variables.player.transform.position)) / 2f;
-
-                //Gets which direction the player is (-1 = left, 1 = right)
-                signedDir = Mathf.Sign((Variables.player.transform.position - transform.position).x);
-            }
-            else if(GetComponent<EnemyPathfinding>().path.Count > 0 && GetComponent<EnemyPathfinding>().path[0].x != transform.position.x)
-            {
-                signedDir = Mathf.Sign(GetComponent<EnemyPathfinding>().path[0].x - transform.position.x);
-                armReachPos = (leftArm.transform.position + rightArm.transform.position) / 2f + Vector3.right * signedDir;
-            }
+                SetArmPointPos(Variables.player.position);
             else
-            {
-                signedDir = Mathf.Sign(transform.lossyScale.x);
-                armReachPos = (leftArm.transform.position + rightArm.transform.position) / 2f + Vector3.right * signedDir;
-            }
+                SetArmAngle(Mathf.Sign(transform.lossyScale.x) * -160f);
         }
-
-        //Turns the arms towards the armReachPos
-        Angle2D.TurnTo(leftArm.gameObject, armReachPos, 0f);
-        Angle2D.TurnTo(rightArm.gameObject, armReachPos, 0f);
-
-        //Sets localscales based on signedDir (player: sets x sign to signedDir. Arms: set x and y sign to signedDir to not have a flipped arm)
-        transform.localScale = new(Mathf.Abs(transform.localScale.x) * signedDir, transform.localScale.y);
-        leftArm.localScale = new(Mathf.Abs(leftArm.localScale.x) * signedDir, Mathf.Abs(leftArm.localScale.y) * signedDir);
-        rightArm.localScale = new(Mathf.Abs(rightArm.localScale.x) * signedDir, Mathf.Abs(rightArm.localScale.y) * signedDir);
-        
-        //Places the gun on armReachPos and rotates it outward from the chest (center of arms)
-        transform.Find("Gun").position = armReachPos;
-        transform.Find("Gun").rotation = Angle2D.GetAngle<Quaternion>((leftArm.transform.position + rightArm.transform.position) / 2f, armReachPos);
 
         //If moving horizontally and needs to go to next frame, go to next frame. Else, stand
         if (Mathf.Abs(GetComponent<Rigidbody2D>().linearVelocity.x) > .1f && walkingFrameTimer.finished)
@@ -91,7 +54,7 @@ public class AnimationManager : MonoBehaviour
         }
     }
 
-    public void WalkingAnim()
+    void WalkingAnim()
     {
         //Loops the current walking frame to not surpass spriteList count, then sets the sprite to the correct frame, then increases the frame
         curWalkingFrame = Mathf.RoundToInt(Mathf.Repeat(curWalkingFrame, spriteList.Count - 1));
@@ -99,8 +62,42 @@ public class AnimationManager : MonoBehaviour
         curWalkingFrame++;
     }
 
-    public void StandingAnim()
+    void StandingAnim(){GetComponent<SpriteRenderer>().sprite = standingSprite;}
+    
+    /// <summary>Sets the angle of the arms. What it does is it places the gun at the set angle, and applies IK to the arms, where 0 is up and 90 is forward</summary>
+    public void SetArmAngle(float angle)
     {
-        GetComponent<SpriteRenderer>().sprite = standingSprite;
+        Vector3 armReachPos = (leftArm.transform.position + rightArm.transform.position) / 2f + (Vector3)Angle2D.Convert<float, Vector2>(angle);
+
+        SetArmPointPos(armReachPos);
+    }
+
+    /// <summary>Gets the angle to the gun, which is what the arms are pointing at</summary><returns></returns>
+    public float GetArmAngle()
+    {
+        return transform.Find("Gun").eulerAngles.z;
+    }
+
+    /// <summary>Sets the angle of the arms to point towards the position</summary><param name="pos"></param>
+    public void SetArmPointPos(Vector3 pos)
+    {
+        //Gets the position that is within the reach of an arm towards the mousepos (center between left/right arm + average of the directions to point to mouse)
+        Vector3 armReachPos = (leftArm.transform.position + rightArm.transform.position) / 2f + 
+        (Vector3)(Angle2D.GetAngle<Vector2>(leftArm.transform.position, pos) + Angle2D.GetAngle<Vector2>(rightArm.transform.position, pos)) / 2f;
+
+        float signedDir = Mathf.Sign((armReachPos - transform.position).x);
+
+        //Turns the arms towards the armReachPos
+        Angle2D.TurnTo(leftArm.gameObject, armReachPos, 0f);
+        Angle2D.TurnTo(rightArm.gameObject, armReachPos, 0f);
+
+        //Sets localscales based on signedDir (player: sets x sign to signedDir. Arms: set x and y sign to signedDir to not have a flipped arm)
+        transform.localScale = new(Mathf.Abs(transform.localScale.x) * signedDir, transform.localScale.y);
+        leftArm.localScale = new(Mathf.Abs(leftArm.localScale.x) * signedDir, Mathf.Abs(leftArm.localScale.y) * signedDir);
+        rightArm.localScale = new(Mathf.Abs(rightArm.localScale.x) * signedDir, Mathf.Abs(rightArm.localScale.y) * signedDir);
+        
+        //Places the gun on armReachPos and rotates it outward from the chest (center of arms)
+        transform.Find("Gun").position = armReachPos;
+        transform.Find("Gun").rotation = Angle2D.GetAngle<Quaternion>((leftArm.transform.position + rightArm.transform.position) / 2f, armReachPos);
     }
 }

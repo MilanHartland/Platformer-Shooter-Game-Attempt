@@ -58,7 +58,7 @@ public class TooltipInfoHandler : MonoBehaviour
             nameTMP.text = weap.name;
             typeTMP.text = hoveredObj.GetComponent<DragDrop>().name;
             infoTMP.text = (weap.automatic ? "Automatic\n\n" : "Manual\n\n") + $"Damage: {weap.damage}\nBullets: {weap.bulletCount}/shot\nFirerate: {weap.fireRate}/s\n"
-            + "Magazine Size: {weap.magazineSize}\nReload Time: {weap.reloadTime}\nSpread: {weap.spread}°\nBullet Speed: {weap.bulletSpeed} m/s";
+            + $"Magazine Size: {weap.magazineSize}\nReload Time: {weap.reloadTime}\nSpread: {weap.spread}°\nBullet Speed: {weap.bulletSpeed} m/s";
         }
         else if(info != null)
         {
@@ -73,7 +73,10 @@ public class TooltipInfoHandler : MonoBehaviour
 
             if(info.upgrades.Count > 0)
             {
-                upgradeButtonTMP.text = $"Cost: {info.upgrades[0].cost}\n[{Keybinds.bindings["Upgrade"]}] Upgrade";
+                if(PlayerManager.oreCount >= info.upgrades[0].cost)
+                    upgradeButtonTMP.text = $"Cost: {info.upgrades[0].cost}\n[{Keybinds.bindings["Upgrade"]}] Upgrade";
+                else upgradeButtonTMP.text = $"Cost: {info.upgrades[0].cost}\nCannot Afford";
+                
                 upgradeInfoTMP.text = info.upgrades[0].upgradeDescription;
                 upgradeInfoTMP.gameObject.SetActive(true);
             }

@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-[RequireComponent(typeof(EnemyPathfinding))]
+[RequireComponent(typeof(EnemyPathfinding), typeof(AnimationManager))]
 public class EnemyBehaviour : MonoBehaviour
 {
     RaycastHit2D[] visionCasts = new RaycastHit2D[5];
@@ -40,7 +40,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     [Header("Idle")]
     [Tooltip("A list of positions this enemy can wander to")]public List<Vector3> wanderPositions;
-    [Tooltip("The amount of time there is between wanders")]public Range wanderTimeRange;
+    [Tooltip("The amount of time there is between wanders")]public FloatRange wanderTimeRange;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -95,11 +95,12 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    Timer wanderTime;
-    Vector3 wanderPos;
-    bool lookingForPlayer = false;
     IEnumerator PathfindCoroutine()
     {
+        Timer wanderTime;
+        Vector3 wanderPos;
+        bool lookingForPlayer = false;
+        
         StartCoroutine(SightCoroutine());
         wanderPos = wanderPositions[Random.Range(0, wanderPositions.Count)];
         wanderTime = new(wanderTimeRange.Random());
@@ -228,7 +229,7 @@ public class EnemyBehaviour : MonoBehaviour
         Effects.SpawnLine(new(){pos, endPos}, Color.yellow, .05f, .1f);
 
         if(hit.collider.TryGetComponent(out PlayerManager pm)) pm.hp -= w.damage;
-        DamageText.SpawnDamageText(hit.collider.gameObject, w.damage);
+        FloatingText.SpawnDamageText(hit.collider.gameObject, w.damage);
     }
 
     #pragma warning disable

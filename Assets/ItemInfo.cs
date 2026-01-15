@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class ItemInfo : MonoBehaviour
 {
+    public enum ItemQuality{Common, Uncommon, Rare, Epic, Legendary}
+    [Tooltip("The item quality of this item. Used to determine what drops from loot pools")]public ItemQuality itemQuality;
+
     public enum ItemType{Bullet, Effect}
     [Tooltip("The type of item this is. Bullets modify the trajectory and behaviour of bullets, while effects do other things")]public ItemType type;
 
     public new string name;
-    [SerializeField, TextArea, Tooltip("The description of the item. Add [d], [f], [m], [r], [s], or [v] to have the shown string show the modifier value of" +
-    "damage, fire rate, magazine size, reload time, spread, and speed respectively. Add a percentage symbol behind the letter to get the +x% percentage")] string Description;
+    [SerializeField, TextArea, Tooltip("The description of the item. Add [d], [f], [m], [r], [b], [s], or [v] to have the shown string show the modifier value of" +
+    "damage, fire rate, magazine size, reload time, bullets, spread, and speed respectively. Add a percentage symbol behind the letter to get the +x% percentage")] string Description;
     public string description {get{return ReplaceDescriptionValues();}}
 
     [Tooltip("The priority of the effect. Lower values get triggered first")]public int effectOrder;
@@ -22,13 +25,13 @@ public class ItemInfo : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(Keybinds.bindings["Upgrade"]) && upgrades.Count > 0 && UI.GetObjectsUnderMouse().Contains(gameObject))
+        //If pressing the upgrade bind, and there is an upgrade for which the cost is met, and the mouse is over this object: set item variables of upgrade, pay, then remove it from the upgrades list
+        if(Input.GetKeyDown(Keybinds.bindings["Upgrade"]) && upgrades.Count > 0 && PlayerManager.oreCount > upgrades[0].cost && UI.GetObjectsUnderMouse().Contains(gameObject))
         {
-            //DO SOMETHING HERE TO DECREASE CURRENCY BASED ON COST
-
             itemValues = upgrades[0].itemValues;
             modifiers += upgrades[0].modifiers;
-            Description = upgrades[0].itemDescription;
+            if(upgrades[0].itemDescription != string.Empty) Description = upgrades[0].itemDescription;
+            PlayerManager.oreCount -= upgrades[0].cost;
             upgrades.RemoveAt(0);
         }
     }
@@ -39,6 +42,7 @@ public class ItemInfo : MonoBehaviour
         fullDesc = fullDesc.Replace("[f]", modifiers.fireRateModifier.ToString());
         fullDesc = fullDesc.Replace("[m]", modifiers.magazineModifier.ToString());
         fullDesc = fullDesc.Replace("[r]", modifiers.reloadModifier.ToString());
+        fullDesc = fullDesc.Replace("[b]", modifiers.bulletCountModifier.ToString());
         fullDesc = fullDesc.Replace("[s]", modifiers.spreadModifier.ToString());
         fullDesc = fullDesc.Replace("[v]", modifiers.speedModifier.ToString());
         fullDesc = fullDesc.Replace("[d%]", GetModifierPercentageText(modifiers.damageModifier));
