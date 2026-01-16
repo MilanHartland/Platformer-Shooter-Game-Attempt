@@ -48,12 +48,18 @@ public class BulletBehaviour : MonoBehaviour
 
     void LateUpdate()
     {
-        if(trailRend.enabled == false) trailRend.enabled = true;
+        
+    }
 
+    void FixedUpdate()
+    {
         foreach(var item in items)
         {
             switch (item.name)
             {
+                case "Thrust":
+                    rb.linearVelocity *= 1 + itemValues["Thrust"] * Time.fixedDeltaTime;
+                    break;
                 default: continue; 
             }
         }
@@ -78,18 +84,28 @@ public class BulletBehaviour : MonoBehaviour
             }
         }
 
-        if(coll.gameObject.CompareTag("Map") && destroyBullet)
-        {
-            gameObject.SetActive(false);
-        }
-        else if(coll.gameObject.CompareTag("Enemy"))
+        if(coll.gameObject.CompareTag("Enemy"))
         {
             EnemyBehaviour enemyBehaviour = coll.gameObject.GetComponent<EnemyBehaviour>();
-            if(enemyBehaviour) enemyBehaviour.hp -= shotBy.damage;
-            FloatingText.SpawnDamageText(coll.gameObject, shotBy.damage);
-            
-            gameObject.SetActive(false);
+
+            if(enemyBehaviour)
+            {
+                foreach(var item in items)
+                {
+                    switch (item.name)
+                    {
+                        case "Infect":
+                            enemyBehaviour.ApplyInfection(itemValues["Infect"]);
+                            break;
+                        default: continue;
+                    }
+                }
+
+                enemyBehaviour.TakeDamage(shotBy.damage);
+            }
         }
+
+        if(destroyBullet) gameObject.SetActive(false);
     }
 
     public void Disable(float afterSeconds){StartCoroutine(DisableCoroutine(afterSeconds));}

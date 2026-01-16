@@ -38,6 +38,9 @@ public class EnemyBehaviour : MonoBehaviour
     [Tooltip("How fast the enemy should forget it saw something. Put as value / second. For reference, the highest sight factor possible is 1 per second")]
     public float memoryDeterioration;
 
+    float infectedTimeLeft = 0f;
+    Timer infectedTimer = new(1f);
+
     [Header("Idle")]
     [Tooltip("A list of positions this enemy can wander to")]public List<Vector3> wanderPositions;
     [Tooltip("The amount of time there is between wanders")]public FloatRange wanderTimeRange;
@@ -67,6 +70,13 @@ public class EnemyBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        infectedTimeLeft -= Time.deltaTime;
+        if (infectedTimer)
+        {
+            TakeDamage(1f);
+            if(infectedTimeLeft > 0) infectedTimer.ResetTimer();    
+        }
+
         if(hp <= 0)
         {
             Effects.Disintegrate(gameObject, dontThrowNonReadException: true);
@@ -231,6 +241,15 @@ public class EnemyBehaviour : MonoBehaviour
         if(hit.collider.TryGetComponent(out PlayerManager pm)) pm.hp -= w.damage;
         FloatingText.SpawnDamageText(hit.collider.gameObject, w.damage);
     }
+
+    public void TakeDamage(float damage)
+    {
+        hp -= damage;
+        playerKnowledge = Mathf.Max(playerKnowledge, .8f * sightThreshold);
+        FloatingText.SpawnDamageText(gameObject, damage);
+    }
+
+    public void ApplyInfection(float seconds){infectedTimeLeft += seconds;}
 
     #pragma warning disable
     void OnDrawGizmosSelected()
