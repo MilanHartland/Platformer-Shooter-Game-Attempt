@@ -26,7 +26,7 @@ public class ItemInfo : MonoBehaviour
     void Update()
     {
         //If pressing the upgrade bind, and there is an upgrade for which the cost is met, and the mouse is over this object: set item variables of upgrade, pay, then remove it from the upgrades list
-        if(Input.GetKeyDown(Keybinds.bindings["Upgrade"]) && upgrades.Count > 0 && PlayerManager.oreCount > upgrades[0].cost && UI.GetObjectsUnderMouse().Contains(gameObject))
+        if(Input.GetKeyDown(Keybinds.bindings["Upgrade"]) && upgrades.Count > 0 && PlayerManager.oreCount >= upgrades[0].cost && UI.GetObjectsUnderMouse().Contains(gameObject))
         {
             itemValues = upgrades[0].itemValues;
             modifiers += upgrades[0].modifiers;
@@ -55,6 +55,7 @@ public class ItemInfo : MonoBehaviour
         foreach(var value in itemValues.list)
         {
             fullDesc = fullDesc.Replace($"[{value.Key}]", value.Value.ToString());
+            fullDesc = fullDesc.Replace($"[{value.Key}%]", $"{value.Value * 100f}%");
         }
         return fullDesc;
     }
@@ -63,8 +64,8 @@ public class ItemInfo : MonoBehaviour
     void SetBaseModifierText()
     {
         string text = string.Empty;
-        if(modifiers.forceNonAutomatic) text += "Manual\n";
-        else if(modifiers.forceAutomatic) text += "Automatic\n";
+        if(modifiers.automaticModifier == WeaponModifiers.ForceAutomaticType.MakeManual) text += "Manual\n";
+        else if(modifiers.automaticModifier == WeaponModifiers.ForceAutomaticType.MakeAutomatic) text += "Automatic\n";
         if(modifiers.damageModifier != 1f) text += $"[d%] damage\n";
         if(modifiers.reloadModifier != 1f) text += $"[b%] bullets per shot\n";
         if(modifiers.fireRateModifier != 1f) text += $"[f%] bullets per second\n";
@@ -113,11 +114,13 @@ public class ItemInfo : MonoBehaviour
         }
     }
 
+    public override string ToString(){return name;}
+
     [System.Serializable]
     public struct WeaponModifiers
     {
-        public bool forceNonAutomatic;
-        public bool forceAutomatic;
+        public enum ForceAutomaticType{Keep, MakeManual, MakeAutomatic}
+        public ForceAutomaticType automaticModifier;
         public float damageModifier;
         public float bulletCountModifier;
         public float fireRateModifier;
@@ -133,8 +136,7 @@ public class ItemInfo : MonoBehaviour
         {
             return new()
             {
-                forceNonAutomatic = (a.forceNonAutomatic || b.forceNonAutomatic) && !(a.forceAutomatic || b.forceAutomatic),  
-                forceAutomatic = a.forceAutomatic || b.forceAutomatic,
+                automaticModifier = a.automaticModifier,
                 damageModifier = a.damageModifier + b.damageModifier,
                 bulletCountModifier = a.bulletCountModifier + b.bulletCountModifier,
                 fireRateModifier = a.fireRateModifier + b.fireRateModifier,

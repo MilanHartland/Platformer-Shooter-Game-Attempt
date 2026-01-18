@@ -19,6 +19,7 @@ public class HubManager : MonoBehaviour
         gunBenchButtonUI = GameObject.Find("Gun Bench Use");
 
         shootingArea = GameObject.Find("Shooting Range").GetComponent<BoxCollider2D>().bounds;
+        GameObject.Find("Shooting Range").GetComponent<Collider2D>().enabled = false;
     }
 
     // Update is called once per frame

@@ -55,6 +55,8 @@ public class TooltipInfoHandler : MonoBehaviour
 
             upgradePanel.SetActive(false);
             transform.localScale = Vector3.one;
+
+            weap = WeaponInfo.GetWeaponWithModifiers(weap);
             nameTMP.text = weap.name;
             typeTMP.text = hoveredObj.GetComponent<DragDrop>().name;
             infoTMP.text = (weap.automatic ? "Automatic\n\n" : "Manual\n\n") + $"Damage: {weap.damage}\nBullets: {weap.bulletCount}/shot\nFirerate: {weap.fireRate}/s\n"

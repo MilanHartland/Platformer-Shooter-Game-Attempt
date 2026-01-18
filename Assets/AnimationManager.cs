@@ -9,7 +9,7 @@ public class AnimationManager : MonoBehaviour
     public Sprite standingSprite;
     public List<Sprite> spriteList;
 
-    Transform leftArm, rightArm;
+    Transform leftArm, rightArm, gun;
 
     int curWalkingFrame = 0;
 
@@ -17,12 +17,15 @@ public class AnimationManager : MonoBehaviour
 
     Timer walkingFrameTimer;
 
+    int lastFrameArmsSet = 0;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         walkingFrameTimer = new(1f / fps);
         leftArm = transform.Find("Left Arm");
         rightArm = transform.Find("Right Arm");
+        gun = transform.Find("Gun");
     }
 
     public void LateUpdate()
@@ -75,12 +78,15 @@ public class AnimationManager : MonoBehaviour
     /// <summary>Gets the angle to the gun, which is what the arms are pointing at</summary><returns></returns>
     public float GetArmAngle()
     {
-        return transform.Find("Gun").eulerAngles.z;
+        return gun.eulerAngles.z;
     }
 
     /// <summary>Sets the angle of the arms to point towards the position</summary><param name="pos"></param>
     public void SetArmPointPos(Vector3 pos)
     {
+        if(lastFrameArmsSet == Time.frameCount) return;
+        lastFrameArmsSet = Time.frameCount;
+        
         //Gets the position that is within the reach of an arm towards the mousepos (center between left/right arm + average of the directions to point to mouse)
         Vector3 armReachPos = (leftArm.transform.position + rightArm.transform.position) / 2f + 
         (Vector3)(Angle2D.GetAngle<Vector2>(leftArm.transform.position, pos) + Angle2D.GetAngle<Vector2>(rightArm.transform.position, pos)) / 2f;
@@ -95,9 +101,10 @@ public class AnimationManager : MonoBehaviour
         transform.localScale = new(Mathf.Abs(transform.localScale.x) * signedDir, transform.localScale.y);
         leftArm.localScale = new(Mathf.Abs(leftArm.localScale.x) * signedDir, Mathf.Abs(leftArm.localScale.y) * signedDir);
         rightArm.localScale = new(Mathf.Abs(rightArm.localScale.x) * signedDir, Mathf.Abs(rightArm.localScale.y) * signedDir);
+        gun.localScale = new(Mathf.Abs(gun.localScale.x) * signedDir, Mathf.Abs(gun.localScale.y) * signedDir);
         
         //Places the gun on armReachPos and rotates it outward from the chest (center of arms)
-        transform.Find("Gun").position = armReachPos;
-        transform.Find("Gun").rotation = Angle2D.GetAngle<Quaternion>((leftArm.transform.position + rightArm.transform.position) / 2f, armReachPos);
+        gun.position = armReachPos;
+        gun.rotation = Angle2D.GetAngle<Quaternion>((leftArm.transform.position + rightArm.transform.position) / 2f, armReachPos, 0f);
     }
 }

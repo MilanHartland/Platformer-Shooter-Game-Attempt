@@ -35,8 +35,8 @@ public class WeaponStats : ScriptableObject
         WeaponStats w = CreateInstance<WeaponStats>();
         w.SetValues(this);
 
-        if(mod.forceAutomatic) w.automatic = true;
-        else if(mod.forceNonAutomatic) w.automatic = false;
+        if(mod.automaticModifier == ItemInfo.WeaponModifiers.ForceAutomaticType.MakeAutomatic) w.automatic = true;
+        else if(mod.automaticModifier == ItemInfo.WeaponModifiers.ForceAutomaticType.MakeManual) w.automatic = false;
         
         w.damage *= mod.damageModifier;
         w.bulletCount *= mod.bulletCountModifier;

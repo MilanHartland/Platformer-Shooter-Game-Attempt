@@ -19,6 +19,8 @@ public static class SaveSystem
 
     public static void SetSaveData()
     {
+        DragDrop.StopDragging();
+        
         saveData = new();
         SaveData data = new();
 
@@ -120,7 +122,7 @@ public static class SaveSystem
                 Object.Destroy(slot.GetChild(i).gameObject);
             }
         }
-
+        
         //Loads the data from the weapons and equipment
         foreach(var weaponData in saveData.weapons)
         {

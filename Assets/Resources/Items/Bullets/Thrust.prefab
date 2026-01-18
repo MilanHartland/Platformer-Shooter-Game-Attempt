@@ -37,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7442096971112018654
 MonoBehaviour:
@@ -53,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdToDrag: 0
   addHologram: 1
+  hologramColor: {r: 1, g: 1, b: 1, a: 0.5019608}
   needSameName: 1
   _editorType: 0
   type: 0
@@ -84,14 +85,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.435849, g: 0.46413577, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -318127280, guid: 0751d044824198243a3113c4ea3bb914, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -120,8 +121,7 @@ MonoBehaviour:
     per second, but decreases starting speed by [v%]'
   effectOrder: 0
   modifiers:
-    forceNonAutomatic: 0
-    forceAutomatic: 0
+    automaticModifier: 0
     damageModifier: 1
     bulletCountModifier: 1
     fireRateModifier: 1

@@ -66,7 +66,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1671854960, guid: 5c929c54fc2bdbe40848aee5877c2148, type: 3}
+  m_Sprite: {fileID: 1935875436, guid: 0751d044824198243a3113c4ea3bb914, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -90,6 +90,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdToDrag: 0
   addHologram: 1
+  hologramColor: {r: 0, g: 0, b: 0, a: 0}
   needSameName: 1
   _editorType: 2
   type: 1

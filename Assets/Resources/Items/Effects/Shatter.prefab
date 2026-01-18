@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1474817385992993526
+--- !u!1 &7398587777863522293
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,25 +8,25 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7240774437196183986}
-  - component: {fileID: 7765701094986559108}
-  - component: {fileID: 6475599213549376140}
-  - component: {fileID: 3345288530330270838}
-  - component: {fileID: 1113793157031637801}
+  - component: {fileID: 1444937953199299862}
+  - component: {fileID: 2363447149305964794}
+  - component: {fileID: 8944999683163235182}
+  - component: {fileID: 8345490016483072268}
+  - component: {fileID: 4711712927483883744}
   m_Layer: 5
-  m_Name: Infect
+  m_Name: Shatter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &7240774437196183986
+--- !u!224 &1444937953199299862
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1474817385992993526}
+  m_GameObject: {fileID: 7398587777863522293}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -39,13 +39,13 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7765701094986559108
+--- !u!114 &2363447149305964794
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1474817385992993526}
+  m_GameObject: {fileID: 7398587777863522293}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 55bbc1a1e71bb154c949903024716c56, type: 3}
@@ -53,45 +53,46 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdToDrag: 0
   addHologram: 1
+  hologramColor: {r: 1, g: 1, b: 1, a: 0.5019608}
   needSameName: 1
   _editorType: 0
   type: 0
   spawnerMax: 0
   spawnerInstances: []
-  name: Bullet
+  name: Effect
   isActive: 1
   inactiveColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   parent: {fileID: 0}
   ___editorBoolForShowingThisIsACopy: 0
---- !u!222 &6475599213549376140
+--- !u!222 &8944999683163235182
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1474817385992993526}
+  m_GameObject: {fileID: 7398587777863522293}
   m_CullTransparentMesh: 1
---- !u!114 &3345288530330270838
+--- !u!114 &8345490016483072268
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1474817385992993526}
+  m_GameObject: {fileID: 7398587777863522293}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.435849, g: 0.46413577, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 8033092973025764044, guid: 0751d044824198243a3113c4ea3bb914, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -101,26 +102,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &1113793157031637801
+--- !u!114 &4711712927483883744
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1474817385992993526}
+  m_GameObject: {fileID: 7398587777863522293}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   itemQuality: 0
-  type: 0
-  name: Infect
-  Description: Make the enemy take 1 damage per second vor [Infect] seconds
+  type: 1
+  name: Shatter
+  Description: Bullet shatters into [Shatter Count] smaller pieces on hit, each dealing
+    [Shatter Damage%] of the original damage
   effectOrder: 0
   modifiers:
-    forceNonAutomatic: 0
-    forceAutomatic: 0
+    automaticModifier: 0
     damageModifier: 1
     bulletCountModifier: 1
     fireRateModifier: 1
@@ -130,6 +131,8 @@ MonoBehaviour:
     speedModifier: 1
   itemValues:
     list:
-    - Key: Infect
-      Value: 4
+    - Key: Shatter Count
+      Value: 3
+    - Key: Shatter Damage
+      Value: 0.5
   upgrades: []

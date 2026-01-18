@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class ModuleApplyHandler : MonoBehaviour
 {
-    public static Dictionary<string, List<string>> appliedItems = new();
+    public static Dictionary<string, List<ItemInfo>> appliedItems = new();
     public static Dictionary<string, WeaponStats> allWeapons = new();
     public static Dictionary<string, ItemInfo> allItems = new();
     public static Dictionary<string, ItemInfo.WeaponModifiers> allModifiers = new();
@@ -80,8 +80,9 @@ public class ModuleApplyHandler : MonoBehaviour
         //If is currently in a slot (which is in Background Panel, which is in Inventory Panel), add this to the appliedItems of the 2nd parent (Inventory Parent)'s name without " Inventory Parent"
         //Otherwise, if the new "slot" does contain slot in the name (so isn't a parent), remove it from appliedItems of the 2nd parent
         ItemInfo info = item.GetComponent<ItemInfo>();
-        if (DragDrop.slottedItems.Contains(item) && !item.name.Contains("Weapon"))
-            appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Add(info.name);
+        string doubleParentName = slot.transform.parent.parent.name;
+        if (DragDrop.slottedItems.Contains(item) && !item.name.Contains("Weapon") && doubleParentName.Contains(" Inventory Parent"))
+            appliedItems[slot.transform.parent.parent.name[..doubleParentName.IndexOf(" Inventory Parent")]].Add(info);
     }
 
     void SlotOut(DragDrop item, DragDrop slot)
@@ -91,6 +92,6 @@ public class ModuleApplyHandler : MonoBehaviour
         //Otherwise, if the new "slot" does contain slot in the name (so isn't a parent), remove it from appliedItems of the 2nd parent
         ItemInfo info = item.GetComponent<ItemInfo>();
         if(slot.transform.name.Contains("Slot") && !item.name.Contains("Weapon"))
-            appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Remove(info.name);
+            appliedItems[slot.transform.parent.parent.name[..slot.transform.parent.parent.name.IndexOf(" Inventory Parent")]].Remove(info);
     }
 }

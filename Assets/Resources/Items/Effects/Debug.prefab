@@ -53,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdToDrag: 0
   addHologram: 1
+  hologramColor: {r: 1, g: 1, b: 1, a: 0.5019608}
   needSameName: 1
   _editorType: 0
   type: 0
@@ -113,28 +114,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemQuality: 0
   type: 1
   name: Debug
   Description: 'Automatic
 
-    +10000% damage
+    [d%] damage
 
-    +10000% bullets per second
+    [f%] bullets per second
 
-    +10000%
+    [m%]
     magazine size
 
-    -100% reload time
+    [r%] reload time
 
-    -100% spread
+    [b%] bullets per shot
 
-    +1000% bullet speed'
+    [s%] spread
+
+    [v%]
+    bullet speed'
+  effectOrder: 0
   modifiers:
-    forceNonAutomatic: 0
-    forceAutomatic: 1
+    automaticModifier: 2
     damageModifier: 101
+    bulletCountModifier: 2
     fireRateModifier: 101
     magazineModifier: 101
     reloadModifier: 0
     spreadModifier: 0
     speedModifier: 11
+  itemValues:
+    list: []
+  upgrades:
+  - cost: 2
+    upgradeDescription: This is a debug item used for testing purposes
+    itemDescription: This item has been upgraded once
+    modifiers:
+      automaticModifier: 2
+      damageModifier: 0
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0
+    itemValues:
+      list: []

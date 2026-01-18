@@ -39,7 +39,7 @@ II- The edit menu needs to be opened manually
 
 
 Things left to do: item pool, items, maps, multiple enemy types, story, endings, balancing, tutorial
-Things to do when more things are added: save file variables
+Bugs: equipping modifiers doesn't directly change weapon without re-equipping. Loading does not work correctly, bullets/muzzle flash not spawning at tip of barrel
 
 Currently to work on: items
 

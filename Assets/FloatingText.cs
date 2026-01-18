@@ -27,8 +27,12 @@ public class FloatingText : MonoBehaviour
     {
         GameObject obj = Instantiate(Variables.prefabs["Damage Text"]);
         obj.transform.SetParent(GameObject.Find("World Canvas").transform);
-        obj.GetComponent<TextMeshProUGUI>().text = damage.ToString("#.#");
         obj.transform.position = hitObj.transform.position + Vector3.one * Random.Range(.8f, 1f) + Vector3.right * Random.Range(-.5f, .5f);
+
+        TextMeshProUGUI tmp = obj.GetComponent<TextMeshProUGUI>();
+        tmp.text = damage.ToString("0.#");
+        tmp.fontSize = 0.5f * Mathf.Pow(damage, .2f); //Gets the 5th root of the damage as the font size
+        tmp.color = new Color(Random.Range(.7f, 1f), Random.value * .15f, Random.value * .15f);
     }
 
     public static void SpawnOreText(GameObject crate, int count)

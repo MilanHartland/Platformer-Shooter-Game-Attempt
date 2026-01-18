@@ -37,7 +37,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 100, y: -100}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6879189027153280698
 MonoBehaviour:
@@ -53,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdToDrag: 0
   addHologram: 1
+  hologramColor: {r: 1, g: 1, b: 1, a: 0.5019608}
   needSameName: 1
   _editorType: 0
   type: 0
@@ -84,14 +85,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.435849, g: 0.46413577, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 555560330, guid: 0751d044824198243a3113c4ea3bb914, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -119,8 +120,7 @@ MonoBehaviour:
   Description: Makes the bullets bounce [Max Bounces] times on contact with the map
   effectOrder: 0
   modifiers:
-    forceNonAutomatic: 0
-    forceAutomatic: 0
+    automaticModifier: 0
     damageModifier: 1
     bulletCountModifier: 1
     fireRateModifier: 1
@@ -137,15 +137,14 @@ MonoBehaviour:
     upgradeDescription: Increases the max number of bounces to 2
     itemDescription: 
     modifiers:
-      forceNonAutomatic: 0
-      forceAutomatic: 0
-      damageModifier: 1
-      bulletCountModifier: 1
-      fireRateModifier: 1
-      magazineModifier: 1
-      reloadModifier: 1
-      spreadModifier: 1
-      speedModifier: 1
+      automaticModifier: 0
+      damageModifier: 0
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0
     itemValues:
       list:
       - Key: Max Bounces

@@ -5,9 +5,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-[RequireComponent(typeof(EnemyPathfinding), typeof(AnimationManager))]
 public class EnemyBehaviour : MonoBehaviour
 {
+    [Header("Target Dummy")]
+    [Tooltip("If this is a target dummy, without any AI")]public bool isDummy = false;
+
     RaycastHit2D[] visionCasts = new RaycastHit2D[5];
     List<RaycastHit2D> peerVisionCasts = new();
 
@@ -23,39 +25,50 @@ public class EnemyBehaviour : MonoBehaviour
     Vector3 pfCenter => transform.position + pfCenterRelative;
 
     [Header("Fighting")]
-    [Tooltip("The HP the enemy spawns with")]public float maxHp;
+    [Tooltip("The HP the enemy spawns with"), ShowIf("!isDummy")]public float maxHp;
     [HideInInspector]public float hp;
-    [Tooltip("The weapon the enemy uses. Has to be hitscan")]public WeaponStats weapon;
-    [Tooltip("The distance the enemy follows to. When it comes to this distance, it stops pathfinding")]public float followDist;
+    [Tooltip("The weapon the enemy uses. Has to be hitscan"), ShowIf("!isDummy")]public WeaponStats weapon;
+    [Tooltip("The distance the enemy follows to. When it comes to this distance, it stops pathfinding"), ShowIf("!isDummy")]public float followDist;
 
     float playerKnowledge = 0f;
 
     [Header("Sight")]
-    [Tooltip("How fast the sight and pathfinding update, in seconds")]public float updateTime;
-    [Tooltip("The threshold the sight value needs before it counts as seeing the player")]public float sightThreshold;
-    [Tooltip("The factor with which the sight is multiplied if this only sees a peer that knows the player"), Range(0f, 1f)]public float peerFactor;
-    [Tooltip("The max distance the enemy can see. The closer to this distance the player is, the worse it sees the player")]public float sightDist;
-    [Tooltip("How fast the enemy should forget it saw something. Put as value / second. For reference, the highest sight factor possible is 1 per second")]
+    [Tooltip("How fast the sight and pathfinding update, in seconds"), ShowIf("!isDummy")]public float updateTime;
+    [Tooltip("The threshold the sight value needs before it counts as seeing the player"), ShowIf("!isDummy")]public float sightThreshold;
+    [Tooltip("The factor with which the sight is multiplied if this only sees a peer that knows the player"), ShowIf("!isDummy"), Range(0f, 1f)]public float peerFactor;
+    [Tooltip("The max distance the enemy can see. The closer to this distance the player is, the worse it sees the player"), ShowIf("!isDummy")]public float sightDist;
+    [Tooltip("How fast the enemy should forget it saw something. Put as value / second. For reference, the highest sight factor possible is 1 per second"), ShowIf("!isDummy")]
     public float memoryDeterioration;
 
-    float infectedTimeLeft = 0f;
-    Timer infectedTimer = new(1f);
+    struct InfectionStats
+    {
+        public float damage;
+        public float timeEnd;
+        public readonly Timer timer;
+        public InfectionStats(float dmg, float duration){damage = dmg; timeEnd = Time.time + duration; timer = new(1f);}
+    }
+    List<InfectionStats> infections = new();
 
     [Header("Idle")]
     [Tooltip("A list of positions this enemy can wander to")]public List<Vector3> wanderPositions;
-    [Tooltip("The amount of time there is between wanders")]public FloatRange wanderTimeRange;
+    [Tooltip("The amount of time there is between wanders"), ShowIf("!isDummy")]public FloatRange wanderTimeRange;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        pathfinding = GetComponent<EnemyPathfinding>();
-        StartCoroutine(PathfindCoroutine());
-
-        weaponTimer = new(1f / weapon.fireRate);
+        if(!isDummy) weaponTimer = new(1f / weapon.fireRate);
 
         hp = maxHp;
 
         mask = LayerMask.GetMask("Player", "Map");
+
+        if(TryGetComponent(out EnemyPathfinding pathf))
+        {
+            pathfinding = pathf;
+            isDummy = false;
+            StartCoroutine(PathfindCoroutine());
+        }
+        else isDummy = true;
     }
 
     void OnValidate()
@@ -70,14 +83,23 @@ public class EnemyBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        infectedTimeLeft -= Time.deltaTime;
-        if (infectedTimer)
+        for(int i = infections.Count - 1; i >= 0; i--)
         {
-            TakeDamage(1f);
-            if(infectedTimeLeft > 0) infectedTimer.ResetTimer();    
+            InfectionStats inf = infections[i];
+
+            if(Time.time > inf.timeEnd)
+            {
+                infections.RemoveAt(0);
+                continue;
+            }
+            else if (inf.timer)
+            {
+                TakeDamage(inf.damage);
+                inf.timer.ResetTimer();
+            }
         }
 
-        if(hp <= 0)
+        if(!isDummy && hp <= 0)
         {
             Effects.Disintegrate(gameObject, dontThrowNonReadException: true);
         }
@@ -244,12 +266,12 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        hp -= damage;
+        if(!isDummy) hp -= damage;
         playerKnowledge = Mathf.Max(playerKnowledge, .8f * sightThreshold);
         FloatingText.SpawnDamageText(gameObject, damage);
     }
 
-    public void ApplyInfection(float seconds){infectedTimeLeft += seconds;}
+    public void ApplyInfection(float damage, float seconds){infections.Add(new(damage, seconds));}
 
     #pragma warning disable
     void OnDrawGizmosSelected()

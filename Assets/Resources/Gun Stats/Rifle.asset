@@ -19,7 +19,7 @@ MonoBehaviour:
   fireRate: 10
   magazineSize: 24
   reloadTime: 1
-  spread: 20
+  spread: 14
   firingType: 0
   bulletSpeed: 20
   maxHitscanDistance: 10

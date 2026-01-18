@@ -11,7 +11,10 @@ public class WeaponInfo : MonoBehaviour
     public string weaponName;
     public int bulletSlots;
     public int effectSlots;
+    public Sprite weaponSprite;
     RectTransform panel;
+
+    const int maxSlotCountInRow = 5;
 
     [InspectorButton("Create Edit Panel")]
     void EditorResetEditLayout() { Variables.LoadAllResources(); transform.SetParent(transform.parent.parent); 
@@ -34,6 +37,7 @@ public class WeaponInfo : MonoBehaviour
         }
 
         panel = transform.parent.Find("Background Panel").GetComponent<RectTransform>();
+        panel.GetComponent<GridLayoutGroup>().constraintCount = maxSlotCountInRow;
 
         //Kill all children
         List<Transform> siblings = new();
@@ -72,8 +76,22 @@ public class WeaponInfo : MonoBehaviour
         panel = transform.parent.Find("Background Panel").GetComponent<RectTransform>();
 
         GridLayoutGroup layout = panel.GetComponent<GridLayoutGroup>();
-        float panelSize = Mathf.Clamp(panel.childCount, 0, 6) * layout.cellSize.x + Mathf.Clamp(panel.childCount - 1, 0, 5) * layout.spacing.x + layout.padding.left + layout.padding.right;
+        float panelSize = Mathf.Clamp(panel.childCount, 0, maxSlotCountInRow) * layout.cellSize.x + Mathf.Clamp(panel.childCount - 1, 0, maxSlotCountInRow - 1) * layout.spacing.x 
+        + layout.padding.left + layout.padding.right;
         panel.sizeDelta = new(panelSize, panel.sizeDelta.y);
         transform.parent.GetComponent<RectTransform>().sizeDelta = panel.sizeDelta;
+    }
+
+    public static WeaponStats GetWeaponWithModifiers(WeaponStats weap)
+    {
+        if(weap == null) return null;
+        
+        WeaponStats w = ScriptableObject.CreateInstance<WeaponStats>();
+        w.SetValues(weap);
+        foreach(var item in ModuleApplyHandler.appliedItems[weap.name])
+        {
+            w = w.AddModifiers(item.modifiers);
+        }
+        return w;
     }
 }

@@ -53,6 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   holdToDrag: 0
   addHologram: 1
+  hologramColor: {r: 1, g: 1, b: 1, a: 0.5019608}
   needSameName: 1
   _editorType: 1
   type: 0
@@ -114,5 +115,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weaponName: Pistol
-  bulletSlots: 3
-  effectSlots: 3
+  bulletSlots: 2
+  effectSlots: 2
+  weaponSprite: {fileID: 5601323976189978565, guid: 9cd5e98e99ac79240ad26a966b671c3e, type: 3}
