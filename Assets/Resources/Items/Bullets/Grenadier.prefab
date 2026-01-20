@@ -118,9 +118,9 @@ MonoBehaviour:
   type: 0
   name: Grenadier
   Description: Makes the bullet bounce infinitely, keeping [Grenadier Bounce Energy%]
-    of energy per bounce. After [Grenadier Timer]s, explode with a radius of [Grenadier
-    Explosion Size] and [Grenadier Damage] damage
-  effectOrder: 1
+    of energy per bounce. After [Grenadier Timer]s, explode in a [Grenadier Explosion
+    Size]m radius for [Grenadier Damage%] damage
+  effectOrder: -9
   modifiers:
     automaticModifier: 0
     damageModifier: 1

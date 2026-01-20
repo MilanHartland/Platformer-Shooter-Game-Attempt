@@ -118,7 +118,7 @@ MonoBehaviour:
   type: 0
   name: Bouncy Bullets
   Description: Makes the bullets bounce [Max Bounces] times on contact with the map
-  effectOrder: 0
+  effectOrder: -10
   modifiers:
     automaticModifier: 0
     damageModifier: 1

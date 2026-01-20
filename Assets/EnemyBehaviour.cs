@@ -49,6 +49,8 @@ public class EnemyBehaviour : MonoBehaviour
     }
     List<InfectionStats> infections = new();
 
+    public Dictionary<string, float> info = new();
+
     [Header("Idle")]
     [Tooltip("A list of positions this enemy can wander to")]public List<Vector3> wanderPositions;
     [Tooltip("The amount of time there is between wanders"), ShowIf("!isDummy")]public FloatRange wanderTimeRange;
@@ -57,6 +59,9 @@ public class EnemyBehaviour : MonoBehaviour
     void Start()
     {
         if(!isDummy) weaponTimer = new(1f / weapon.fireRate);
+
+        info.Add("Last Position", transform.position.x);
+        info.Add("Cripple Damage", 0f);
 
         hp = maxHp;
 
@@ -103,6 +108,21 @@ public class EnemyBehaviour : MonoBehaviour
         {
             Effects.Disintegrate(gameObject, dontThrowNonReadException: true);
         }
+    }
+
+    void FixedUpdate()
+    {
+        if (info.ContainsKey("Cripple"))
+        {
+            info["Cripple Damage"] += Mathf.Abs(transform.position.x - info["Last Position"]) * info["Cripple"];
+
+            if(info["Cripple Damage"] > 1f)
+            {
+                TakeDamage(1f);
+                info["Cripple Damage"]--;
+            }
+        }
+        info["Last Position"] = transform.position.x;
     }
 
     IEnumerator SightCoroutine()
@@ -180,9 +200,9 @@ public class EnemyBehaviour : MonoBehaviour
             {
                 Vector3 curPath0 = pathfinding.path[0];
                 while(pathfinding.isPathfinding && pathfinding.path.Count > 0 && pathfinding.path[0] == curPath0) 
-                    yield return null;
+                    yield return new WaitForFixedUpdate();
             }
-            yield return null;
+            yield return new WaitForFixedUpdate();
         }
     }
 

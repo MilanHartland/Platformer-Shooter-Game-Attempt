@@ -30,7 +30,8 @@ public class BulletBehaviour : MonoBehaviour
 
     public void SetShotBy(WeaponStats w)
     {
-        shotBy = w;
+        shotBy = (WeaponStats)ScriptableObject.CreateInstance(nameof(WeaponStats));
+        shotBy.SetValues(w);
 
         items = new();
         itemValues = new();
@@ -80,6 +81,17 @@ public class BulletBehaviour : MonoBehaviour
 
         trailRend.Clear();
         GetComponent<Collider2D>().isTrigger = false;
+
+        //Resets info
+        info = new()
+        {
+            {"Start Time", Time.time},
+            {"Start Position", transform.position},
+            {"Stored Position", transform.position},
+            {"Velocity", rb.linearVelocity},
+            {"Start Velocity", rb.linearVelocity},
+            {"Stored Velocity", rb.linearVelocity},
+        };
     }
 
     void FixedUpdate()
@@ -115,10 +127,10 @@ public class BulletBehaviour : MonoBehaviour
                     bool wasFrozen = info.ContainsKey("Frozen");
 
                     //Checks each enemy
-                    foreach(var enemy in allEnemies)
+                    for(int i = 0; i < allEnemies.Count; i++)
                     {
                         //If close enough to the enemy      
-                        if(Vector2.Distance(transform.position, enemy.transform.position) < itemValues["Proximity Freeze Distance"])
+                        if(Vector2.Distance(transform.position, allEnemies[i].transform.position) < itemValues["Proximity Freeze Distance"])
                         {
                             freeze = true;
 
@@ -129,7 +141,6 @@ public class BulletBehaviour : MonoBehaviour
                             //If it was already present and the current time is above the freeze start + length, unfreeze
                             else if(Time.time > (float)info["Frozen"] + itemValues["Proximity Freeze Length"]) freeze = false;
                             
-
                             //Zeros out velocity and sets position to the stored position
                             rb.linearVelocity = Vector3.zero;
                             transform.position = (Vector3)info["Stored Position"];
@@ -152,10 +163,10 @@ public class BulletBehaviour : MonoBehaviour
                         ps.transform.localScale = 2f * itemValues["Grenadier Explosion Size"] * Vector3.one;
 
                         //Checks each enemy if the closest point of the hitbox is within explosion range, and deals damage accordingly
-                        foreach(var enemy in allEnemies)
+                        for(int i = 0; i < allEnemies.Count; i++)
                         {
-                            if(Vector2.Distance(transform.position, enemy.GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Grenadier Explosion Size"])
-                                enemy.GetComponent<EnemyBehaviour>().TakeDamage(itemValues["Grenadier Explosion Damage"] * shotBy.damage);
+                            if(Vector2.Distance(transform.position, allEnemies[i].GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Grenadier Explosion Size"])
+                                DamageEnemy(allEnemies[i], itemValues["Grenadier Explosion Damage"] * shotBy.damage);
                         }
 
                         //If the player is in explosion range, damage the player for half of the normal damage
@@ -203,10 +214,10 @@ public class BulletBehaviour : MonoBehaviour
                     break;
                 case "Static Cloud":
                     //Checks each enemy if the closest point of the hitbox is within cloud range, and deals damage accordingly
-                    foreach(var enemy in allEnemies)
+                    for(int i = 0; i < allEnemies.Count; i++)
                     {
-                        if(Vector2.Distance(transform.position, enemy.GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Static Cloud Size"])
-                            enemy.GetComponent<EnemyBehaviour>().TakeDamage(itemValues["Static Cloud Damage"] * shotBy.damage);
+                        if(Vector2.Distance(transform.position, allEnemies[i].GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Static Cloud Size"])
+                            DamageEnemy(allEnemies[i], itemValues["Static Cloud Damage"] * shotBy.damage);
                     }
                     break;
                 default: continue; 
@@ -240,10 +251,10 @@ public class BulletBehaviour : MonoBehaviour
                     ps.transform.localScale = 2f * itemValues["Explosion Size"] * Vector3.one;
                     
                     //Checks each enemy if the closest point of the hitbox is within explosion range, and deals damage accordingly
-                    foreach(var enemy in allEnemies)
+                    for(int i = 0; i < allEnemies.Count; i++)
                     {
-                        if(Vector2.Distance(hitPoint, enemy.GetComponent<BoxCollider2D>().ClosestPoint(hitPoint)) < itemValues["Explosion Size"])
-                            enemy.GetComponent<EnemyBehaviour>().TakeDamage(itemValues["Explosion Damage"] * shotBy.damage);
+                        if(Vector2.Distance(hitPoint, allEnemies[i].GetComponent<BoxCollider2D>().ClosestPoint(hitPoint)) < itemValues["Explosion Size"])
+                            DamageEnemy(allEnemies[i],itemValues["Explosion Damage"] * shotBy.damage);
                     }
 
                     //If the player is in explosion range, damage the player for half of the normal damage
@@ -261,17 +272,34 @@ public class BulletBehaviour : MonoBehaviour
                     }
                     break;
                 case "Shatter":
-                //NEEDS TO BE FULLY IMPLEMENTED
-                    if(coll.gameObject.CompareTag("Map") && !info.ContainsKey("Is Shattered"))
+                    //If still colliding, colliding with the map, and isn't shattered
+                    if(stillColliding && coll.gameObject.CompareTag("Map") && !info.ContainsKey("Is Shattered"))
                     {
+                        //Makes a bullet for each shatter count
                         for(int i = 0; i < itemValues["Shatter Count"]; i++)
                         {
+                            //Spawns a bullet and sets the position to this position, but slightly off from the wall (to not instantly have OnCollisionEnter2D trigger)
                             GameObject bullet = PlayerManager.SpawnBullet();
-                            bullet.transform.position = transform.position;
-                            bullet.GetComponent<Rigidbody2D>().linearVelocity = Vector2.Reflect((Vector2)info["Velocity"], coll.GetContact(0).normal);
-                            bullet.GetComponent<BulletBehaviour>().info.Add("Is Shattered", true);
+                            bullet.transform.position = transform.position + (Vector3)coll.GetContact(0).normal * .1f;
+
+                            //Gets the BulletBehaviour, sets shotBy, sets damage, adds Is Shattered, and copies this item's itemValues (just for good measure)
+                            BulletBehaviour bulBeh = bullet.GetComponent<BulletBehaviour>();
+                            bulBeh.SetShotBy(shotBy);
+                            bulBeh.shotBy.damage *= itemValues["Shatter Damage"];
+                            bulBeh.info.Add("Is Shattered", true);
+                            bulBeh.itemValues = itemValues;
+
+                            //Enables the bullet
                             bullet.SetActive(true);
+
+                            //Gets the bounce velocity (reflected), and sets the velocity to magnitude * normalized (((velocity vector) to float, add random offset) to vector) vector
+                            Vector2 vel = Vector2.Reflect((Vector2)info["Velocity"], coll.GetContact(0).normal);
+                            vel = vel.magnitude * Angle2D.Convert<float, Vector2>(Angle2D.Convert<Vector2, float>(vel) + Random.Range(-itemValues["Shatter Spread"], itemValues["Shatter Spread"])).normalized;
+                            bullet.GetComponent<Rigidbody2D>().linearVelocity = vel;
                         }
+
+                        //Kills this bullet
+                        gameObject.SetActive(false);
                     }
                     break;
                 default: continue; 
@@ -282,7 +310,6 @@ public class BulletBehaviour : MonoBehaviour
         {
             EnemyBehaviour enemyBehaviour = coll.gameObject.GetComponent<EnemyBehaviour>();
             
-            float damageToTake = shotBy.damage;
             foreach(var item in items)
             {
                 switch (item.name)
@@ -297,10 +324,10 @@ public class BulletBehaviour : MonoBehaviour
                         ps.transform.localScale = 2f * itemValues["Grenadier Explosion Size"] * Vector3.one;
 
                         //Checks each enemy if the closest point of the hitbox is within explosion range, and deals damage accordingly
-                        foreach(var enemy in allEnemies)
+                        for(int i = 0; i < allEnemies.Count; i++)
                         {
-                            if(Vector2.Distance(transform.position, enemy.GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Grenadier Explosion Size"])
-                                enemy.GetComponent<EnemyBehaviour>().TakeDamage(itemValues["Grenadier Explosion Damage"] * shotBy.damage);
+                            if(Vector2.Distance(transform.position, allEnemies[i].GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Grenadier Explosion Size"])
+                                DamageEnemy(allEnemies[i], itemValues["Grenadier Explosion Damage"] * shotBy.damage);
                         }
 
                         //If the player is in explosion range, damage the player for half of the normal damage
@@ -308,18 +335,49 @@ public class BulletBehaviour : MonoBehaviour
                         player.GetComponent<PlayerManager>().hp -= itemValues["Grenadier Explosion Size"] * shotBy.damage * .5f;
                         break;
                     case "Gamble":
-                        damageToTake *= Random.Range(1f - itemValues["Gamble Strength"], 1f + itemValues["Gamble Strength"]);
+                        shotBy.damage *= Random.Range(1f - itemValues["Gamble Strength"], 1f + itemValues["Gamble Strength"]);
                         break;
-                    case "Shatter":
-                        if(info.ContainsKey("Is Shattered")) shotBy.damage *= itemValues["Shatter Damage"];
+                    case "Cripple":
+                        if(!enemyBehaviour.info.TryAdd("Cripple", itemValues["Cripple Strength"]))
+                        {
+                            enemyBehaviour.info["Cripple"] += itemValues["Cripple Strength"];
+                        }
                         break;
                     default: continue;
                 }
             }
 
-            enemyBehaviour.TakeDamage(damageToTake);
+            DamageEnemy(coll.gameObject, shotBy.damage);
         }
 
         if(destroyBullet) gameObject.SetActive(false);
+    }
+
+    void DamageEnemy(GameObject enemy, float damage)
+    {
+        enemy.GetComponent<EnemyBehaviour>().TakeDamage(damage);
+
+        foreach(var item in items)
+        {
+            switch (item.name)
+            {
+                case "Chain":
+                    allEnemies.Sort((x, y) => Vector2.Distance(transform.position, x.GetComponent<BoxCollider2D>().ClosestPoint(transform.position))
+                    .CompareTo(Vector2.Distance(transform.position, y.GetComponent<BoxCollider2D>().ClosestPoint(transform.position))));
+
+                    foreach(var obj in allEnemies)
+                    {
+                        if(obj != enemy && itemValues["Chain Count"] > .5 &&
+                        Vector2.Distance(transform.position, obj.GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Chain Size"])
+                        {
+                            obj.GetComponent<EnemyBehaviour>().TakeDamage(damage * itemValues["Chain Damage"]);
+                            Effects.SpawnLine(new(){enemy.transform.position, obj.transform.position}, Color.red, .1f, .1f).transform.position += Vector3.forward * 10f;
+                            itemValues["Chain Count"]--;
+                        }
+                    }
+                    break;
+                default: continue;
+            }
+        }
     }
 }

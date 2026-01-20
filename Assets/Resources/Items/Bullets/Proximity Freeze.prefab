@@ -117,8 +117,8 @@ MonoBehaviour:
   itemQuality: 0
   type: 0
   name: Proximity Freeze
-  Description: 'Makes bullets freeze midair when getting close to an enemy. Also
-    decreases spread by [s%]'
+  Description: 'Makes bullets freeze midair when getting within [Proximity Freeze
+    Distance]m of an enemy. Also decreases spread by [s%]'
   effectOrder: 0
   modifiers:
     automaticModifier: 0

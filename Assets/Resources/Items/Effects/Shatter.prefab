@@ -27,7 +27,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7398587777863522293}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 8033092973025764044, guid: 0751d044824198243a3113c4ea3bb914, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -117,9 +117,9 @@ MonoBehaviour:
   itemQuality: 0
   type: 1
   name: Shatter
-  Description: Bullet shatters into [Shatter Count] smaller pieces on hit, each dealing
-    [Shatter Damage%] of the original damage
-  effectOrder: 0
+  Description: "Bullet shatters into [Shatter Count] smaller pieces on hit with a
+    [Shatter Spread]\xB0 spread, each dealing [Shatter Damage%] of the original damage"
+  effectOrder: -9
   modifiers:
     automaticModifier: 0
     damageModifier: 1
@@ -134,5 +134,7 @@ MonoBehaviour:
     - Key: Shatter Count
       Value: 3
     - Key: Shatter Damage
-      Value: 0.5
+      Value: 0.4
+    - Key: Shatter Spread
+      Value: 10
   upgrades: []

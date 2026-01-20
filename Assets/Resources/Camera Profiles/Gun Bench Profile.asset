@@ -20,7 +20,7 @@ MonoBehaviour:
     m_Extent: {x: 2, y: 3, z: 0}
   restrictionType: 2
   restrictionRange:
-    m_Center: {x: 4, y: 1, z: 0}
-    m_Extent: {x: 29, y: 9, z: 0}
+    m_Center: {x: -7.5, y: 2, z: 0}
+    m_Extent: {x: 41, y: 10, z: 0}
   movementType: 2
   speed: 5
