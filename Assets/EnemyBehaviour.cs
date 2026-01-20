@@ -25,7 +25,7 @@ public class EnemyBehaviour : MonoBehaviour
     Vector3 pfCenter => transform.position + pfCenterRelative;
 
     [Header("Fighting")]
-    [Tooltip("The HP the enemy spawns with"), ShowIf("!isDummy")]public float maxHp;
+    [Tooltip("The HP the enemy spawns with")]public float maxHp;
     [HideInInspector]public float hp;
     [Tooltip("The weapon the enemy uses. Has to be hitscan"), ShowIf("!isDummy")]public WeaponStats weapon;
     [Tooltip("The distance the enemy follows to. When it comes to this distance, it stops pathfinding"), ShowIf("!isDummy")]public float followDist;
@@ -286,7 +286,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        if(!isDummy) hp -= damage;
+        hp -= damage;
         playerKnowledge = Mathf.Max(playerKnowledge, .8f * sightThreshold);
         FloatingText.SpawnDamageText(gameObject, damage);
     }

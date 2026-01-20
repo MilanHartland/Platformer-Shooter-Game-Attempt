@@ -59,6 +59,11 @@ public class BulletBehaviour : MonoBehaviour
 
         allEnemies = GameObject.FindGameObjectsWithTag("Enemy").ToList();
         SceneManager.activeSceneChanged += (_, _) => {allEnemies = GameObject.FindGameObjectsWithTag("Enemy").ToList();};
+
+        foreach(var item in items)
+        {
+            if(item.name == "Weightless") rb.gravityScale = 0f;
+        }
     }
 
     void OnEnable()
@@ -92,6 +97,8 @@ public class BulletBehaviour : MonoBehaviour
             {"Start Velocity", rb.linearVelocity},
             {"Stored Velocity", rb.linearVelocity},
         };
+
+        rb.gravityScale = 1f;
     }
 
     void FixedUpdate()
@@ -212,6 +219,64 @@ public class BulletBehaviour : MonoBehaviour
                     // store current overlap state for next frame
                     info["WasOverlappingMap"] = overlappingMap;
                     break;
+                case "Quantum": //Also ChatGPT code because I could not be fucked and I am in a slight time crunch. I'm sorry
+                    bool overlappingMapQuantum =
+                        Physics2D.OverlapCircle(
+                            transform.position,
+                            GetComponent<CircleCollider2D>().radius * 1.1f,
+                            LayerMask.GetMask("Map")
+                        );
+
+                    bool wasOverlappingQuantum =
+                        info.ContainsKey("WasOverlappingMapQuantum") &&
+                        (bool)info["WasOverlappingMapQuantum"];
+
+                    // ENTER wall
+                    if (overlappingMapQuantum && !wasOverlappingQuantum)
+                    {
+                        if (itemValues["Max Quantums"] > .5f && !info.ContainsKey("Is Quantum") && !info.ContainsKey("Is Copy"))
+                        {
+                            info["Is Quantum"] = true;
+                            GetComponent<Collider2D>().isTrigger = true;
+
+                            // --- spawn bouncing copy ---
+                            Collider2D wall = Physics2D.OverlapCircle(
+                                transform.position,
+                                GetComponent<CircleCollider2D>().radius * 1.1f,
+                                LayerMask.GetMask("Map")
+                            );
+
+                            if (wall)
+                            {
+                                Vector2 normal =
+                                    ((Vector2)transform.position -
+                                    wall.ClosestPoint(transform.position)).normalized;
+
+                                GameObject copy = PlayerManager.SpawnBullet();
+                                copy.transform.position = transform.position;
+                                copy.SetActive(true);
+
+                                var copyBehaviour = copy.GetComponent<BulletBehaviour>();
+                                var copyRb = copy.GetComponent<Rigidbody2D>();
+
+                                copyBehaviour.SetShotBy(shotBy);
+                                copyBehaviour.info["Is Copy"] = true;
+
+                                copyRb.linearVelocity =
+                                    Vector2.Reflect(rb.linearVelocity, normal);
+                            }
+                        }
+                    }
+                    // EXIT wall
+                    else if (!overlappingMapQuantum && info.ContainsKey("Is Quantum"))
+                    {
+                        info.Remove("Is Quantum");
+                        itemValues["Max Quantums"]--;
+                        GetComponent<Collider2D>().isTrigger = false;
+                    }
+
+                    info["WasOverlappingMapQuantum"] = overlappingMapQuantum;
+                    break;
                 case "Static Cloud":
                     //Checks each enemy if the closest point of the hitbox is within cloud range, and deals damage accordingly
                     for(int i = 0; i < allEnemies.Count; i++)
@@ -258,8 +323,8 @@ public class BulletBehaviour : MonoBehaviour
                     }
 
                     //If the player is in explosion range, damage the player for half of the normal damage
-                    if(Vector2.Distance(transform.position, player.GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Grenadier Explosion Size"])
-                            player.GetComponent<PlayerManager>().hp -= itemValues["Grenadier Explosion Size"] * shotBy.damage * .5f;
+                    if(Vector2.Distance(transform.position, player.GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Explosion Size"])
+                            player.GetComponent<PlayerManager>().hp -= itemValues["Explosion Size"] * shotBy.damage * .5f;
                     break;
                 case "Grenadier":
                     //If still colliding and colliding with the map
@@ -343,6 +408,19 @@ public class BulletBehaviour : MonoBehaviour
                             enemyBehaviour.info["Cripple"] += itemValues["Cripple Strength"];
                         }
                         break;
+                    case "Rebound":
+                        if(itemValues["Max Rebounds"] > .5f)
+                        {
+                            itemValues["Max Rebounds"]--;
+                            destroyBullet = false;
+                            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), coll.collider);
+
+                            var list = allEnemies;
+                            list.Remove(coll.gameObject);
+                            GameObject enemy = Lists.GetClosest(allEnemies, gameManager);
+                            rb.linearVelocity = ((Vector2)info["Velocity"]).magnitude * (enemy.transform.position - transform.position).normalized;
+                        }
+                        break;
                     default: continue;
                 }
             }
@@ -355,26 +433,100 @@ public class BulletBehaviour : MonoBehaviour
 
     void DamageEnemy(GameObject enemy, float damage)
     {
-        enemy.GetComponent<EnemyBehaviour>().TakeDamage(damage);
-
         foreach(var item in items)
         {
             switch (item.name)
             {
                 case "Chain":
-                    allEnemies.Sort((x, y) => Vector2.Distance(transform.position, x.GetComponent<BoxCollider2D>().ClosestPoint(transform.position))
-                    .CompareTo(Vector2.Distance(transform.position, y.GetComponent<BoxCollider2D>().ClosestPoint(transform.position))));
-
-                    foreach(var obj in allEnemies)
+                    foreach(var obj in GetClosestEnemies(itemValues["Chain Count"], true))
                     {
-                        if(obj != enemy && itemValues["Chain Count"] > .5 &&
-                        Vector2.Distance(transform.position, obj.GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Chain Size"])
+                        if(obj != enemy && Vector2.Distance(transform.position, obj.GetComponent<BoxCollider2D>().ClosestPoint(transform.position)) < itemValues["Chain Size"])
                         {
-                            obj.GetComponent<EnemyBehaviour>().TakeDamage(damage * itemValues["Chain Damage"]);
+                            DamageEnemySecondTier(obj, damage * itemValues["Chain Damage"]);
                             Effects.SpawnLine(new(){enemy.transform.position, obj.transform.position}, Color.red, .1f, .1f).transform.position += Vector3.forward * 10f;
                             itemValues["Chain Count"]--;
                         }
                     }
+                    break;
+                case "Cull the Horde":
+                    //Defines variables for average HP, a list for all enemies to consider, and a list for all enemy behaviours
+                    float avgHP = 0f;
+                    List<GameObject> hordeEnemies = GetClosestEnemies(itemValues["Horde Size"], false);
+                    List<EnemyBehaviour> hordeBehaviour = new();
+                    Dictionary<EnemyBehaviour, float> damageToDo = new();
+
+                    //Populates hordeBehaviour and damageToDo
+                    foreach(var obj in hordeEnemies) 
+                    {
+                        if(Vector2.Distance(transform.position, obj.transform.position) > itemValues["Horde Range"]) continue;
+                        hordeBehaviour.Add(obj.GetComponent<EnemyBehaviour>());
+                        damageToDo.Add(obj.GetComponent<EnemyBehaviour>(), 0f);
+                    }
+
+                    //Sets the average HP
+                    foreach(var obj in hordeBehaviour)
+                        avgHP += obj.hp / hordeBehaviour.Count;
+
+                    //For each point of damage (rounded up)
+                    for(int i = 0; i < Mathf.CeilToInt(damage); i++)
+                    {
+                        //Gets the EnemyBehaviour with the highest HP
+                        EnemyBehaviour highestHP = null;
+                        foreach(var obj in hordeBehaviour)
+                            if(highestHP == null || obj.hp > highestHP.hp) highestHP = obj;
+
+                        //If the damage left to do is under 1, damage it for the remainder. Otherwise, damage for 1
+                        if(damage - i < 1f)
+                            damageToDo[highestHP] += damage - i;
+                        else damageToDo[highestHP] += 1f;
+                    }
+
+                    //Deals the damage
+                    foreach(var pair in damageToDo)
+                    {
+                        if(pair.Value == 0f) continue;
+                        DamageEnemySecondTier(pair.Key.gameObject, pair.Value);
+                        Effects.SpawnLine(new(){enemy.transform.position, pair.Key.gameObject.transform.position}, Color.red, .1f, .1f).transform.position += Vector3.forward * 10f;
+                    }
+
+                    //Sets damage to 0 so that this enemy doesn't get damaged more than it needs to
+                    damage = 0f;
+                    break;
+                default: continue;
+            }
+        }
+
+        enemy.GetComponent<EnemyBehaviour>().TakeDamage(damage);
+
+        List<GameObject> GetClosestEnemies(float count, bool excludeCurrent)
+        {
+            allEnemies.Sort((x, y) => Vector2.Distance(transform.position, x.GetComponent<BoxCollider2D>().ClosestPoint(transform.position))
+            .CompareTo(Vector2.Distance(transform.position, y.GetComponent<BoxCollider2D>().ClosestPoint(transform.position))));
+
+            List<GameObject> newEnemies = new(allEnemies);
+            if(excludeCurrent) newEnemies.Remove(enemy);
+
+            List<GameObject> list = new();
+            for(int i = 0; i < Mathf.RoundToInt(count); i++) 
+                if(i < newEnemies.Count) list.Add(newEnemies[i]);
+
+            return list;
+        }
+    }
+
+    /// <summary>
+    /// The second round of DamageEnemy, for use in the DamageEnemy void itself. This is used for effects that affect all damage, no matter the source
+    /// </summary>
+    /// <param name="enemy"></param>
+    /// <param name="damage"></param>
+    void DamageEnemySecondTier(GameObject enemy, float damage)
+    {
+        foreach(var item in items)
+        {
+            switch (item.name)
+            {
+                case "Cull the Strong":
+                    //IMPLEMENT HERE
                     break;
                 default: continue;
             }
