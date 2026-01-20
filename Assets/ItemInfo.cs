@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class ItemInfo : MonoBehaviour
 {
-    public enum ItemQuality{Common, Uncommon, Rare, Epic, Legendary}
-    [Tooltip("The item quality of this item. Used to determine what drops from loot pools")]public ItemQuality itemQuality;
-
     public enum ItemType{Bullet, Effect}
     [Tooltip("The type of item this is. Bullets modify the trajectory and behaviour of bullets, while effects do other things")]public ItemType type;
 

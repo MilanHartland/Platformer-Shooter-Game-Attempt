@@ -13,6 +13,7 @@ public class MenuManager : MonoBehaviour
     public static MenuState menuState;
 
     public static bool IsPaused => menuState != MenuState.Game;
+    public static bool tooltipShownDefault;
 
     bool isMainMenu => SceneManager.GetActiveScene().name.Contains("Main Menu");
 
@@ -43,10 +44,19 @@ public class MenuManager : MonoBehaviour
         if(World.TryFindInactive("DragDrop Hold Toggle", out GameObject ddHoldToggle)) 
         {
             ddHoldToggle.GetComponent<Toggle>().onValueChanged.AddListener(SettingsDragDropToggle);
-            ddHoldToggle.GetComponent<Toggle>().isOn = World.FindInactive("Bullet Inventory").GetComponent<DragDrop>().holdToDrag;
-            SettingsDragDropToggle(World.FindInactive("Bullet Inventory").GetComponent<DragDrop>().holdToDrag);
+            ddHoldToggle.GetComponent<Toggle>().isOn = World.FindInactive("Item Inventory").GetComponent<DragDrop>().holdToDrag;
+            SettingsDragDropToggle(ddHoldToggle.GetComponent<Toggle>().isOn);
         }
         if(World.TryFindInactive("Reset Save Button", out GameObject rsb)){rsb.GetComponent<Button>().onClick.AddListener(SaveSystem.ResetSave);}
+        if(World.TryFindInactive("Tooltip Show Button", out GameObject tooltipToggle))
+        {
+            tooltipToggle.GetComponent<Toggle>().onValueChanged.AddListener(x => 
+            {
+                tooltipShownDefault = x; 
+                GameObject.Find("Show Tooltip").transform.Find("Keybind Name").GetComponent<TextMeshProUGUI>().text = x ? "Hide Tooltip" : "Show Tooltip";
+            });
+            tooltipShownDefault = tooltipToggle.GetComponent<Toggle>().isOn;
+        }
 
         if(isMainMenu) menuState = MenuState.MainMenu;
         else ContinueGame();

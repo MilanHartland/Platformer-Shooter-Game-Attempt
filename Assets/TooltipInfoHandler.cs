@@ -14,6 +14,8 @@ public class TooltipInfoHandler : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if(!Keybinds.bindings.ContainsKey("Tooltip")) Keybinds.bindings.Add("Tooltip", KeyCode.LeftShift);
+
         img = GetComponent<Image>();
         upgradeInfoTMP.gameObject.SetActive(false);
         upgradeInfoTMP.gameObject.SetActive(false);
@@ -23,8 +25,14 @@ public class TooltipInfoHandler : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        if((Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0 && !Input.GetKeyDown(Keybinds.bindings["Upgrade"])) || MenuManager.menuState != MenuManager.MenuState.Inventory) 
-            return; //If mouse didn't move and no upgrade happened, or game is not in inventory menu, don't change anything
+        if((MenuManager.tooltipShownDefault && Input.GetKey(Keybinds.bindings["Tooltip"])) || (!MenuManager.tooltipShownDefault && !Input.GetKey(Keybinds.bindings["Tooltip"])))
+        {
+            transform.localScale = Vector3.zero;
+            return;
+        }
+
+        if(MenuManager.menuState != MenuManager.MenuState.Inventory) 
+            return; //If not in inventory, return
 
         var underMouse = UI.GetObjectsUnderMouse();
 
@@ -47,7 +55,7 @@ public class TooltipInfoHandler : MonoBehaviour
                 break;
             }
         }
-
+        
         if(weap != null)
         {
             if(hoveredObj.GetComponent<DragDrop>().name.Contains("Alt")) img.color = new(1f, .5f, 0f);

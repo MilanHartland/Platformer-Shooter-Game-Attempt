@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using MilanUtils;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 
 public class ItemCrateBehaviour : MonoBehaviour
 {
-    [Tooltip("The quality of crate. Used to determine which loot pool to use")]public ItemInfo.ItemQuality crateQuality;
     [Tooltip("The chance of getting an itemObj instead of ore"), Range(0f, 1f)]public float itemChance;
-    bool canRollItem => itemChance > 0f;
-    bool canRollNotItem => itemChance < 1f;
+    [Tooltip("The chance of getting an itemObj instead of ore"), Range(0f, 1f)]public float weaponChance;
+    bool canRollItem => itemChance > 0f && weaponChance > 0f;
+    bool canRollNotItem => itemChance < 1f && weaponChance < 1f;
     [Tooltip("The range of ore that is possible to get when no itemObj is rolled"), ShowIf("canRollNotItem")]public IntRange loneOreCount;
     [Tooltip("The range of ore that is possible to get when an itemObj is rolled"), ShowIf("canRollItem")]public IntRange itemOreCount;
 
@@ -48,17 +50,11 @@ public class ItemCrateBehaviour : MonoBehaviour
 
         //If the random chance passes, spawn item. Otherwise, only increase ore
         bool spawnItem = Random.value <= itemChance;
-        if (spawnItem)
+        bool spawnWeapon = Random.value <= weaponChance;
+        if (spawnWeapon)
         {
-            //Gets all items of the correct rarity from ModuleApplyHandler
-            List<ItemInfo> allRarityItems = new();
-            foreach(var obj in ModuleApplyHandler.allItems.Values)
-            {
-                if(obj.itemQuality == crateQuality) allRarityItems.Add(obj);
-            }
-
             //Gets a random item name from the list
-            string itemName = allRarityItems[Random.Range(0, allRarityItems.Count)].name;
+            string itemName = ModuleApplyHandler.allWeapons.Values.ToList()[Random.Range(0, ModuleApplyHandler.allWeapons.Values.ToList().Count)].name;
             
             //Creates an itemObj, adds it to droppeditems, sets parent to world canvas, and sets position
             GameObject itemObj = Instantiate(Variables.prefabs[itemName]);
@@ -68,7 +64,24 @@ public class ItemCrateBehaviour : MonoBehaviour
 
             itemObj.name = $"{itemName} Dropped Item";
 
-            //ADD FUNCTIONALITY FOR CHANGING THE IMAGE WHEN KEVIN MAKES THE IMAGES
+            itemObj.GetComponent<Image>().sprite = Variables.prefabs[itemName].GetComponent<Image>().sprite;
+
+            oreCount = Random.Range(itemOreCount.min, itemOreCount.max);
+        }
+        else if (spawnItem)
+        {
+            //Gets a random item name from the list
+            string itemName = ModuleApplyHandler.allItems.Values.ToList()[Random.Range(0, ModuleApplyHandler.allItems.Values.ToList().Count)].name;
+            
+            //Creates an itemObj, adds it to droppeditems, sets parent to world canvas, and sets position
+            GameObject itemObj = Instantiate(Variables.prefabs[itemName]);
+            MissionManager.allDroppedItems.Add(itemObj);
+            itemObj.transform.SetParent(GameObject.Find("World Canvas").transform);
+            itemObj.transform.position = transform.position;
+
+            itemObj.name = $"{itemName} Dropped Item";
+
+            itemObj.GetComponent<Image>().sprite = Variables.prefabs[itemName].GetComponent<Image>().sprite;
 
             oreCount = Random.Range(itemOreCount.min, itemOreCount.max);
         }
