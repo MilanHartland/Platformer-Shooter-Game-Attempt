@@ -5,14 +5,17 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Main Menu.unity
     guid: db6374e055f77574880b398bae522a3e
   - enabled: 1
     path: Assets/Scenes/Hub Scene.unity
     guid: 2c4db32605f58ba42b6ca02c8673b3e7
   - enabled: 1
-    path: Assets/Scenes/Mission Scene.unity
+    path: Assets/Scenes/Mission 1 Scene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Mission 2 Scene.unity
+    guid: 2a253ebbb88585a4aa3eb0a6aef40207
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

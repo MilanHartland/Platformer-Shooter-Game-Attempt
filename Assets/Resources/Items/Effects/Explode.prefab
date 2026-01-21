@@ -114,7 +114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemQuality: 0
   type: 1
   name: Explode
   Description: Explodes the bullet on contact, dealing [Explosion Damage%] in a [Explosion
@@ -132,7 +131,25 @@ MonoBehaviour:
   itemValues:
     list:
     - Key: Explosion Damage
-      Value: 4
+      Value: 5
     - Key: Explosion Size
-      Value: 1
-  upgrades: []
+      Value: 0.6
+  upgrades:
+  - cost: 0
+    upgradeDescription: Increases radius
+    itemDescription: 
+    modifiers:
+      automaticModifier: 0
+      damageModifier: 0
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0
+    itemValues:
+      list:
+      - Key: Explosion Damage
+        Value: 5
+      - Key: Explosion Size
+        Value: 1.4

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32799d603f9c75944ba19c43f36b0ba2, type: 3}
-  m_Name: Mission Profile
+  m_Name: Mission 2 Profile
   m_EditorClassIdentifier: 
   targetName: Player
   offset: {x: 0, y: 0}
@@ -20,7 +20,7 @@ MonoBehaviour:
     m_Extent: {x: 2, y: 3, z: 0}
   restrictionType: 2
   restrictionRange:
-    m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 100, y: 20, z: 0}
+    m_Center: {x: 19, y: 9, z: 0}
+    m_Extent: {x: 29.5, y: 11.5, z: 0}
   movementType: 2
   speed: 5

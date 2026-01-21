@@ -9,8 +9,8 @@ public class ItemCrateBehaviour : MonoBehaviour
 {
     [Tooltip("The chance of getting an itemObj instead of ore"), Range(0f, 1f)]public float itemChance;
     [Tooltip("The chance of getting an itemObj instead of ore"), Range(0f, 1f)]public float weaponChance;
-    bool canRollItem => itemChance > 0f && weaponChance > 0f;
-    bool canRollNotItem => itemChance < 1f && weaponChance < 1f;
+    bool canRollItem => itemChance > 0f || weaponChance > 0f;
+    bool canRollNotItem => itemChance < 1f || weaponChance < 1f;
     [Tooltip("The range of ore that is possible to get when no itemObj is rolled"), ShowIf("canRollNotItem")]public IntRange loneOreCount;
     [Tooltip("The range of ore that is possible to get when an itemObj is rolled"), ShowIf("canRollItem")]public IntRange itemOreCount;
 
@@ -39,54 +39,79 @@ public class ItemCrateBehaviour : MonoBehaviour
         {
             interactTextObject.SetActive(true);
 
-            if(Input.GetKeyDown(Keybinds.interact)) OpenCrate();
+            if(Input.GetKeyUp(Keybinds.interact)) OpenCrate();
         }
         else interactTextObject.SetActive(false);
     }
 
     public void OpenCrate()
     {
-        int oreCount;
+        int oreCount = Random.Range(loneOreCount.min, loneOreCount.max);;
 
         //If the random chance passes, spawn item. Otherwise, only increase ore
         bool spawnItem = Random.value <= itemChance;
         bool spawnWeapon = Random.value <= weaponChance;
         if (spawnWeapon)
         {
-            //Gets a random item name from the list
-            string itemName = ModuleApplyHandler.allWeapons.Values.ToList()[Random.Range(0, ModuleApplyHandler.allWeapons.Values.ToList().Count)].name;
-            
-            //Creates an itemObj, adds it to droppeditems, sets parent to world canvas, and sets position
-            GameObject itemObj = Instantiate(Variables.prefabs[itemName]);
-            MissionManager.allDroppedItems.Add(itemObj);
-            itemObj.transform.SetParent(GameObject.Find("World Canvas").transform);
-            itemObj.transform.position = transform.position;
+            List<string> newList = new(ModuleApplyHandler.allWeapons.Keys.ToList());
+            foreach(Transform parent in World.FindInactive("Weapon Inventory").transform)
+            {
+                foreach(Transform child in parent)
+                {
+                    if(child.TryGetComponent(out WeaponInfo wi))
+                        newList.Remove(wi.name);
+                }
+            }
 
-            itemObj.name = $"{itemName} Dropped Item";
+            if(newList.Count > 0)
+            {
+                //Gets a random item name from the list
+                string itemName = newList[Random.Range(0, newList.Count)];
+                
+                //Creates an itemObj, adds it to droppeditems, sets parent to world canvas, and sets position
+                GameObject itemObj = Instantiate(Variables.prefabs[itemName]);
+                MissionManager.allDroppedItems.Add(itemObj);
+                itemObj.transform.SetParent(GameObject.Find("World Canvas").transform);
+                itemObj.transform.position = transform.position;
+                itemObj.GetComponent<RectTransform>().sizeDelta = Vector3.one;
 
-            itemObj.GetComponent<Image>().sprite = Variables.prefabs[itemName].GetComponent<Image>().sprite;
+                itemObj.name = $"{itemName} Dropped Item";
 
-            oreCount = Random.Range(itemOreCount.min, itemOreCount.max);
+                itemObj.GetComponent<Image>().sprite = Variables.prefabs[itemName].GetComponent<Image>().sprite;
+
+                oreCount = Random.Range(itemOreCount.min, itemOreCount.max);
+            }
         }
         else if (spawnItem)
         {
-            //Gets a random item name from the list
-            string itemName = ModuleApplyHandler.allItems.Values.ToList()[Random.Range(0, ModuleApplyHandler.allItems.Values.ToList().Count)].name;
-            
-            //Creates an itemObj, adds it to droppeditems, sets parent to world canvas, and sets position
-            GameObject itemObj = Instantiate(Variables.prefabs[itemName]);
-            MissionManager.allDroppedItems.Add(itemObj);
-            itemObj.transform.SetParent(GameObject.Find("World Canvas").transform);
-            itemObj.transform.position = transform.position;
+            List<string> newList = new(ModuleApplyHandler.allItems.Keys.ToList());
+            foreach(Transform item in World.FindInactive("Item Inventory").transform)
+            {
+                if(item.TryGetComponent(out ItemInfo ii))
+                {
+                    newList.Remove(ii.name);
+                }
+            }
 
-            itemObj.name = $"{itemName} Dropped Item";
+            if(newList.Count > 0)
+            {
+                //Gets a random item name from the list
+                string itemName = newList[Random.Range(0, newList.Count)];
+                
+                //Creates an itemObj, adds it to droppeditems, sets parent to world canvas, and sets position
+                GameObject itemObj = Instantiate(Variables.prefabs[itemName]);
+                MissionManager.allDroppedItems.Add(itemObj);
+                itemObj.transform.SetParent(GameObject.Find("World Canvas").transform);
+                itemObj.transform.position = transform.position;
+                itemObj.GetComponent<RectTransform>().sizeDelta = Vector3.one;
 
-            itemObj.GetComponent<Image>().sprite = Variables.prefabs[itemName].GetComponent<Image>().sprite;
+                itemObj.name = $"{itemName} Dropped Item";
 
-            oreCount = Random.Range(itemOreCount.min, itemOreCount.max);
+                itemObj.GetComponent<Image>().sprite = Variables.prefabs[itemName].GetComponent<Image>().sprite;
+
+                oreCount = Random.Range(itemOreCount.min, itemOreCount.max);
+            }
         }
-        else
-            oreCount = Random.Range(loneOreCount.min, loneOreCount.max);
 
         //Spawns the ore text and increases PlayerManager oreCount
         FloatingText.SpawnOreText(gameObject, oreCount);

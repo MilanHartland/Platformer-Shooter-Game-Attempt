@@ -92,7 +92,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 628027412, guid: 9f112fa4cc9ac4b4d996256c2dae1445, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -114,7 +114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemQuality: 0
   type: 1
   name: Shatter
   Description: "Bullet shatters into [Shatter Count] smaller pieces on hit with a
@@ -132,9 +131,49 @@ MonoBehaviour:
   itemValues:
     list:
     - Key: Shatter Count
-      Value: 3
+      Value: 2
     - Key: Shatter Damage
       Value: 0.4
     - Key: Shatter Spread
-      Value: 10
-  upgrades: []
+      Value: 20
+  upgrades:
+  - cost: 20
+    upgradeDescription: Shatter more
+    itemDescription: 
+    modifiers:
+      automaticModifier: 0
+      damageModifier: 0
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0
+    itemValues:
+      list:
+      - Key: Shatter Count
+        Value: 4
+      - Key: Shatter Damage
+        Value: 0.3
+      - Key: Shatter Spread
+        Value: 16
+  - cost: 40
+    upgradeDescription: Shatter even more
+    itemDescription: 
+    modifiers:
+      automaticModifier: 0
+      damageModifier: 0
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0
+    itemValues:
+      list:
+      - Key: Shatter Count
+        Value: 8
+      - Key: Shatter Damage
+        Value: 0.2
+      - Key: Shatter Spread
+        Value: 10

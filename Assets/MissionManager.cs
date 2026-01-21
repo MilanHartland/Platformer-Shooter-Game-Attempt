@@ -122,11 +122,18 @@ public class MissionManager : MonoBehaviour
             {
                 //Gets the item prefab, which is 
                 GameObject item = Instantiate(prefabs[closestItem.name[..closestItem.name.IndexOf(" Dropped Item")]]);
+                item.transform.name = closestItem.name[..closestItem.name.IndexOf(" Dropped Item")];
 
                 //Sets the instantiated item to the correct inventory parent and resets localScale
                 if (item && item.GetComponent<DragDrop>())
                 {
-                    item.transform.SetParent(World.FindInactive(item.GetComponent<DragDrop>().name + " Inventory").transform);
+                    if(item.GetComponent<ItemInfo>())
+                        item.transform.SetParent(World.FindInactive("Item Inventory").transform);
+                    else
+                    {
+                        item.transform.SetParent(World.FindInactive("Weapon Inventory").transform);
+                        item.GetComponent<WeaponInfo>().ResetEditLayout();
+                    }
 
                     item.transform.localScale = Vector3.one;
                 }
@@ -280,7 +287,7 @@ public class MissionManager : MonoBehaviour
         Destroy(gunCopy.gameObject);
 
         //Sets the follow profile the the correct one based on the scene, and sets transitioning to false
-        camFollow.ImportFollowProfile(SceneManager.GetActiveScene().name.Contains("Hub") ? "Hub Profile" : "Mission Profile");
+        camFollow.ImportFollowProfile(SceneManager.GetActiveScene().name[..SceneManager.GetActiveScene().name.IndexOf(" Scene")] + " Profile");
         isTransitioning = false;
     }
 

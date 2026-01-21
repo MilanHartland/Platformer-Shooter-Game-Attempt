@@ -28,7 +28,7 @@ public class EnemyBehaviour : MonoBehaviour
     [Tooltip("The HP the enemy spawns with")]public float maxHp;
     [HideInInspector]public float hp;
     [Tooltip("The weapon the enemy uses. Has to be hitscan"), ShowIf("!isDummy")]public WeaponStats weapon;
-    [Tooltip("The distance the enemy follows to. When it comes to this distance, it stops pathfinding"), ShowIf("!isDummy")]public float followDist;
+    float followDist;
 
     float playerKnowledge = 0f;
 
@@ -54,11 +54,16 @@ public class EnemyBehaviour : MonoBehaviour
     [Header("Idle")]
     [Tooltip("A list of positions this enemy can wander to")]public List<Vector3> wanderPositions;
     [Tooltip("The amount of time there is between wanders"), ShowIf("!isDummy")]public FloatRange wanderTimeRange;
+    Vector3 startPosition;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        if(!isDummy) weaponTimer = new(1f / weapon.fireRate);
+        if(!isDummy) 
+        {
+            weaponTimer = new(1f / weapon.fireRate);
+            followDist = weapon.maxHitscanDistance;
+        }
 
         info.Add("Last Position", transform.position.x);
         info.Add("Cripple Damage", 0f);
@@ -74,6 +79,8 @@ public class EnemyBehaviour : MonoBehaviour
             StartCoroutine(PathfindCoroutine());
         }
         else isDummy = true;
+
+        startPosition = transform.position;
     }
 
     void OnValidate()
@@ -149,13 +156,19 @@ public class EnemyBehaviour : MonoBehaviour
 
     IEnumerator PathfindCoroutine()
     {
+        yield return null;
+        
         Timer wanderTime;
         Vector3 wanderPos;
         bool lookingForPlayer = false;
         
         StartCoroutine(SightCoroutine());
-        wanderPos = wanderPositions[Random.Range(0, wanderPositions.Count)];
-        wanderTime = new(wanderTimeRange.Random());
+
+        if(wanderPositions.Count > 0)
+            wanderPos = wanderPositions[Random.Range(0, wanderPositions.Count)];
+        else wanderPos = startPosition;
+
+            wanderTime = new(wanderTimeRange.Random());
 
         while (true)
         {
@@ -164,7 +177,7 @@ public class EnemyBehaviour : MonoBehaviour
             //If sees the player, sets the last seen position to the closest node to the player. If the distance is over follow distance, pathfind towards player. Set lookingForPlayer to true
             if (seesPlayer)
             {
-                lastSeenPos = Pathfinding.ClosestNode(EnemyPathfinding.pathGraph, player.position);
+                lastSeenPos = Pathfinding.ClosestNode(GetComponent<EnemyPathfinding>().pathGraph, player.position);
                 
                 if(Vector2.Distance(pfCenter, player.position) > followDist) 
                     pathfinding.Pathfind(player.position);
@@ -187,7 +200,9 @@ public class EnemyBehaviour : MonoBehaviour
             {
                 if(wanderTime)
                 {
-                    wanderPos = wanderPositions[Random.Range(0, wanderPositions.Count)];
+                    if(wanderPositions.Count > 0)
+                        wanderPos = wanderPositions[Random.Range(0, wanderPositions.Count)];
+                    else wanderPos = startPosition;
 
                     wanderTime = new(wanderTimeRange.Random());
                 }

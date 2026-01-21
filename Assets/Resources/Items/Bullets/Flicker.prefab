@@ -114,7 +114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemQuality: 0
   type: 0
   name: Flicker
   Description: Shoots a second bullet after a [Flicker Delay]s delay. [d%] damage
@@ -132,5 +131,24 @@ MonoBehaviour:
   itemValues:
     list:
     - Key: Flicker Delay
-      Value: 0.2
-  upgrades: []
+      Value: 0.3
+  upgrades:
+  - cost: 15
+    upgradeDescription: Halves the delay, and also gives a 10% chance of a double
+      shot
+    itemDescription: Shoots a second bullet after a [Flicker Delay]s delay. [d%]
+      damage for both bullets. Disables automatic firing, but adds a 10% chance to
+      fire 2 bullets at the start
+    modifiers:
+      automaticModifier: 0
+      damageModifier: 0
+      bulletCountModifier: 0.1
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0
+    itemValues:
+      list:
+      - Key: Flicker Delay
+        Value: 0.15

@@ -1,5 +1,6 @@
 using UnityEngine;
 using MilanUtils;
+using UnityEngine.UI;
 
 #pragma warning disable CS0660
 #pragma warning disable CS0661
@@ -19,6 +20,7 @@ public class WeaponStats : ScriptableObject
     [Tooltip("The type of firing the gun does\n\nProjectile: shoots a physical projectile with gravity\nHitscan: shoots a raycast. Should only be used for enemy guns")] public FiringType firingType;
     [Tooltip("The speed of the bullet"), ShowIf(_enumName: "firingType", "Projectile")] public float bulletSpeed;
     [Tooltip("The maximum distance the hitscan can go"), ShowIf(_enumName: "firingType", "Hitscan"), SetName("Max Distance")] public float maxHitscanDistance;
+    [Tooltip("The sprite that held guns will have")]public Sprite gunImage;
 
     public void SetValues(WeaponStats w)
     {name = w.name; automatic = w.automatic; damage = w.damage; bulletCount = w.bulletCount; fireRate = w.fireRate; 

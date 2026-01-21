@@ -85,14 +85,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 707644606, guid: 9f112fa4cc9ac4b4d996256c2dae1445, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -114,7 +114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemQuality: 0
   type: 1
   name: Cull the Horde
   Description: Spreads damage to the closest [Horde Size] enemies within [Horde Range]m
@@ -135,4 +134,23 @@ MonoBehaviour:
       Value: 3
     - Key: Horde Range
       Value: 10
-  upgrades: []
+  upgrades:
+  - cost: 100
+    upgradeDescription: The upgrade works on all enemies
+    itemDescription: Spreads damage to all enemies. This is done in a way that puts
+      all enemies at the same health
+    modifiers:
+      automaticModifier: 0
+      damageModifier: 0
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0
+    itemValues:
+      list:
+      - Key: Horde Size
+        Value: 99999
+      - Key: Horde Range
+        Value: 99999

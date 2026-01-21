@@ -17,8 +17,8 @@ public class WeaponInfo : MonoBehaviour
     const int maxSlotCountInRow = 5;
 
     [InspectorButton("Create Edit Panel")]
-    void EditorResetEditLayout() { Variables.LoadAllResources(); transform.SetParent(transform.parent.parent); 
-    DestroyImmediate(transform.parent.Find(transform.name + " Inventory Parent").gameObject); ResetEditLayout(); }
+    void EditorResetEditLayout() { Variables.LoadAllResources(); if(transform.parent.name.Contains(" Inventory Parent")) {transform.SetParent(transform.parent.parent); 
+    DestroyImmediate(transform.parent.Find(transform.name + " Inventory Parent").gameObject);} ResetEditLayout(); }
     
     public void ResetEditLayout()
     {
@@ -68,10 +68,14 @@ public class WeaponInfo : MonoBehaviour
         _OnValidate();
     }
 
-    void OnValidate() { EditorApplication.delayCall += _OnValidate; }
+    #if UNITY_EDITOR 
+    void OnValidate() { EditorApplication.delayCall += _OnValidate; } 
+    #endif
     void _OnValidate()
     {
+        #if UNITY_EDITOR
         if (this == null || PrefabUtility.IsPartOfPrefabAsset(this) || !transform.parent.Find("Background Panel")) return;
+        #endif
         
         panel = transform.parent.Find("Background Panel").GetComponent<RectTransform>();
 

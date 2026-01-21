@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Enemy Rifle
   automatic: 1
-  damage: 1
-  fireRate: 5
+  damage: 2
+  bulletCount: 1
+  fireRate: 7
   magazineSize: 0
   reloadTime: 0
   spread: 10
   firingType: 1
   bulletSpeed: 50
-  maxHitscanDistance: 10
+  maxHitscanDistance: 8
+  gunImage: {fileID: -761887118410055393, guid: 9cd5e98e99ac79240ad26a966b671c3e, type: 3}

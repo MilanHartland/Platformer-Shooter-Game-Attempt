@@ -27,7 +27,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6669627909368832668}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -114,7 +114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemQuality: 0
   type: 0
   name: Ether
   Description: Makes the bullet go through walls for the first [Max Ether] hits
@@ -132,4 +131,20 @@ MonoBehaviour:
     list:
     - Key: Max Ethers
       Value: 1
-  upgrades: []
+  upgrades:
+  - cost: 5
+    upgradeDescription: The bullet can go through 1 extra wall
+    itemDescription: 
+    modifiers:
+      automaticModifier: 0
+      damageModifier: 0
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0
+    itemValues:
+      list:
+      - Key: Max Ethers
+        Value: 2

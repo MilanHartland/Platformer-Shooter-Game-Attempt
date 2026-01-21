@@ -114,7 +114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemQuality: 0
   type: 1
   name: Infect
   Description: Make the enemy take 1/[Infection Damage]th of the bullet's damage
@@ -132,7 +131,27 @@ MonoBehaviour:
   itemValues:
     list:
     - Key: Infection Damage
-      Value: 10
+      Value: 8
     - Key: Infection Duration
       Value: 4
-  upgrades: []
+  upgrades:
+  - cost: 0
+    upgradeDescription: Increases base damage, infection damage and duration
+    itemDescription: 'Make the enemy take 1/[Infection Damage]th of the bullet''s
+      damage per second for [Infection Duration] seconds. Also increases damage by
+      [d%]'
+    modifiers:
+      automaticModifier: 0
+      damageModifier: 0.2
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0
+    itemValues:
+      list:
+      - Key: Infection Damage
+        Value: 4
+      - Key: Infection Duration
+        Value: 8

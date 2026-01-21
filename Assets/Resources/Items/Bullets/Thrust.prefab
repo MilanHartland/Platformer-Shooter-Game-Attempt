@@ -114,7 +114,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee784627b03d16e40b066c64fd7627e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemQuality: 0
   type: 0
   name: Thrust
   Description: 'Have the bullet''s speed exponentially increase by a factor [Thrust]
@@ -128,9 +127,41 @@ MonoBehaviour:
     magazineModifier: 1
     reloadModifier: 1
     spreadModifier: 1
-    speedModifier: 0.7
+    speedModifier: 0.5
   itemValues:
     list:
     - Key: Thrust
-      Value: 1.1
-  upgrades: []
+      Value: 1.04
+  upgrades:
+  - cost: 20
+    upgradeDescription: Increases starting velocity and thrust
+    itemDescription: 
+    modifiers:
+      automaticModifier: 0
+      damageModifier: 0
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0.15
+    itemValues:
+      list:
+      - Key: Thrust
+        Value: 1.08
+  - cost: 40
+    upgradeDescription: Increases starting velocity and thrust
+    itemDescription: 
+    modifiers:
+      automaticModifier: 0
+      damageModifier: 0
+      bulletCountModifier: 0
+      fireRateModifier: 0
+      magazineModifier: 0
+      reloadModifier: 0
+      spreadModifier: 0
+      speedModifier: 0.15
+    itemValues:
+      list:
+      - Key: Thrust
+        Value: 1.16

@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Rifle
   automatic: 1
-  damage: 1
+  damage: 2
   bulletCount: 1
-  fireRate: 10
+  fireRate: 6
   magazineSize: 24
   reloadTime: 1
-  spread: 14
+  spread: 16
   firingType: 0
   bulletSpeed: 20
   maxHitscanDistance: 10

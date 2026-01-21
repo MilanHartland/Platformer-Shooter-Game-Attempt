@@ -496,7 +496,7 @@ public class BulletBehaviour : MonoBehaviour
             }
         }
 
-        enemy.GetComponent<EnemyBehaviour>().TakeDamage(damage);
+        DamageEnemySecondTier(enemy, damage);
 
         List<GameObject> GetClosestEnemies(float count, bool excludeCurrent)
         {
@@ -526,10 +526,14 @@ public class BulletBehaviour : MonoBehaviour
             switch (item.name)
             {
                 case "Cull the Strong":
-                    //IMPLEMENT HERE
+                    EnemyBehaviour beh = enemy.GetComponent<EnemyBehaviour>();
+                    beh.TakeDamage((beh.hp - 1f) * itemValues["Strong Factor"]);
+                    damage = 0f;
                     break;
                 default: continue;
             }
         }
+
+        enemy.GetComponent<EnemyBehaviour>().TakeDamage(damage);
     }
 }

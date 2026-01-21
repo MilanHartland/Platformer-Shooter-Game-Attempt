@@ -215,7 +215,7 @@ public class PlayerManager : MonoBehaviour
         
         //Sets dead to true and deletes equipped items, as well as turning the player to particles
         isDead = true;
-        DeleteEquippedItems();
+        // DeleteEquippedItems();
         Effects.TurnIntoParticles(gameObject, transform.position, dontThrowNonReadException: true);
 
         //Creates a scene loading variable, and makes it not automatically switch scenes

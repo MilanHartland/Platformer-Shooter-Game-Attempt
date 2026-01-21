@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Shotgun
   automatic: 0
-  damage: 2
+  damage: 3
   bulletCount: 6
-  fireRate: 1
-  magazineSize: 4
-  reloadTime: 1
-  spread: 120
+  fireRate: 0.5
+  magazineSize: 6
+  reloadTime: 3
+  spread: 90
   firingType: 0
   bulletSpeed: 30
   maxHitscanDistance: 0

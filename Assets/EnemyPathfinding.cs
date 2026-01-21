@@ -5,6 +5,8 @@ using MilanUtils;
 using static MilanUtils.Trajectory;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
+using UnityEditor;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class EnemyPathfinding : MonoBehaviour
@@ -14,7 +16,7 @@ public class EnemyPathfinding : MonoBehaviour
 
     Rigidbody2D rb;
 
-    public static Dictionary<Vector3, List<Vector3>> pathGraph = new();
+    public Dictionary<Vector3, List<Vector3>> pathGraph = new();
     [HideInInspector] public List<Vector3> path { get; private set; } = new();
     Vector3 curTarget = Vector3.zero;
 
@@ -30,20 +32,18 @@ public class EnemyPathfinding : MonoBehaviour
     Vector3 pfCenter => transform.position + pfCenterRelative;
 
     [HideInInspector]public bool isPathfinding;
+    
+    public static Dictionary<string, BakedMap> bakedMaps = new();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        GenerateMap();
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Z)) StartPathfindCoroutine(World.mousePos);
-        // if (Input.GetKeyDown(KeyCode.X)) rb.linearVelocity = GetJumpToConstantSpeed(pfCenter, World.mousePos2D, speed);
-        // if (Input.GetKeyDown(KeyCode.C)) pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
+        pathGraph = Resources.Load<BakedMap>($"Enemy Maps/Map{transform.name}").map;
+
+        // GenerateMap();
+        //GENERATING THE MAP IS WAYYYYY TO HEAVY FOR THE GAME. TRYING TO MAKE A SYSTEM TO BAKE IT INSTEAD OF GENERATING IT EVERY TIME
     }
 
     public void StopPathfinding(){rb.linearVelocityX = 0f; path = new(); StopAllCoroutines(); isPathfinding = false;}
@@ -176,7 +176,17 @@ public class EnemyPathfinding : MonoBehaviour
         return (0.5f * vel * vel) / -Physics2D.gravity.y;
     }
 
-    [InspectorButton("Generate Map")]
+    #if UNITY_EDITOR
+    [InspectorButton("Bake Map Universal (Might Take A While)")]
+    void GenerateMapAll()
+    {
+        foreach(var obj in World.AllGameObjects(true, typeof(EnemyPathfinding)))
+        {
+            obj.GetComponent<EnemyPathfinding>().GenerateMap();
+        }
+    }
+
+    [InspectorButton("Bake Map")]
     void GenerateMap()
     {
         mask = 1 << LayerMask.NameToLayer("Map");
@@ -305,7 +315,15 @@ public class EnemyPathfinding : MonoBehaviour
             }
         };
         pathGraph = Pathfinding.GenerateMapDijkstraGraphFull(map, true, graphConnectionRequirements, gameObject);
+
+        if(transform.name.Contains("Enemy")) transform.name = gameObject.GetHashCode().ToString();
+        
+        BakedMap bm = (BakedMap)ScriptableObject.CreateInstance(nameof(BakedMap));
+        bm.SetFromDict(pathGraph);
+        AssetDatabase.DeleteAsset($"Assets/Resources/Enemy Maps/Map{transform.name}.asset");
+        AssetDatabase.CreateAsset(bm, $"Assets/Resources/Enemy Maps/Map{transform.name}.asset");
     }
+    #endif
 
     [ContextMenu("Log Path")]
     void LogPath()
@@ -321,8 +339,18 @@ public class EnemyPathfinding : MonoBehaviour
     public bool drawGraphGizmos;
     public bool drawPathGizmos;
     #pragma warning disable
-    void OnDrawGizmos()
+    void OnDrawGizmosSelected()
     {
+        try
+        {
+            pathGraph = Resources.Load<BakedMap>($"Enemy Maps/Map{transform.name}").map;
+        }
+        catch
+        {
+            Debug.LogWarning("This enemy does not yet have a BakedMap associated!");
+            return;
+        }
+        
         if(drawGraphGizmos)
         {
             Gizmos.color = Color.white;

@@ -23,7 +23,7 @@ public class ModuleApplyHandler : MonoBehaviour
         appliedItems = new();
         foreach(var obj in resources)
         {
-            if(obj.Value.GetType() == typeof(WeaponStats))
+            if(obj.Value.GetType() == typeof(WeaponStats) && !((WeaponStats)obj.Value).name.Contains("Enemy"))
             {
                 appliedItems.Add(((WeaponStats)obj.Value).name, new());
                 allWeapons.Add(((WeaponStats)obj.Value).name, (WeaponStats)obj.Value);

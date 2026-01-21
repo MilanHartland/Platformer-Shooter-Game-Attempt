@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Pistol
   automatic: 0
-  damage: 3
+  damage: 10
   bulletCount: 1
   fireRate: 2
   magazineSize: 6
   reloadTime: 0.5
-  spread: 4
+  spread: 5
   firingType: 0
-  bulletSpeed: 10
+  bulletSpeed: 15
   maxHitscanDistance: 0
